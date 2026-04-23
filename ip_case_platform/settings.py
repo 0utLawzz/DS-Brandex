@@ -35,7 +35,7 @@ CSRF_TRUSTED_ORIGINS = [
     o.strip()
     for o in os.environ.get(
         "DJANGO_CSRF_TRUSTED_ORIGINS",
-        "http://127.0.0.1:52684",
+        "http://127.0.0.1:52684,http://127.0.0.1:62497",
     ).split(",")
     if o.strip()
 ]

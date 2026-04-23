@@ -8,68 +8,118 @@
     <div class="card-body">
       <form class="row g-2" method="get" action="">
         <div class="col-sm-8">
-          <input class="form-control victorian-input" type="text" name="q" value="{{ q }}" placeholder="Search: folder #, application name, application #, applicant" />
+          <input class="form-control victorian-input small-cap" type="text" name="q" value="{{ q }}" placeholder="Search: folder #, application name, case #, applicant" />
         </div>
         <div class="col-sm-4 d-grid">
-          <button class="btn victorian-btn" type="submit">Search</button>
+          <button class="btn victorian-btn small-cap" type="submit">Search</button>
         </div>
       </form>
 
       <div class="mt-3 d-grid">
-        <a class="btn victorian-btn" href="{% url 'cases:application_create' %}">+ New Application</a>
+        <a class="btn victorian-btn small-cap" href="{% url 'cases:application_create' %}">+ New Application</a>
       </div>
     </div>
   </div>
 
   <div class="victorian-card card">
-    <div class="card-header py-3">Latest Updated (showing up to 500)</div>
+    <div class="card-header py-3 small-cap">Latest Updated (100 per page)</div>
     <div class="card-body">
+      {% if page_obj.has_other_pages %}
+        <div class="d-flex justify-content-between mb-3">
+          {% if page_obj.has_previous %}
+            <a class="victorian-link small-cap" href="?page=1{% if q %}&q={{ q }}{% endif %}">First</a>
+            <a class="victorian-link small-cap" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">Previous</a>
+          {% endif %}
+          <span class="small-cap">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a class="victorian-link small-cap" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Next</a>
+            <a class="victorian-link small-cap" href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}">Last</a>
+          {% endif %}
+        </div>
+      {% endif %}
+
       <div class="table-responsive">
         <table class="table victorian-table align-middle">
           <thead>
             <tr>
-              <th>Folder #</th>
-              <th>Application</th>
-              <th>Type</th>
-              <th>Trademark No</th>
-              <th>Application #</th>
-              <th>Applicant</th>
-              <th>City</th>
-              <th>Filing Date</th>
-              <th>Stage</th>
-              <th>Sub-stage</th>
-              <th>Status</th>
-              <th>Updated</th>
+              <th class="small-cap">Creation Date</th>
+              <th class="small-cap">Folder No</th>
+              <th class="small-cap">Type</th>
+              <th class="small-cap">TM No</th>
+              <th class="small-cap">Application Name</th>
+              <th class="small-cap">Class</th>
+              <th class="small-cap">Stage</th>
+              <th class="small-cap">Sub Status</th>
+              <th class="small-cap">Assign</th>
+              <th class="small-cap">Last Update</th>
             </tr>
           </thead>
           <tbody>
-            {% for a in applications %}
+            {% for a in page_obj %}
               <tr>
+                <td class="small">{{ a.created_at|date:"d-M-y" }}</td>
                 <td>
                   <a class="victorian-link" href="{% url 'cases:application_detail' a.pk %}"><strong>{{ a.folder_number }}</strong></a>
                 </td>
-                <td>{{ a.application_name }}</td>
-                <td class="small"><span class="badge victorian-badge">{{ a.get_application_type_display }}</span></td>
+                <td>
+                  {% if a.application_type == 'trademark' %}
+                    <span class="badge victorian-badge">T</span>
+                  {% elif a.application_type == 'copyright' %}
+                    <span class="badge victorian-badge">C</span>
+                  {% elif a.application_type == 'ntn' %}
+                    <span class="badge victorian-badge">N</span>
+                  {% else %}
+                    <span class="badge victorian-badge">{{ a.application_type|slice:":1"|upper }}</span>
+                  {% endif %}
+                </td>
                 <td>{{ a.trademark_no }}</td>
-                <td>{{ a.application_number }}</td>
-                <td>{{ a.applicant_name }}</td>
-                <td>{{ a.city }}</td>
-                <td class="small">{% if a.filing_date %}{{ a.filing_date|date:"Y-m-d" }}{% endif %}</td>
-                <td><span class="badge victorian-badge">{{ a.get_current_stage_display }}</span></td>
-                <td><span class="badge victorian-badge">{{ a.get_current_sub_stage_display }}</span></td>
-                <td><span class="badge victorian-badge">{{ a.current_status }}</span></td>
-                <td class="text-muted small">{{ a.updated_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ a.application_name }}</td>
+                <td>{{ a.class_numbers }}</td>
+                <td>
+                  {% if a.current_stage == 1 %}
+                    <span class="badge victorian-badge">1</span>
+                  {% elif a.current_stage == 2 %}
+                    <span class="badge victorian-badge">2</span>
+                  {% elif a.current_stage == 3 %}
+                    <span class="badge victorian-badge">3</span>
+                  {% elif a.current_stage == 4 %}
+                    <span class="badge victorian-badge">4</span>
+                  {% endif %}
+                </td>
+                <td><span class="badge victorian-badge">{{ a.get_current_sub_stage_display|default:"-" }}</span></td>
+                <td>
+                  {% with latest_assign=a.assignments.first %}
+                    {% if latest_assign %}
+                      {{ latest_assign.assigned_to.username|default:"-" }}
+                    {% else %}
+                      -
+                    {% endif %}
+                  {% endwith %}
+                </td>
+                <td class="text-muted small">{{ a.updated_at|date:"d-M-y H:i" }}</td>
               </tr>
             {% empty %}
               <tr>
-                <td colspan="12" class="text-muted">No applications found.</td>
+                <td colspan="10" class="text-muted small-cap">No applications found.</td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
 
-      <div class="small text-muted">Tip: create cases via Admin for now: <a class="victorian-link" href="/admin/">/admin/</a></div>
+      {% if page_obj.has_other_pages %}
+        <div class="d-flex justify-content-between mt-3">
+          {% if page_obj.has_previous %}
+            <a class="victorian-link small-cap" href="?page=1{% if q %}&q={{ q }}{% endif %}">First</a>
+            <a class="victorian-link small-cap" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">Previous</a>
+          {% endif %}
+          <span class="small-cap">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a class="victorian-link small-cap" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Next</a>
+            <a class="victorian-link small-cap" href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}">Last</a>
+          {% endif %}
+        </div>
+      {% endif %}
     </div>
   </div>
 {% endblock %}

@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db import models
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404, redirect, render
@@ -6,7 +7,7 @@ from django.utils import timezone
 
 from django.contrib.auth import get_user_model
 
-from .models import Application, Assignment, DocumentLink, Event, EventType, Stage, SubStage
+from .models import Application, Assignment, DocumentLink, Event, EventType, Stage, SubStage, FileUpload, SiteSettings
 
 
 @login_required
@@ -18,26 +19,39 @@ def application_list(request: HttpRequest):
         applications = applications.filter(
             models.Q(folder_number__icontains=q)
             | models.Q(application_name__icontains=q)
-            | models.Q(application_number__icontains=q)
+            | models.Q(case_no__icontains=q)
             | models.Q(applicant_name__icontains=q)
         )
 
+    paginator = Paginator(applications, 100)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
+    site_settings = SiteSettings.objects.first()
+    if not site_settings:
+        site_settings = SiteSettings.objects.create()
+
     context = {
-        "applications": applications[:500],
+        "page_obj": page_obj,
         "q": q,
+        "site_settings": site_settings,
     }
     return render(request, "cases/application_list.html", context)
 
 
 @login_required
 def application_create(request: HttpRequest):
+    site_settings = SiteSettings.objects.first()
+    if not site_settings:
+        site_settings = SiteSettings.objects.create()
+
     if request.method == "POST":
         folder_number = (request.POST.get("folder_number") or "").strip()
         client_type = (request.POST.get("client_type") or "").strip()
         application_type = (request.POST.get("application_type") or "").strip()
         application_name = (request.POST.get("application_name") or "").strip()
         trademark_no = (request.POST.get("trademark_no") or "").strip()
-        application_number = (request.POST.get("application_number") or "").strip()
+        case_no = (request.POST.get("case_no") or "").strip()
         class_numbers = (request.POST.get("class_numbers") or "").strip()
         filing_date = request.POST.get("filing_date") or None
         application_year = request.POST.get("application_year") or None
@@ -51,6 +65,7 @@ def application_create(request: HttpRequest):
         jurisdiction = (request.POST.get("jurisdiction") or "").strip()
         dispatch_status = (request.POST.get("dispatch_status") or "").strip()
         logo = request.FILES.get("logo")
+        files = request.FILES.getlist("files")
 
         errors = []
         if not folder_number:
@@ -72,7 +87,9 @@ def application_create(request: HttpRequest):
                 "client_type_choices": Application._meta.get_field("client_type").choices,
                 "application_type_choices": Application._meta.get_field("application_type").choices,
                 "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
+                "city_choices": Application._meta.get_field("city").choices,
                 "values": request.POST,
+                "site_settings": site_settings,
             }
             return render(request, "cases/application_create.html", context)
 
@@ -82,7 +99,7 @@ def application_create(request: HttpRequest):
             application_type=application_type,
             application_name=application_name,
             trademark_no=trademark_no,
-            application_number=application_number,
+            case_no=case_no,
             class_numbers=class_numbers,
             filing_date=filing_date,
             application_year=application_year or None,
@@ -103,13 +120,19 @@ def application_create(request: HttpRequest):
             app.logo = logo
 
         app.save()
+
+        for f in files:
+            FileUpload.objects.create(application=app, file=f)
+
         return redirect("cases:application_detail", pk=app.pk)
 
     context = {
         "client_type_choices": Application._meta.get_field("client_type").choices,
         "application_type_choices": Application._meta.get_field("application_type").choices,
         "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
+        "city_choices": Application._meta.get_field("city").choices,
         "values": {},
+        "site_settings": site_settings,
     }
     return render(request, "cases/application_create.html", context)
 
@@ -120,6 +143,10 @@ def application_detail(request: HttpRequest, pk: int):
 
     today = timezone.localdate()
     users = get_user_model().objects.all().order_by("username")
+
+    site_settings = SiteSettings.objects.first()
+    if not site_settings:
+        site_settings = SiteSettings.objects.create()
 
     assignment_cards = []
     for a in application.assignments.all()[:200]:
@@ -143,6 +170,7 @@ def application_detail(request: HttpRequest, pk: int):
         "sub_stage_choices": SubStage.choices,
         "users": users,
         "today": today,
+        "site_settings": site_settings,
     }
     return render(request, "cases/application_detail.html", context)
 

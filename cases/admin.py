@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Application, Assignment, AuditLog, DocumentLink, Event
+from .models import Application, Assignment, AuditLog, DocumentLink, Event, FileUpload, SiteSettings
 
 
 class EventInline(admin.TabularInline):
@@ -24,6 +24,13 @@ class DocumentInline(admin.TabularInline):
     readonly_fields = ("uploaded_by", "uploaded_date")
 
 
+class FileUploadInline(admin.TabularInline):
+    model = FileUpload
+    extra = 0
+    fields = ("file", "uploaded_at", "uploaded_by")
+    readonly_fields = ("uploaded_at", "uploaded_by")
+
+
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = (
@@ -34,7 +41,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         "application_name",
         "application_type",
         "trademark_no",
-        "application_number",
+        "case_no",
         "applicant_name",
         "city",
         "jurisdiction",
@@ -43,7 +50,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         "current_status",
         "updated_at",
     )
-    search_fields = ("folder_number", "application_name", "application_number", "trademark_no", "applicant_name")
+    search_fields = ("folder_number", "application_name", "case_no", "trademark_no", "applicant_name")
     list_filter = (
         "client_type",
         "application_type",
@@ -54,7 +61,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         "city",
     )
     readonly_fields = ("created_at", "updated_at")
-    inlines = (EventInline, AssignmentInline, DocumentInline)
+    inlines = (EventInline, AssignmentInline, DocumentInline, FileUploadInline)
 
 
 @admin.register(Event)
@@ -101,3 +108,16 @@ class AuditLogAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+
+@admin.register(FileUpload)
+class FileUploadAdmin(admin.ModelAdmin):
+    list_display = ("application", "file", "uploaded_at", "uploaded_by")
+    search_fields = ("application__folder_number", "application__application_name", "file")
+    readonly_fields = ("uploaded_at", "uploaded_by")
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    list_display = ("company_name", "updated_at")
+    fields = ("company_name", "company_logo")

@@ -7,6 +7,8 @@ from .current_user import get_current_user
 
 class ApplicantType(models.TextChoices):
     SOLE_PROPRIETOR = "sole_proprietor", "Sole Proprietor"
+    PARTNER = "partner", "Partner"
+    CEO = "ceo", "CEO"
     COMPANY = "company", "Company"
 
 
@@ -111,12 +113,12 @@ class Application(models.Model):
     application_year = models.PositiveIntegerField(null=True, blank=True)
     filing_date = models.DateField(null=True, blank=True)
 
-    application_number = models.CharField(max_length=100, blank=True)
+    case_no = models.CharField(max_length=100, blank=True, verbose_name="Case No")
     applicant_name = models.CharField(max_length=255)
     trading_as = models.CharField(max_length=255, blank=True)
     applicant_type = models.CharField(max_length=20, choices=ApplicantType.choices, default=ApplicantType.COMPANY)
     address = models.TextField(blank=True)
-    city = models.CharField(max_length=50, blank=True)
+    city = models.CharField(max_length=50, blank=True, choices=[("Lahore", "Lahore"), ("Karachi", "Karachi"), ("Islamabad", "Islamabad"), ("Peshawar", "Peshawar")])
 
     agent_name = models.CharField(max_length=255, blank=True)
     agent_address = models.TextField(blank=True)
@@ -170,7 +172,7 @@ class Application(models.Model):
             "class_numbers",
             "application_year",
             "filing_date",
-            "application_number",
+            "case_no",
             "applicant_name",
             "trading_as",
             "applicant_type",
@@ -392,6 +394,38 @@ class AuditLog(models.Model):
             new_value=str(new_value),
             changed_by=changed_by,
         )
+
+
+class SiteSettings(models.Model):
+    company_name = models.CharField(max_length=255, default="IP Case Platform")
+    company_logo = models.ImageField(upload_to="company_logo/", null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Site Settings"
+        verbose_name_plural = "Site Settings"
+
+    def __str__(self) -> str:
+        return self.company_name
+
+
+class FileUpload(models.Model):
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="file_uploads")
+    file = models.FileField(upload_to="case_files/%Y/%m/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="file_uploads",
+    )
+
+    class Meta:
+        ordering = ["-uploaded_at"]
+
+    def __str__(self) -> str:
+        return f"{self.application.folder_number} - {self.file.name}"
 
 
 # Create your models here.

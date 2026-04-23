@@ -231,3 +231,9 @@
   border: var(--border-width) solid var(--line);
   background: var(--surface);
 }
+
+.small-cap {
+  font-variant: small-caps;
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+}
