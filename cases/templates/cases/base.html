@@ -24,7 +24,10 @@
         <div class="d-flex align-items-center gap-3">
           {% if user.is_authenticated %}
             <div class="small">Logged in as <strong>{{ user.username }}</strong></div>
-            <a class="btn btn-sm victorian-btn" href="{% url 'logout' %}">Logout</a>
+            <form method="post" action="{% url 'logout' %}" class="m-0">
+              {% csrf_token %}
+              <button class="btn btn-sm victorian-btn" type="submit">Logout</button>
+            </form>
           {% else %}
             <a class="btn btn-sm victorian-btn" href="{% url 'login' %}">Login</a>
           {% endif %}
