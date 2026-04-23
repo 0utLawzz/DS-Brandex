@@ -5,17 +5,17 @@
 {% block content %}
   <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
-      <div class="victorian-card card">
-        <div class="card-header py-3">Login</div>
+      <div class="victorian-card card" style="max-width: 400px; margin: 2rem auto;">
+        <div class="card-header py-3 small-cap">Login</div>
         <div class="card-body">
           <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
             <div class="mb-3">
-              <label class="form-label" for="id_username">Username</label>
+              <label class="form-label small-cap" for="id_username">Username</label>
               <input class="form-control victorian-input" type="text" name="username" autofocus required id="id_username" />
             </div>
             <div class="mb-3">
-              <label class="form-label" for="id_password">Password</label>
+              <label class="form-label small-cap" for="id_password">Password</label>
               <input class="form-control victorian-input" type="password" name="password" required id="id_password" />
             </div>
             {% if form.errors %}
@@ -23,7 +23,7 @@
             {% endif %}
             <input type="hidden" name="next" value="{{ next|default:'/' }}" />
             <div class="d-grid">
-              <button class="btn victorian-btn" type="submit">Login</button>
+              <button class="btn victorian-btn small-cap" type="submit">Login</button>
             </div>
           </form>
         </div>
