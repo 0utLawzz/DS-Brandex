@@ -1,0 +1,71 @@
+{% extends 'cases/base.html' %}
+
+{% block title %}Applications - IP Case Platform{% endblock %}
+
+{% block content %}
+  <div class="victorian-card card mb-4">
+    <div class="card-header py-3">Applications</div>
+    <div class="card-body">
+      <form class="row g-2" method="get" action="">
+        <div class="col-sm-8">
+          <input class="form-control victorian-input" type="text" name="q" value="{{ q }}" placeholder="Search: folder #, application name, application #, applicant" />
+        </div>
+        <div class="col-sm-4 d-grid">
+          <button class="btn victorian-btn" type="submit">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="victorian-card card">
+    <div class="card-header py-3">Latest Updated (showing up to 500)</div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table victorian-table align-middle">
+          <thead>
+            <tr>
+              <th>Folder #</th>
+              <th>Application</th>
+              <th>Type</th>
+              <th>Trademark No</th>
+              <th>Application #</th>
+              <th>Applicant</th>
+              <th>City</th>
+              <th>Filing Date</th>
+              <th>Stage</th>
+              <th>Sub-stage</th>
+              <th>Status</th>
+              <th>Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in applications %}
+              <tr>
+                <td>
+                  <a class="victorian-link" href="{% url 'cases:application_detail' a.pk %}"><strong>{{ a.folder_number }}</strong></a>
+                </td>
+                <td>{{ a.application_name }}</td>
+                <td class="small"><span class="badge victorian-badge">{{ a.get_application_type_display }}</span></td>
+                <td>{{ a.trademark_no }}</td>
+                <td>{{ a.application_number }}</td>
+                <td>{{ a.applicant_name }}</td>
+                <td>{{ a.city }}</td>
+                <td class="small">{% if a.filing_date %}{{ a.filing_date|date:"Y-m-d" }}{% endif %}</td>
+                <td><span class="badge victorian-badge">{{ a.get_current_stage_display }}</span></td>
+                <td><span class="badge victorian-badge">{{ a.get_current_sub_stage_display }}</span></td>
+                <td><span class="badge victorian-badge">{{ a.current_status }}</span></td>
+                <td class="text-muted small">{{ a.updated_at|date:"Y-m-d H:i" }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="12" class="text-muted">No applications found.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="small text-muted">Tip: create cases via Admin for now: <a class="victorian-link" href="/admin/">/admin/</a></div>
+    </div>
+  </div>
+{% endblock %}

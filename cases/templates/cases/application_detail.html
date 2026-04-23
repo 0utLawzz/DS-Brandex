@@ -1,0 +1,280 @@
+{% extends 'cases/base.html' %}
+
+{% block title %}{{ application.folder_number }} - IP Case Platform{% endblock %}
+
+{% block content %}
+  <div class="mb-3">
+    <a class="victorian-link" href="{% url 'cases:application_list' %}">← Back to Applications</a>
+  </div>
+
+  <div class="dst-grid">
+    <div class="victorian-card card dst-accent-blue">
+      <div class="card-header py-3">Case Info</div>
+      <div class="card-body">
+        <div class="d-flex align-items-start justify-content-between gap-3">
+          <div class="dst-kv">
+            <div class="k">Folder #</div><div>{{ application.folder_number }}</div>
+            <div class="k">Client Type</div><div>{{ application.get_client_type_display }}</div>
+            <div class="k">Application Type</div><div>{{ application.get_application_type_display }}</div>
+            <div class="k">Application Name</div><div>{{ application.application_name }}</div>
+            <div class="k">Trademark No</div><div>{{ application.trademark_no }}</div>
+            <div class="k">Application #</div><div>{{ application.application_number }}</div>
+            <div class="k">Class</div><div>{{ application.class_numbers }}</div>
+            <div class="k">Filing Date</div><div>{% if application.filing_date %}{{ application.filing_date|date:"Y-m-d" }}{% endif %}</div>
+            <div class="k">Applicant</div><div>{{ application.applicant_name }}</div>
+            <div class="k">Trading As</div><div>{{ application.trading_as }}</div>
+            <div class="k">City</div><div>{{ application.city }}</div>
+            <div class="k">Agent</div><div>{{ application.agent_name }}</div>
+            <div class="k">Dispatch</div><div>{{ application.dispatch_status }}</div>
+          </div>
+          <div>
+            {% if application.logo %}
+              <img class="dst-thumb" src="{{ application.logo.url }}" alt="logo" onclick="openDstImage(this.src)" />
+            {% else %}
+              <div class="small text-muted">No logo</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="victorian-card card dst-accent-yellow">
+      <div class="card-header py-3">Status Box</div>
+      <div class="card-body">
+        <div class="dst-kv">
+          <div class="k">Stage</div><div><span class="badge victorian-badge">{{ application.get_current_stage_display }}</span></div>
+          <div class="k">Sub-Status</div><div><span class="badge victorian-badge">{{ application.get_current_sub_stage_display }}</span></div>
+          <div class="k">Status</div><div><span class="badge victorian-badge">{{ application.current_status }}</span></div>
+          <div class="k">Last Updated</div><div class="small text-muted">{{ application.updated_at|date:"Y-m-d H:i" }}</div>
+        </div>
+
+        <div class="mt-3">
+          <div class="fw-bold mb-2">Quick Event Buttons</div>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn victorian-btn" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="filing">➕ Filing</button>
+            <button class="btn victorian-btn" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="objection">⚠️ Objection</button>
+            <button class="btn victorian-btn" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="publication">📢 Publication</button>
+            <button class="btn victorian-btn" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="demand">💰 Demand</button>
+            <button class="btn victorian-btn" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="certificate">🏆 Certificate</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="victorian-card card dst-accent-blue">
+      <div class="card-header py-3">Timeline</div>
+      <div class="card-body">
+        <div class="dst-timeline">
+          {% for e in events %}
+            <div class="dst-event {% if e.deadline_date and e.deadline_date < today %}is-alert{% elif e.deadline_date and e.deadline_date == today %}is-attn{% endif %}">
+              <div class="dst-event-title">{{ e.get_event_type_display }}{% if e.sub_stage %} — {{ e.get_sub_stage_display }}{% endif %}</div>
+              <div class="dst-event-meta">{{ e.event_datetime|date:"Y-m-d H:i" }}{% if e.deadline_date %} | Deadline: {{ e.deadline_date|date:"Y-m-d" }}{% endif %}</div>
+              {% if e.document_link %}
+                <div class="small"><a class="victorian-link" href="{{ e.document_link }}" target="_blank">Document</a></div>
+              {% endif %}
+              {% if e.notes %}<div class="small">{{ e.notes }}</div>{% endif %}
+            </div>
+          {% empty %}
+            <div class="text-muted">No events yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="victorian-card card dst-accent-red">
+      <div class="card-header py-3">Assignments</div>
+      <div class="card-body">
+        <form class="row g-2 mb-3" method="post" action="{% url 'cases:add_assignment' application.pk %}">
+          {% csrf_token %}
+          <div class="col-md-6">
+            <select class="form-select victorian-input" name="assigned_to">
+              <option value="">(unassigned)</option>
+              {% for u in users %}
+                <option value="{{ u.id }}">{{ u.username }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <input class="form-control victorian-input" type="date" name="due_date" />
+          </div>
+          <div class="col-md-6">
+            <select class="form-select victorian-input" name="status">
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+              <option value="overdue">Overdue</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <button class="btn victorian-btn w-100" type="submit">Add</button>
+          </div>
+          <div class="col-12">
+            <textarea class="form-control victorian-input" name="notes" rows="2" placeholder="Notes..."></textarea>
+          </div>
+        </form>
+
+        <div class="d-grid gap-3">
+          {% for a,urgency in assignments %}
+            <div class="dst-assignment {{ urgency }}">
+              <div class="fw-bold">{% if a.assigned_to %}{{ a.assigned_to.username }}{% else %}(unassigned){% endif %}</div>
+              <div class="small">Due: {% if a.due_date %}{{ a.due_date|date:"Y-m-d" }}{% else %}-{% endif %}</div>
+              <div class="small">Status: {{ a.get_status_display }}</div>
+              {% if a.notes %}<div class="small mt-1">{{ a.notes }}</div>{% endif %}
+            </div>
+          {% empty %}
+            <div class="text-muted">No assignments.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="victorian-card card dst-span-2 dst-accent-yellow">
+      <div class="card-header py-3">Documents</div>
+      <div class="card-body">
+        <form class="row g-2 mb-3" method="post" action="{% url 'cases:add_document' application.pk %}">
+          {% csrf_token %}
+          <div class="col-md-3">
+            <select class="form-select victorian-input" name="file_type">
+              <option value="logo">Logo</option>
+              <option value="certificate">Certificate</option>
+              <option value="notice">Notice</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="col-md-9">
+            <input class="form-control victorian-input" type="text" name="file_path" placeholder="Paste shared drive / SharePoint link" required />
+          </div>
+          <div class="col-12">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="preview_enabled" id="preview_enabled" checked />
+              <label class="form-check-label" for="preview_enabled">Preview enabled</label>
+            </div>
+          </div>
+          <div class="col-12 d-grid">
+            <button class="btn victorian-btn" type="submit">Add Document Link</button>
+          </div>
+        </form>
+
+        <div class="table-responsive">
+          <table class="table victorian-table align-middle">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in documents %}
+                <tr>
+                  <td class="small"><span class="badge victorian-badge">{{ d.get_file_type_display }}</span></td>
+                  <td class="small"><a class="victorian-link" href="{{ d.file_path }}" target="_blank">{{ d.file_path }}</a></td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="2" class="text-muted">No documents.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="victorian-card card dst-span-2 dst-accent-blue">
+      <div class="card-header py-3">Audit Log (latest)</div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table victorian-table align-middle">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Action</th>
+                <th>Field</th>
+                <th>User</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for l in audit_logs %}
+                <tr>
+                  <td class="small text-muted">{{ l.timestamp|date:"Y-m-d H:i" }}</td>
+                  <td class="small">{{ l.get_action_type_display }}</td>
+                  <td class="small">{{ l.field_changed }}</td>
+                  <td class="small">{% if l.changed_by %}{{ l.changed_by.username }}{% else %}<span class="text-muted">(system)</span>{% endif %}</td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4" class="text-muted">No audit logs.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dst-preview" onclick="this.style.display='none'">
+    <img id="dst-preview-img" alt="preview" />
+  </div>
+
+  <div class="modal" id="eventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content victorian-card">
+        <div class="card-header py-3">Add Event</div>
+        <div class="card-body">
+          <form class="row g-2" method="post" action="{% url 'cases:add_event' application.pk %}">
+            {% csrf_token %}
+            <div class="col-12">
+              <label class="form-label">Event Type</label>
+              <select class="form-select victorian-input" name="event_type" id="event_type" required>
+                {% for value,label in event_type_choices %}
+                  <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Sub-Status</label>
+              <select class="form-select victorian-input" name="sub_stage">
+                <option value="">(optional)</option>
+                {% for value,label in sub_stage_choices %}
+                  <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Deadline</label>
+              <input class="form-control victorian-input" type="date" name="deadline_date" />
+            </div>
+            <div class="col-12">
+              <label class="form-label">Document Link</label>
+              <input class="form-control victorian-input" type="text" name="document_link" />
+            </div>
+            <div class="col-12">
+              <label class="form-label">Notes</label>
+              <textarea class="form-control victorian-input" name="notes" rows="3"></textarea>
+            </div>
+            <div class="col-12 d-grid">
+              <button class="btn victorian-btn" type="submit">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function openDstImage(src) {
+      document.getElementById('dst-preview').style.display = 'block';
+      document.getElementById('dst-preview-img').src = src;
+    }
+
+    const eventModal = document.getElementById('eventModal');
+    if (eventModal) {
+      eventModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        if (!button) return;
+        const type = button.getAttribute('data-event-type');
+        const select = document.getElementById('event_type');
+        if (type && select) {
+          select.value = type;
+        }
+      });
+    }
+  </script>
+{% endblock %}

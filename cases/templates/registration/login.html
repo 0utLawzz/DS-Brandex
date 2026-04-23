@@ -1,0 +1,33 @@
+{% extends 'cases/base.html' %}
+
+{% block title %}Login - IP Case Platform{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="victorian-card card">
+        <div class="card-header py-3">Login</div>
+        <div class="card-body">
+          <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label" for="id_username">Username</label>
+              <input class="form-control victorian-input" type="text" name="username" autofocus required id="id_username" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="id_password">Password</label>
+              <input class="form-control victorian-input" type="password" name="password" required id="id_password" />
+            </div>
+            {% if form.errors %}
+              <div class="alert alert-danger">Invalid username or password.</div>
+            {% endif %}
+            <input type="hidden" name="next" value="{{ next|default:'/' }}" />
+            <div class="d-grid">
+              <button class="btn victorian-btn" type="submit">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
