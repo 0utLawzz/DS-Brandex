@@ -14,6 +14,12 @@ dist/
 local_settings.py
 db.sqlite3
 
+# Media uploads
+media/
+
+# Sample documents (do not commit)
+Sample-Cases/
+
 # Virtualenv
 .venv/
 venv/
