@@ -363,8 +363,11 @@ def add_document(request: HttpRequest, pk: int):
 @login_required
 def export_application_pdf(request: HttpRequest, pk: int):
     application = get_object_or_404(Application, pk=pk)
-    from xhtml2pdf import pisa
-    from django.template.loader import render_to_string
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+    from reportlab.lib import colors
     from django.http import HttpResponse
     import datetime
 
@@ -372,19 +375,169 @@ def export_application_pdf(request: HttpRequest, pk: int):
     if not site_settings:
         site_settings = SiteSettings.objects.create()
 
-    html_string = render_to_string('cases/application_pdf.html', {
-        'application': application,
-        'events': application.events.all(),
-        'assignments': application.assignments.all(),
-        'documents': application.documents.all(),
-        'today': datetime.date.today(),
-        'site_settings': site_settings,
-    })
-
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{application.case_number}_application.pdf"'
+
+    doc = SimpleDocTemplate(response, pagesize=A4,
+                            rightMargin=72, leftMargin=72,
+                            topMargin=72, bottomMargin=18)
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        textColor=colors.HexColor('#722F37'),
+        spaceAfter=12
+    )
+    header_style = ParagraphStyle(
+        'CustomHeader',
+        parent=styles['Heading2'],
+        fontSize=12,
+        textColor=colors.HexColor('#2E5339'),
+        spaceAfter=6
+    )
+
+    elements = []
+
+    # Header with company name
+    if site_settings.company_logo and site_settings.company_logo.path:
+        try:
+            img = Image(site_settings.company_logo.path, width=2*inch, height=1*inch)
+            elements.append(img)
+        except:
+            pass
     
-    pisa.CreatePDF(html_string, dest=response)
+    elements.append(Paragraph(site_settings.company_name|default:"Office IP Case Platform", title_style))
+    elements.append(Spacer(1, 0.2*inch))
+
+    # Case Information
+    elements.append(Paragraph("Case Information", header_style))
+    case_data = [
+        ["Case #", application.case_number],
+        ["Client Type", application.get_client_type_display()],
+        ["Application Type", application.get_application_type_display()],
+        ["Application Name", application.application_name],
+        ["Trademark No", application.trademark_no],
+        ["Case No (Official)", application.case_no|default:"-"],
+        ["Class", application.class_numbers],
+        ["Filing Date", application.filing_date|date:"d-M-Y" if application.filing_date else ""],
+        ["Applicant", application.applicant_name],
+        ["Trading As", application.trading_as],
+        ["City", application.city],
+        ["Agent", application.agent_name],
+        ["Dispatch Status", application.dispatch_status],
+    ]
+    case_table = Table(case_data, colWidths=[2*inch, 4*inch])
+    case_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (0, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    elements.append(case_table)
+    elements.append(Spacer(1, 0.2*inch))
+
+    # Status
+    elements.append(Paragraph("Status", header_style))
+    status_data = [
+        ["Stage", application.get_current_stage_display],
+        ["Sub-Status", application.get_current_sub_stage_display],
+        ["Status", application.current_status],
+    ]
+    status_table = Table(status_data, colWidths=[2*inch, 4*inch])
+    status_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (0, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    elements.append(status_table)
+    elements.append(Spacer(1, 0.2*inch))
+
+    # Timeline
+    elements.append(Paragraph("Timeline", header_style))
+    timeline_data = [["Date/Time", "Event Type", "Notes", "Deadline"]]
+    for e in application.events.all():
+        timeline_data.append([
+            e.event_datetime|date:"d-M-Y H:i",
+            f"{e.get_event_type_display} - {e.get_sub_stage_display}" if e.sub_stage else e.get_event_type_display,
+            e.notes,
+            e.deadline_date|date:"d-M-Y" if e.deadline_date else ""
+        ])
+    timeline_table = Table(timeline_data, colWidths=[1.2*inch, 1.5*inch, 2*inch, 1.3*inch])
+    timeline_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONTSIZE', (0, 1), (-1, -1), 8),
+    ]))
+    elements.append(timeline_table)
+    elements.append(Spacer(1, 0.2*inch))
+
+    # Assignments
+    elements.append(Paragraph("Assignments (CASES)", header_style))
+    assignment_data = [["Assigned To", "Due Date", "Status", "Notes"]]
+    for a in application.assignments.all():
+        assignment_data.append([
+            a.assigned_to.username if a.assigned_to else "(Unassigned)",
+            a.due_date|date:"d-M-Y" if a.due_date else "",
+            a.get_status_display,
+            a.notes
+        ])
+    assignment_table = Table(assignment_data, colWidths=[1.2*inch, 1*inch, 1*inch, 2.8*inch])
+    assignment_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONTSIZE', (0, 1), (-1, -1), 8),
+    ]))
+    elements.append(assignment_table)
+    elements.append(Spacer(1, 0.2*inch))
+
+    # Documents
+    elements.append(Paragraph("Documents", header_style))
+    doc_data = [["Type", "Link"]]
+    for d in application.documents.all():
+        doc_data.append([d.get_file_type_display, d.file_path])
+    doc_table = Table(doc_data, colWidths=[1.5*inch, 4.5*inch])
+    doc_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONTSIZE', (0, 1), (-1, -1), 8),
+    ]))
+    elements.append(doc_table)
+
+    # Footer
+    elements.append(Spacer(1, 0.5*inch))
+    elements.append(Paragraph(
+        f"{site_settings.company_name|default:'Office IP Case Platform'} | Generated: {datetime.date.today()|date:'d-M-Y H:i'}",
+        ParagraphStyle('Footer', parent=styles['Normal'], fontSize=8, textColor=colors.grey)
+    ))
+
+    doc.build(elements)
     return response
 
 
