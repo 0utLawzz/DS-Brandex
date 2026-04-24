@@ -298,3 +298,40 @@ def dashboard(request: HttpRequest):
         "site_settings": site_settings,
     }
     return render(request, "cases/dashboard.html", context)
+
+
+@login_required
+def my_tasks(request: HttpRequest):
+    today = timezone.localdate()
+    current_user = request.user
+
+    # Get assignments for current user
+    my_assignments = Assignment.objects.filter(
+        assigned_to=current_user
+    ).select_related('application').order_by('due_date', '-assigned_date')
+
+    # Separate by status
+    pending_assignments = my_assignments.filter(status="pending")
+    overdue_assignments = my_assignments.filter(status="overdue")
+    completed_assignments = my_assignments.filter(status="completed")
+
+    # Get events with deadlines for applications assigned to user
+    my_application_ids = my_assignments.values_list('application_id', flat=True)
+    my_events = Event.objects.filter(
+        application_id__in=my_application_ids,
+        deadline_date__isnull=False
+    ).select_related('application').order_by('deadline_date')
+
+    site_settings = SiteSettings.objects.first()
+    if not site_settings:
+        site_settings = SiteSettings.objects.create()
+
+    context = {
+        "pending_assignments": pending_assignments,
+        "overdue_assignments": overdue_assignments,
+        "completed_assignments": completed_assignments,
+        "my_events": my_events,
+        "today": today,
+        "site_settings": site_settings,
+    }
+    return render(request, "cases/my_tasks.html", context)

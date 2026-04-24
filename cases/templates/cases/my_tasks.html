@@ -1,0 +1,122 @@
+{% extends 'cases/base.html' %}
+
+{% block title %}My Tasks - IP Case Platform{% endblock %}
+
+{% block content %}
+  <div class="mb-3">
+    <a class="victorian-link" href="{% url 'cases:dashboard' %}">← Back to Dashboard</a>
+  </div>
+
+  <div class="victorian-card card mb-4">
+    <div class="card-header py-3">My Tasks</div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="victorian-card card dst-accent-red">
+            <div class="card-body text-center">
+              <div class="h2 mb-0">{{ overdue_assignments|length }}</div>
+              <div class="small text-muted">Overdue</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="victorian-card card dst-accent-yellow">
+            <div class="card-body text-center">
+              <div class="h2 mb-0">{{ pending_assignments|length }}</div>
+              <div class="small text-muted">Pending</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="victorian-card card dst-accent-blue">
+            <div class="card-body text-center">
+              <div class="h2 mb-0">{{ completed_assignments|length }}</div>
+              <div class="small text-muted">Completed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="victorian-card card dst-accent-red">
+        <div class="card-header py-3">Overdue Assignments</div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            {% for assignment in overdue_assignments %}
+              <div class="dst-assignment overdue p-2">
+                <a class="victorian-link" href="{% url 'cases:application_detail' assignment.application.pk %}">
+                  <div class="fw-bold">{{ assignment.application.folder_number }} - {{ assignment.application.application_name }}</div>
+                </a>
+                <div class="small">Due: {{ assignment.due_date|date:"Y-m-d" }} ({{ assignment.due_date|timesince:today }} ago)</div>
+                {% if assignment.notes %}<div class="small">{{ assignment.notes }}</div>{% endif %}
+              </div>
+            {% empty %}
+              <div class="text-muted">No overdue assignments.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="victorian-card card dst-accent-yellow">
+        <div class="card-header py-3">Pending Assignments</div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            {% for assignment in pending_assignments %}
+              <div class="dst-assignment soon p-2">
+                <a class="victorian-link" href="{% url 'cases:application_detail' assignment.application.pk %}">
+                  <div class="fw-bold">{{ assignment.application.folder_number }} - {{ assignment.application.application_name }}</div>
+                </a>
+                <div class="small">Due: {% if assignment.due_date %}{{ assignment.due_date|date:"Y-m-d" }}{% else %}No due date{% endif %}</div>
+                {% if assignment.notes %}<div class="small">{{ assignment.notes }}</div>{% endif %}
+              </div>
+            {% empty %}
+              <div class="text-muted">No pending assignments.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="victorian-card card mb-4">
+    <div class="card-header py-3">Completed Assignments</div>
+    <div class="card-body">
+      <div class="d-grid gap-2">
+        {% for assignment in completed_assignments %}
+          <div class="p-2" style="border-left: 3px solid blue;">
+            <a class="victorian-link" href="{% url 'cases:application_detail' assignment.application.pk %}">
+              <div class="fw-bold">{{ assignment.application.folder_number }} - {{ assignment.application.application_name }}</div>
+            </a>
+            <div class="small">Completed: {{ assignment.assigned_date|date:"Y-m-d" }}</div>
+          </div>
+        {% empty %}
+          <div class="text-muted">No completed assignments.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="victorian-card card">
+    <div class="card-header py-3">Upcoming Events</div>
+    <div class="card-body">
+      <div class="d-grid gap-2">
+        {% for event in my_events %}
+          <div class="p-2" style="border-left: 3px solid black;">
+            <a class="victorian-link" href="{% url 'cases:application_detail' event.application.pk %}">
+              <div class="fw-bold">{{ event.application.folder_number }} - {{ event.get_event_type_display }}</div>
+            </a>
+            <div class="small">Deadline: {% if event.deadline_date %}{{ event.deadline_date|date:"Y-m-d" }}{% else %}No deadline{% endif %}</div>
+            {% if event.notes %}<div class="small">{{ event.notes }}</div>{% endif %}
+          </div>
+        {% empty %}
+          <div class="text-muted">No upcoming events.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

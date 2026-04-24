@@ -166,8 +166,34 @@ URLs:
 
 ## 6. Next Steps / TODO
 
-1. **Folder Number auto-generator** (`[ClientType]-[ClientID]-[Sequence]`) so IDs are auto-made.
-2. **Dashboard** (deadlines + overdue summary).
-3. **Assignment improvements** (agent list, overdue auto-status, “My Tasks” page).
+1. ~~**Folder Number auto-generator** (`[ClientType]-[ClientID]-[Sequence]`) so IDs are auto-made.~~ ✅ COMPLETED
+2. ~~**Dashboard** (deadlines + overdue summary).~~ ✅ COMPLETED
+3. ~~**Assignment improvements** (agent list, overdue auto-status, “My Tasks” page).~~ ✅ COMPLETED
 4. **Dispatch workflow** (Certificate Received → Print → Dispatch) with one-click actions.
 5. (Optional) Email-based password reset if needed for remote users.
+
+## 7. Recently Completed Features (April 2026)
+
+### Folder Number Auto-Generator
+- Automatic folder number generation in format: `[ClientType]-[ClientID]-[Sequence]`
+- Example: `X-454-001`, `A-123-001`
+- Folder number is optional in forms - auto-generated if client_id is provided
+- Sequence auto-increments per client_type + client_id combination
+
+### Dashboard
+- Overview page with deadline summaries
+- Shows overdue assignments, assignments due soon
+- Shows overdue events and events with upcoming deadlines
+- Stage summary (count of applications per stage)
+- Recent applications list
+- Accessible at `/` (root URL)
+
+### Assignment Improvements
+- **Agent Model**: Added Agent model for managing external agents
+- **Auto-Status**: Assignments automatically marked as overdue when due date passes
+- **My Tasks Page**: Personal task view for each user showing:
+  - Overdue assignments
+  - Pending assignments
+  - Completed assignments
+  - Upcoming events for assigned applications
+- Accessible at `/my-tasks/`

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Application, Assignment, AuditLog, DocumentLink, Event, FileUpload, SiteSettings
+from .models import Application, Assignment, AuditLog, DocumentLink, Event, FileUpload, SiteSettings, Agent
 
 
 class EventInline(admin.TabularInline):
@@ -144,3 +144,11 @@ class FileUploadAdmin(admin.ModelAdmin):
 class SiteSettingsAdmin(admin.ModelAdmin):
     list_display = ("company_name", "updated_at")
     fields = ("company_name", "company_logo")
+
+
+@admin.register(Agent)
+class AgentAdmin(admin.ModelAdmin):
+    list_display = ("name", "email", "phone", "is_active", "created_at")
+    search_fields = ("name", "email", "phone")
+    list_filter = ("is_active",)
+    fields = ("name", "email", "phone", "address", "is_active")

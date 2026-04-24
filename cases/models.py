@@ -322,6 +322,12 @@ class Assignment(models.Model):
             if user and getattr(user, "is_authenticated", False):
                 self.created_by = user
 
+        # Auto-update status to overdue if due date has passed
+        if self.due_date and self.status != "completed":
+            today = timezone.localdate()
+            if self.due_date < today and self.status != "overdue":
+                self.status = "overdue"
+
         is_create = self.pk is None
         super().save(*args, **kwargs)
 
@@ -427,6 +433,21 @@ class SiteSettings(models.Model):
 
     def __str__(self) -> str:
         return self.company_name
+
+
+class Agent(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=50, blank=True)
+    address = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class FileUpload(models.Model):

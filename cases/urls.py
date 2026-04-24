@@ -7,6 +7,7 @@ app_name = "cases"
 
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
+    path("my-tasks/", views.my_tasks, name="my_tasks"),
     path("applications/", views.application_list, name="application_list"),
     path("applications/new/", views.application_create, name="application_create"),
     path("applications/<int:pk>/", views.application_detail, name="application_detail"),
