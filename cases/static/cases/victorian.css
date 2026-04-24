@@ -9,8 +9,8 @@
 }
 
 @font-face {
-  font-family: 'Mision';
-  src: url('./fonts/Mision.ttf') format('truetype');
+  font-family: 'Driftune';
+  src: url('./fonts/Driftune.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -26,7 +26,7 @@
   --text-muted: #7A5C5C;
 
   --font-heading: 'Syndra', 'Playfair Display', serif;
-  --font-body: 'Mision', 'Inter', sans-serif;
+  --font-body: 'Driftune', 'Inter', sans-serif;
 
   --radius: 4px;
   --border-width: 3px;
