@@ -14,6 +14,9 @@ dist/
 local_settings.py
 db.sqlite3
 
+# Database backups
+backups/
+
 # Media uploads
 media/
 

@@ -314,7 +314,7 @@ class Assignment(models.Model):
         ordering = ["-assigned_date", "-id"]
 
     def __str__(self) -> str:
-        return f"{self.application.folder_number} assignment"
+        return f"{self.application.case_number} assignment"
 
     def save(self, *args, **kwargs):
         if not self.created_by:

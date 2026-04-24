@@ -310,9 +310,18 @@ def add_assignment(request: HttpRequest, pk: int):
     application = get_object_or_404(Application, pk=pk)
     if request.method == "POST":
         assigned_to_id = request.POST.get("assigned_to") or None
-        due_date = request.POST.get("due_date") or None
+        due_date_str = request.POST.get("due_date") or None
         status = (request.POST.get("status") or "pending").strip()
         notes = (request.POST.get("notes") or "").strip()
+
+        # Convert due_date string to date object if provided
+        due_date = None
+        if due_date_str:
+            from datetime import datetime
+            try:
+                due_date = datetime.strptime(due_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                pass
 
         Assignment.objects.create(
             application=application,
