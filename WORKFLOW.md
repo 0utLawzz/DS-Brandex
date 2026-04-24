@@ -109,11 +109,12 @@ Assignments show as cards with color:
 - **AuditLog** (append-only)
   - Action type, field changed, old/new value, changed by, timestamp
 
-### 2.3 UI (De Stijl Theme)
-- Thick black lines (6px)
-- Primary colors: Red, Blue, Yellow as accents only
-- Zero border radius, no shadows
-- Font: Inter (headings + body)
+### 2.3 UI (Victorian Legal Theme)
+- Victorian Legal Elegance style (premium, archival, authoritative)
+- Colors: Deep Burgundy (#722F37), Forest Green (#2E5339), Antique Gold (#B8860B)
+- Fonts: Syndra (headings), Mision (body)
+- Small-caps utility class (.small-cap) for labels/headings only
+- Border radius: 4px, hard shadows (0px 4px 0px rgba(0,0,0,0.15))
 - Grid layout on detail page:
   - Case Info block
   - Status Box + Quick Event Buttons
