@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 from datetime import datetime
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = 'Backup the database to a backup directory'
+    help = 'Backup the database to a backup directory and sync to Google Drive via rclone'
 
     def handle(self, *args, **options):
         # Get database path (SQLite)
@@ -37,6 +38,7 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.ERROR(f'Failed to backup database: {e}')
             )
+            return
 
         # Keep only last 7 backups (to save space)
         backups = sorted(backup_dir.glob('db_backup_*.sqlite3'), reverse=True)
@@ -50,3 +52,40 @@ class Command(BaseCommand):
                 self.stdout.write(
                     self.style.ERROR(f'Failed to delete old backup {old_backup.name}: {e}')
                 )
+
+        # Sync to Google Drive using rclone
+        rclone_remote = os.environ.get('RCLONE_REMOTE', 'brandex-drive')
+        rclone_destination = os.environ.get('RCLONE_DESTINATION', 'IP-Case-Backups')
+        
+        # Check if rclone is available
+        try:
+            subprocess.run(['rclone', 'version'], check=True, capture_output=True)
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            self.stdout.write(
+                self.style.WARNING('rclone not found. Skipping Google Drive sync. Install rclone and configure it following BACKUP_GUIDE.md')
+            )
+            return
+
+        # Sync backups to Google Drive
+        try:
+            self.stdout.write(f'Syncing backups to Google Drive ({rclone_remote}:{rclone_destination})...')
+            result = subprocess.run(
+                [
+                    'rclone', 'sync',
+                    str(backup_dir),
+                    f'{rclone_remote}:{rclone_destination}',
+                    '--progress'
+                ],
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            self.stdout.write(
+                self.style.SUCCESS('Successfully synced backups to Google Drive')
+            )
+        except subprocess.CalledProcessError as e:
+            self.stdout.write(
+                self.style.ERROR(f'Failed to sync to Google Drive: {e}')
+            )
+            if e.stderr:
+                self.stdout.write(self.style.ERROR(f'Error output: {e.stderr}'))

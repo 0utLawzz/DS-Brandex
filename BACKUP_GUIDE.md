@@ -10,13 +10,59 @@ python manage.py backup_db
 
 This will create a timestamped backup in the `backups/` directory and keep only the last 7 backups.
 
+## Install rclone (Windows)
+
+1. Download rclone from https://rclone.org/downloads/
+2. Extract to a folder (e.g., `C:\rclone`)
+3. Add `C:\rclone` to your system PATH
+4. Verify installation:
+   ```bash
+   rclone version
+   ```
+
+## Configure rclone with Google Drive
+
+1. Run rclone config:
+   ```bash
+   rclone config
+   ```
+
+2. Follow the prompts:
+   - Type `n` for new remote
+   - Name: `brandex-drive` (or your preferred name)
+   - Type: `drive` (Google Drive)
+   - Scope: `1` (Full access all files)
+   - Root folder ID: Leave blank
+   - Service Account Credentials: Leave blank
+   - Advanced config: `n`
+   - Auto config: `y` (this will open a browser window)
+   - Sign in with brandex004@gmail.com
+   - Grant permissions
+   - Configure as team drive: `n`
+   - Confirm: `y`
+
+3. Verify connection:
+   ```bash
+   rclone ls brandex-drive:
+   ```
+
+## Create Google Drive Folder
+
+1. Go to https://drive.google.com
+2. Sign in with brandex004@gmail.com
+3. Create a folder named `IP-Case-Backups`
+
+## Update Backup Management Command
+
+The backup command has been updated to automatically sync to Google Drive using rclone after each backup. You just need to ensure rclone is configured.
+
 ## Automated Backup (Every 6 Hours)
 
 ### Windows Task Scheduler
 
 1. Open Task Scheduler
 2. Create a new task:
-   - Name: `IP Case Platform Backup`
+   - Name: `IP Case Platform Backup with Sync`
    - Trigger: Daily, repeat every 6 hours for 24 hours
    - Action: Start a program
      - Program: `python`
@@ -37,24 +83,9 @@ Add this line (runs every 6 hours):
 0 */6 * * * cd /path/to/DS-Brandex && python manage.py backup_db
 ```
 
-## Backup to Google Drive
+## Manual Sync to Google Drive
 
-### Option 1: Google Drive Desktop (Recommended)
-
-1. Install Google Drive for Desktop from https://www.google.com/drive/download/
-2. Sign in with brandex004@gmail.com
-3. Sync the `g:\DS-Brandex\backups\` folder to Google Drive
-
-### Option 2: rclone
-
-Install rclone and configure it with Google Drive:
-
-```bash
-rclone config
-# Select "Google Drive" and authenticate with brandex004@gmail.com
-```
-
-Then add a scheduled task to sync after backup:
+If you need to manually sync backups to Google Drive:
 
 ```bash
 rclone sync g:\DS-Brandex\backups\ brandex-drive:IP-Case-Backups
@@ -67,6 +98,8 @@ Configure backup behavior via environment variables:
 - `BACKUP_ENABLED`: Enable/disable backup (default: `true`)
 - `BACKUP_INTERVAL_HOURS`: Backup interval in hours (default: `6`)
 - `BACKUP_RETENTION_DAYS`: Number of days to keep backups (default: `7`)
+- `RCLONE_REMOTE`: rclone remote name (default: `brandex-drive`)
+- `RCLONE_DESTINATION`: Google Drive folder (default: `IP-Case-Backups`)
 
 Example:
 
