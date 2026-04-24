@@ -287,6 +287,7 @@ def add_event(request: HttpRequest, pk: int):
         event_type = (request.POST.get("event_type") or "").strip()
         notes = (request.POST.get("notes") or "").strip()
         document_link = (request.POST.get("document_link") or "").strip()
+        file = request.FILES.get("file")
         deadline_date = request.POST.get("deadline_date") or None
         stage = request.POST.get("stage") or None
         sub_stage = (request.POST.get("sub_stage") or "").strip()
@@ -296,6 +297,7 @@ def add_event(request: HttpRequest, pk: int):
             event_type=event_type,
             notes=notes,
             document_link=document_link,
+            file=file,
             deadline_date=deadline_date,
             stage=stage or None,
             sub_stage=sub_stage,

@@ -230,6 +230,7 @@ class Event(models.Model):
     event_datetime = models.DateTimeField(default=timezone.now)
     notes = models.TextField(blank=True)
     document_link = models.CharField(max_length=500, blank=True)
+    file = models.FileField(upload_to='event_documents/%Y/%m/', null=True, blank=True)
     deadline_date = models.DateField(null=True, blank=True)
     stage = models.IntegerField(choices=Stage.choices, null=True, blank=True)
     sub_stage = models.CharField(max_length=50, choices=SubStage.choices, blank=True)

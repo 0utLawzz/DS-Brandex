@@ -241,7 +241,7 @@
       <div class="modal-content victorian-card p-3">
         <div class="card-header py-3 small-cap">Add Event</div>
         <div class="card-body">
-          <form class="row g-2" method="post" action="{% url 'cases:add_event' application.pk %}">
+          <form class="row g-2" method="post" action="{% url 'cases:add_event' application.pk %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="col-12">
               <label class="form-label small-cap">Event Type</label>
@@ -267,6 +267,10 @@
             <div class="col-12">
               <label class="form-label small-cap">Document Link</label>
               <input class="form-control victorian-input" type="text" name="document_link" />
+            </div>
+            <div class="col-12">
+              <label class="form-label small-cap">File Upload</label>
+              <input class="form-control victorian-input" type="file" name="file" />
             </div>
             <div class="col-12">
               <label class="form-label small-cap">Notes</label>
