@@ -175,6 +175,16 @@ URLs:
 
 ## 7. Recently Completed Features (April 2026)
 
+### Victorian Legal UI Theme
+- Replaced De Stijl theme with Victorian Legal Elegance style
+- Custom self-hosted fonts: Syndra (headings), Mision (body)
+- Small-caps utility class (.small-cap) for labels/headings only
+- Typography: normal weights, 11pt body, 12pt headings
+- Colors: Deep Burgundy, Forest Green, Antique Gold
+- Border radius: 4px, hard shadows
+- Table font size reduced for denser dashboard tables
+- CSRF trusted origins updated for preview port
+
 ### Folder Number Auto-Generator
 - Automatic folder number generation in format: `[ClientType]-[ClientID]-[Sequence]`
 - Example: `X-454-001`, `A-123-001`
