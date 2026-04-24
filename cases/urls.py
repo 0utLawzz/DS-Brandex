@@ -18,4 +18,5 @@ urlpatterns = [
     path("applications/<int:pk>/dispatch/received/", views.dispatch_certificate_received, name="dispatch_received"),
     path("applications/<int:pk>/dispatch/print/", views.dispatch_certificate_print, name="dispatch_print"),
     path("applications/<int:pk>/dispatch/dispatch/", views.dispatch_certificate_dispatch, name="dispatch_dispatch"),
+    path("search/tm/", views.search_by_tm, name="search_tm"),
 ]

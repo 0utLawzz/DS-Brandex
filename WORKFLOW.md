@@ -115,11 +115,15 @@ Assignments show as cards with color:
 - Fonts: Syndra (headings), Mision (body)
 - Small-caps utility class (.small-cap) for labels/headings only
 - Border radius: 4px, hard shadows (0px 4px 0px rgba(0,0,0,0.15))
+- Typography: normal weights, 11pt body, 12pt headings
+- Trademark Number (TM No) is the primary display key
+- Charts: Bar charts on dashboard and application detail pages for status tracking
 - Grid layout on detail page:
   - Case Info block
   - Status Box + Quick Event Buttons
+  - Dispatch Workflow buttons
   - Timeline (vertical)
-  - Assignments (cards)
+  - Assignments (cards with status chart)
   - Documents
   - Audit Log
 
@@ -170,10 +174,25 @@ URLs:
 1. ~~**Folder Number auto-generator** (`[ClientType]-[ClientID]-[Sequence]`) so IDs are auto-made.~~ ✅ COMPLETED
 2. ~~**Dashboard** (deadlines + overdue summary).~~ ✅ COMPLETED
 3. ~~**Assignment improvements** (agent list, overdue auto-status, “My Tasks” page).~~ ✅ COMPLETED
-4. **Dispatch workflow** (Certificate Received → Print → Dispatch) with one-click actions.
+4. ~~**Dispatch workflow** (Certificate Received → Print → Dispatch) with one-click actions.~~ ✅ COMPLETED
 5. (Optional) Email-based password reset if needed for remote users.
 
 ## 7. Recently Completed Features (April 2026)
+
+### TM No Search & Display Updates
+- **TM No Search Page**: New search page for searching applications by Trademark Number
+- **Primary Display Key**: Trademark Number (TM No) is now the primary display key instead of Folder Number
+- **Header Navigation**: Added HOME button and Search TM button to header
+- **Client Type Labels**: Updated to X (CLIENTS) and N (NOOR BAAF)
+
+### Charts & Visualizations
+- **Dashboard Charts**: Bar chart for stage summary on dashboard
+- **Assignment Status Chart**: Bar chart showing assignment status distribution on application detail page
+- Using Chart.js for interactive visualizations
+
+### Typography Updates
+- **Removed Bold Formatting**: Removed fw-bold classes and strong tags from templates
+- Normal weights maintained throughout the interface
 
 ### Victorian Legal UI Theme
 - Replaced De Stijl theme with Victorian Legal Elegance style
@@ -184,6 +203,11 @@ URLs:
 - Border radius: 4px, hard shadows
 - Table font size reduced for denser dashboard tables
 - CSRF trusted origins updated for preview port
+
+### Dispatch Workflow
+- **One-Click Actions**: Certificate Received, Certificate Print, Certificate Dispatch
+- Updates application sub-stage and creates timeline events automatically
+- Buttons added to application detail page Status Box
 
 ### Folder Number Auto-Generator
 - Automatic folder number generation in format: `[ClientType]-[ClientID]-[Sequence]`

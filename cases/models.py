@@ -14,8 +14,8 @@ class ApplicantType(models.TextChoices):
 
 class ClientType(models.TextChoices):
     CONSULTANT = "A", "A (consultant)"
-    DIRECT = "X", "X (direct client)"
-    NORMAL = "N", "N"
+    DIRECT = "X", "X (CLIENTS)"
+    NORMAL = "N", "N (NOOR BAAF)"
 
 
 class ApplicationType(models.TextChoices):

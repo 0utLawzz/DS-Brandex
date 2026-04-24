@@ -490,3 +490,28 @@ def dispatch_certificate_dispatch(request: HttpRequest, pk: int):
     )
 
     return redirect("cases:application_detail", pk=pk)
+
+
+@login_required
+def search_by_tm(request: HttpRequest):
+    """Search applications by Trademark Number"""
+    q = (request.GET.get("q") or "").strip()
+
+    applications = []
+    if q:
+        applications = Application.objects.filter(trademark_no__icontains=q)
+
+    paginator = Paginator(applications, 100)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
+    site_settings = SiteSettings.objects.first()
+    if not site_settings:
+        site_settings = SiteSettings.objects.create()
+
+    context = {
+        "page_obj": page_obj,
+        "q": q,
+        "site_settings": site_settings,
+    }
+    return render(request, "cases/search_tm.html", context)

@@ -2,6 +2,10 @@
 
 {% block title %}Dashboard - IP Case Platform{% endblock %}
 
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
 {% block content %}
   <div class="victorian-card card mb-4">
     <div class="card-header py-3">Dashboard</div>
@@ -51,7 +55,7 @@
           <div class="d-grid gap-2">
             {% for assignment in overdue_assignments %}
               <div class="dst-assignment overdue p-2">
-                <div class="fw-bold">{{ assignment.application.folder_number }} - {{ assignment.application.application_name }}</div>
+                <div>{{ assignment.application.trademark_no|default:assignment.application.folder_number }} - {{ assignment.application.application_name }}</div>
                 <div class="small">Assigned to: {% if assignment.assigned_to %}{{ assignment.assigned_to.username }}{% else %}(unassigned){% endif %}</div>
                 <div class="small">Due: {{ assignment.due_date|date:"Y-m-d" }} ({{ assignment.due_date|timesince:today }} ago)</div>
               </div>
@@ -70,7 +74,7 @@
           <div class="d-grid gap-2">
             {% for assignment in soon_assignments %}
               <div class="dst-assignment soon p-2">
-                <div class="fw-bold">{{ assignment.application.folder_number }} - {{ assignment.application.application_name }}</div>
+                <div>{{ assignment.application.trademark_no|default:assignment.application.folder_number }} - {{ assignment.application.application_name }}</div>
                 <div class="small">Assigned to: {% if assignment.assigned_to %}{{ assignment.assigned_to.username }}{% else %}(unassigned){% endif %}</div>
                 <div class="small">Due: {{ assignment.due_date|date:"Y-m-d" }}</div>
               </div>
@@ -91,7 +95,7 @@
           <div class="d-grid gap-2">
             {% for event in overdue_events %}
               <div class="p-2" style="border-left: 3px solid red;">
-                <div class="fw-bold">{{ event.application.folder_number }} - {{ event.get_event_type_display }}</div>
+                <div>{{ event.application.trademark_no|default:event.application.folder_number }} - {{ event.get_event_type_display }}</div>
                 <div class="small">Deadline: {{ event.deadline_date|date:"Y-m-d" }} ({{ event.deadline_date|timesince:today }} ago)</div>
                 {% if event.notes %}<div class="small">{{ event.notes }}</div>{% endif %}
               </div>
@@ -110,7 +114,7 @@
           <div class="d-grid gap-2">
             {% for event in soon_events %}
               <div class="p-2" style="border-left: 3px solid yellow;">
-                <div class="fw-bold">{{ event.application.folder_number }} - {{ event.get_event_type_display }}</div>
+                <div>{{ event.application.trademark_no|default:event.application.folder_number }} - {{ event.get_event_type_display }}</div>
                 <div class="small">Deadline: {{ event.deadline_date|date:"Y-m-d" }}</div>
                 {% if event.notes %}<div class="small">{{ event.notes }}</div>{% endif %}
               </div>
@@ -126,20 +130,31 @@
   <div class="row g-3 mb-4">
     <div class="col-md-6">
       <div class="victorian-card card">
-        <div class="card-header py-3">Stage Summary</div>
+        <div class="card-header py-3">Stage Summary (Chart)</div>
+        <div class="card-body">
+          <canvas id="stageChart" style="max-height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="victorian-card card">
+        <div class="card-header py-3">Stage Summary (Table)</div>
         <div class="card-body">
           <table class="table victorian-table">
             {% for stage_name, count in stage_summary.items %}
               <tr>
                 <td>{{ stage_name }}</td>
-                <td class="text-end fw-bold">{{ count }}</td>
+                <td class="text-end">{{ count }}</td>
               </tr>
             {% endfor %}
           </table>
         </div>
       </div>
     </div>
+  </div>
 
+  <div class="row g-3 mb-4">
     <div class="col-md-6">
       <div class="victorian-card card">
         <div class="card-header py-3">Recent Applications</div>
@@ -148,7 +163,7 @@
             {% for app in recent_applications %}
               <a class="victorian-link" href="{% url 'cases:application_detail' app.pk %}">
                 <div class="p-2" style="border: 1px solid black;">
-                  <div class="fw-bold">{{ app.folder_number }} - {{ app.application_name }}</div>
+                  <div>{{ app.trademark_no|default:app.folder_number }} - {{ app.application_name }}</div>
                   <div class="small text-muted">Created: {{ app.created_at|date:"Y-m-d H:i" }}</div>
                 </div>
               </a>
@@ -165,4 +180,45 @@
     <a class="btn victorian-btn" href="{% url 'cases:application_list' %}">View All Applications</a>
     <a class="btn victorian-btn" href="{% url 'cases:application_create' %}">Create New Application</a>
   </div>
+
+  <script>
+    const stageData = {
+      labels: [{% for stage_name, count in stage_summary.items %}'{{ stage_name }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+      datasets: [{
+        label: 'Applications',
+        data: [{% for stage_name, count in stage_summary.items %}{{ count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+        backgroundColor: [
+          '#722F37',
+          '#2E5339',
+          '#B8860B',
+          '#4A2932'
+        ],
+        borderColor: '#000000',
+        borderWidth: 2
+      }]
+    };
+
+    const ctx = document.getElementById('stageChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: stageData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    });
+  </script>
 {% endblock %}

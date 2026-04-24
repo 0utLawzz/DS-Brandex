@@ -28,7 +28,9 @@
         </div>
         <div class="d-flex align-items-center gap-3">
           {% if user.is_authenticated %}
-            <div class="small small-cap">Logged In As <strong>{{ user.username }}</strong></div>
+            <a class="btn btn-sm victorian-btn small-cap" href="{% url 'cases:dashboard' %}">Home</a>
+            <a class="btn btn-sm victorian-btn small-cap" href="{% url 'cases:search_tm' %}">Search TM</a>
+            <div class="small small-cap">Logged In As {{ user.username }}</div>
             {% if user.is_staff %}
               <a class="btn btn-sm victorian-btn small-cap" href="{% url 'admin:index' %}">Settings</a>
             {% endif %}

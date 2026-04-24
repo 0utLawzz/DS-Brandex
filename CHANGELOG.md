@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.0.3 - 24/Apr/26
+
+- add: HOME button to header
+- add: charts (bar charts) to dashboard and application detail pages for visual status tracking
+- add: search page for Trademark Number (TM No) with clickable results
+- change: links from folder number to trademark number (TM No is now the primary key for display)
+- change: client type text to X (CLIENTS) and N (NOOR BAAF)
+- remove: bold/strong formatting from templates (fw-bold class and strong tags)
+- add: assignment status chart on application detail page
+- add: stage summary bar chart on dashboard
+
 ## v1.0.0.2 - 24/Apr/26
 
 - add: Victorian Legal UI theme (replaces De Stijl)

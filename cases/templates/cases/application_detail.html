@@ -1,6 +1,10 @@
 {% extends 'cases/base.html' %}
 
-{% block title %}{{ application.folder_number }} - IP Case Platform{% endblock %}
+{% block title %}{{ application.trademark_no|default:application.folder_number }} - IP Case Platform{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
 
 {% block content %}
   <div class="mb-3 d-flex justify-content-between align-items-center">
@@ -50,7 +54,7 @@
         </div>
 
         <div class="mt-3">
-          <div class="fw-bold mb-2 small-cap">Quick Event Buttons</div>
+          <div class="mb-2 small-cap">Quick Event Buttons</div>
           <div class="d-flex flex-wrap gap-2">
             <button class="btn victorian-btn small-cap" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="filing">➕ Filing</button>
             <button class="btn victorian-btn small-cap" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="objection">⚠️ Objection</button>
@@ -61,7 +65,7 @@
         </div>
 
         <div class="mt-3">
-          <div class="fw-bold mb-2 small-cap">Dispatch Workflow</div>
+          <div class="mb-2 small-cap">Dispatch Workflow</div>
           <div class="d-flex flex-wrap gap-2">
             <a class="btn victorian-btn small-cap" href="{% url 'cases:dispatch_received' application.pk %}">📥 Certificate Received</a>
             <a class="btn victorian-btn small-cap" href="{% url 'cases:dispatch_print' application.pk %}">🖨️ Certificate Print</a>
@@ -125,7 +129,7 @@
         <div class="d-grid gap-3">
           {% for a,urgency in assignments %}
             <div class="dst-assignment {{ urgency }}">
-              <div class="fw-bold">{% if a.assigned_to %}{{ a.assigned_to.username }}{% else %}(Unassigned){% endif %}</div>
+              <div>{% if a.assigned_to %}{{ a.assigned_to.username }}{% else %}(Unassigned){% endif %}</div>
               <div class="small">Due: {% if a.due_date %}{{ a.due_date|date:"d-M-y" }}{% else %}-{% endif %}</div>
               <div class="small">Status: {{ a.get_status_display }}</div>
               {% if a.notes %}<div class="small mt-1">{{ a.notes }}</div>{% endif %}
@@ -134,6 +138,13 @@
             <div class="text-muted small-cap">No Assignments.</div>
           {% endfor %}
         </div>
+      </div>
+    </div>
+
+    <div class="victorian-card card dst-accent-blue">
+      <div class="card-header py-3 small-cap">Assignment Status Chart</div>
+      <div class="card-body">
+        <canvas id="assignmentChart" style="max-height: 250px;"></canvas>
       </div>
     </div>
 
@@ -273,6 +284,48 @@
       document.getElementById('dst-preview').style.display = 'block';
       document.getElementById('dst-preview-img').src = src;
     }
+
+    // Assignment status chart
+    const assignmentStatusCounts = {
+      'Pending': 0,
+      'Completed': 0,
+      'Overdue': 0
+    };
+    {% for a,urgency in assignments %}
+      assignmentStatusCounts['{{ a.get_status_display }}']++;
+    {% endfor %}
+
+    const assignmentCtx = document.getElementById('assignmentChart').getContext('2d');
+    new Chart(assignmentCtx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(assignmentStatusCounts),
+        datasets: [{
+          label: 'Assignments',
+          data: Object.values(assignmentStatusCounts),
+          backgroundColor: ['#B8860B', '#2E5339', '#722F37'],
+          borderColor: '#000000',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    });
 
     const eventModal = document.getElementById('eventModal');
     if (eventModal) {
