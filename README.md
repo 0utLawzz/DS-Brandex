@@ -75,7 +75,7 @@ python manage.py runserver
 
 ---
 
-Author: Nadeem
-Email: (add your email)
+Author: 0utLawzz
+Email: net2tara@gmail.com
 
 For similar projects or ideas, feel free to contact
