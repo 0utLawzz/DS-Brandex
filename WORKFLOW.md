@@ -28,7 +28,6 @@ Since this is an office LAN tool, password reset is done by admin:
    - Application Type (Trademark / Copyright / NTN / Company)
    - Application Name
    - Trademark No
-   - Application #, Class, Filing Date, Year
    - Applicant details + City
    - Agent details + Jurisdiction + Dispatch
    - Logo (optional image upload)
@@ -40,16 +39,17 @@ On case detail page:
 
 - **Quick buttons** (top right of Status Box):
   - ➕ Filing
-  - ⚠️ Objection
-  - 📢 Publication
-  - 💰 Demand
+  - ✅ Acknowledgement
+  - ⚠️️ Objection
+  - 🎗️ Publication
+  - 💰 Demand Note
   - 🏆 Certificate
 
 Click any button → modal opens → fill:
 - Event Type (pre-selected by button)
 - Sub-Status (optional)
 - Deadline
-- Document Link
+- Document Upload or PDF
 - Notes
 
 Click **Save** → Event added and case status updates automatically (sub-status → stage).
