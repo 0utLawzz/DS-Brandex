@@ -1,17 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-  --primary: #722F37;
-  --secondary: #2E5339;
-  --accent: #B8860B;
+  --primary: #6B2E35;
+  --secondary: #2A4A32;
+  --accent: #C4962A;
   --background: #F5E6D3;
-  --surface: #FDF5E6;
-  --text: #4A2932;
+  --surface: #FEF8E7;
+  --text: #4A252D;
 
   --radius: 4px;
   --border-width: 3px;
   --shadow: 0px 4px;
-  --line: #4A2932;
+  --line: #4A252D;
+  --ornate-border: #C4962A;
 }
 
 .victorian-bg {
@@ -20,6 +21,9 @@
   font-family: 'Inter', sans-serif;
   font-variant: small-caps;
   letter-spacing: 0.5px;
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(196, 150, 42, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 90% 90%, rgba(107, 46, 53, 0.05) 0%, transparent 50%);
 }
 
 .victorian-header {
@@ -32,7 +36,7 @@
   font-size: 1.35rem;
   letter-spacing: 0.2px;
   color: var(--text);
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cinzel', serif;
   font-variant: small-caps;
 }
 
@@ -47,39 +51,87 @@
   border-radius: var(--radius);
   border: var(--border-width) solid var(--line);
   box-shadow: none;
+  position: relative;
+}
+
+.victorian-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid var(--ornate-border);
+  border-radius: var(--radius);
+  pointer-events: none;
+  margin: 4px;
+}
+
+.victorian-card::after {
+  content: "✦";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--ornate-border);
+  font-size: 12px;
+  opacity: 0.6;
 }
 
 .victorian-card .card-header {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, #D4A847 100%);
   border-bottom: var(--border-width) solid var(--line);
   font-weight: 700;
   color: var(--text);
   font-variant: small-caps;
+  font-family: 'Cinzel', serif;
+  border-radius: var(--radius) var(--radius) 0 0;
+  position: relative;
 }
 
 .victorian-btn {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary) 0%, #8B3A42 100%);
   border: var(--border-width) solid var(--line);
   color: #fff;
   border-radius: var(--radius);
-  box-shadow: none;
+  box-shadow: 2px 2px 4px rgba(74, 37, 45, 0.3);
   font-variant: small-caps;
   font-weight: 600;
+  font-family: 'Cinzel', serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.victorian-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius);
+  pointer-events: none;
+  margin: 2px;
 }
 
 .victorian-btn:hover {
-  background: #5a252c;
+  background: linear-gradient(135deg, #8B3A42 0%, var(--primary) 100%);
   color: #fff;
+  box-shadow: 3px 3px 6px rgba(74, 37, 45, 0.4);
 }
 
 .victorian-link {
   color: var(--secondary);
   text-decoration: none;
   font-variant: small-caps;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
 }
 
 .victorian-link:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  border-bottom: 1px solid var(--secondary);
+  color: #3D6648;
 }
 
 .victorian-badge {
@@ -93,24 +145,31 @@
 .victorian-table thead th {
   font-weight: 700;
   color: var(--text);
-  background: var(--surface);
+  background: linear-gradient(135deg, var(--accent) 0%, #D4A847 100%);
   border-bottom: var(--border-width) solid var(--line);
   font-variant: small-caps;
+  font-family: 'Cinzel', serif;
 }
 
 .victorian-table > :not(caption) > * > * {
   border-bottom: 2px solid var(--line);
 }
 
+.victorian-table tbody tr:hover {
+  background: rgba(196, 150, 42, 0.1);
+}
+
 .victorian-input {
   border-radius: var(--radius);
   border: 3px solid var(--line);
   font-variant: small-caps;
+  background: var(--surface);
 }
 
 .victorian-input:focus {
-  border-color: var(--secondary);
-  box-shadow: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(196, 150, 42, 0.2);
+  outline: none;
 }
 
 .dst-grid {
@@ -164,7 +223,8 @@
   top: 0;
   bottom: 0;
   width: 6px;
-  background: var(--line);
+  background: linear-gradient(to bottom, var(--accent), var(--primary));
+  border-radius: 3px;
 }
 
 .dst-event {
@@ -173,6 +233,8 @@
   margin-bottom: 12px;
   border: 3px solid var(--line);
   background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: 2px 2px 4px rgba(74, 37, 45, 0.15);
 }
 
 .dst-event::before {
@@ -209,6 +271,8 @@
   border: var(--border-width) solid var(--line);
   background: var(--surface);
   padding: 12px;
+  border-radius: var(--radius);
+  box-shadow: 2px 2px 4px rgba(74, 37, 45, 0.15);
 }
 
 .dst-assignment.overdue {
