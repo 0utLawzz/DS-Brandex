@@ -39,6 +39,29 @@
   color: var(--text);
   font-family: var(--font-body);
   letter-spacing: normal;
+  font-size: 0.917rem;
+}
+
+/* Override Bootstrap fw-bold to use normal weight */
+.fw-bold {
+  font-weight: 400 !important;
+}
+
+/* Override Bootstrap heading classes for stat boxes */
+.victorian-card .h1,
+.victorian-card .h2,
+.victorian-card .h3,
+.victorian-card .h4,
+.victorian-card .h5,
+.victorian-card .h6 {
+  font-weight: 400 !important;
+  font-size: 1rem !important;
+}
+
+/* Ensure stat card numbers match normal text */
+.victorian-card .card-body .h2 {
+  font-size: 1rem !important;
+  font-weight: 400 !important;
 }
 
 .victorian-header {
@@ -47,8 +70,8 @@
 }
 
 .victorian-title {
-  font-weight: 700;
-  font-size: 1.35rem;
+  font-weight: 400;
+  font-size: 1rem;
   letter-spacing: 0.5px;
   color: var(--text);
   font-family: var(--font-heading);
@@ -94,7 +117,7 @@
 .victorian-card .card-header {
   background: var(--surface);
   border-bottom: 2px solid var(--line);
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text);
   font-family: var(--font-heading);
   text-transform: uppercase;
@@ -107,7 +130,7 @@
   color: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  font-weight: 600;
+  font-weight: 400;
   font-family: var(--font-body);
   transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
