@@ -48,6 +48,28 @@
   </div>
 
   <div class="row g-3 mb-4">
+    <div class="col-md-12">
+      <div class="victorian-card card">
+        <div class="card-header py-3">Recent Applications</div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            {% for app in recent_applications %}
+              <a class="victorian-link" href="{% url 'cases:application_detail' app.pk %}">
+                <div class="p-2" style="border: 1px solid black;">
+                  <div>{{ app.trademark_no|default:app.case_number }} - {{ app.application_name }}</div>
+                  <div class="small text-muted">Created: {{ app.created_at|date:"Y-m-d H:i" }}</div>
+                </div>
+              </a>
+            {% empty %}
+              <div class="text-muted">No recent applications.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
     <div class="col-md-6">
       <div class="victorian-card card dst-accent-red">
         <div class="card-header py-3">Overdue CASES</div>
@@ -149,28 +171,6 @@
               </tr>
             {% endfor %}
           </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row g-3 mb-4">
-    <div class="col-md-6">
-      <div class="victorian-card card">
-        <div class="card-header py-3">Recent Applications</div>
-        <div class="card-body">
-          <div class="d-grid gap-2">
-            {% for app in recent_applications %}
-              <a class="victorian-link" href="{% url 'cases:application_detail' app.pk %}">
-                <div class="p-2" style="border: 1px solid black;">
-                  <div>{{ app.trademark_no|default:app.case_number }} - {{ app.application_name }}</div>
-                  <div class="small text-muted">Created: {{ app.created_at|date:"Y-m-d H:i" }}</div>
-                </div>
-              </a>
-            {% empty %}
-              <div class="text-muted">No recent applications.</div>
-            {% endfor %}
-          </div>
         </div>
       </div>
     </div>
