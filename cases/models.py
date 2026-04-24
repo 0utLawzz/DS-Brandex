@@ -350,7 +350,8 @@ class DocumentLink(models.Model):
 
     application = models.ForeignKey(Application, on_delete=models.PROTECT, related_name="documents")
     file_type = models.CharField(max_length=20, choices=FileType.choices, default=FileType.OTHER)
-    file_path = models.CharField(max_length=500)
+    file_path = models.CharField(max_length=500, blank=True)
+    file = models.FileField(upload_to='documents/%Y/%m/', null=True, blank=True)
     preview_enabled = models.BooleanField(default=True)
     uploaded_date = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(

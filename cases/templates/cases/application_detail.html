@@ -151,7 +151,7 @@
     <div class="victorian-card card dst-span-2 dst-accent-yellow">
       <div class="card-header py-3 small-cap">Documents</div>
       <div class="card-body">
-        <form class="row g-2 mb-3" method="post" action="{% url 'cases:add_document' application.pk %}">
+        <form class="row g-2 mb-3" method="post" action="{% url 'cases:add_document' application.pk %}" enctype="multipart/form-data">
           {% csrf_token %}
           <div class="col-md-3">
             <select class="form-select victorian-input" name="file_type">
@@ -161,8 +161,11 @@
               <option value="other">Other</option>
             </select>
           </div>
-          <div class="col-md-9">
-            <input class="form-control victorian-input" type="text" name="file_path" placeholder="Paste Shared Drive / SharePoint Link" required />
+          <div class="col-md-6">
+            <input class="form-control victorian-input" type="text" name="file_path" placeholder="Paste Shared Drive / SharePoint Link" />
+          </div>
+          <div class="col-md-3">
+            <input class="form-control victorian-input" type="file" name="file" />
           </div>
           <div class="col-12">
             <div class="form-check">

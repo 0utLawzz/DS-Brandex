@@ -341,13 +341,15 @@ def add_document(request: HttpRequest, pk: int):
     if request.method == "POST":
         file_type = (request.POST.get("file_type") or "other").strip()
         file_path = (request.POST.get("file_path") or "").strip()
+        file = request.FILES.get("file")
         preview_enabled = request.POST.get("preview_enabled") == "on"
 
-        if file_path:
+        if file_path or file:
             DocumentLink.objects.create(
                 application=application,
                 file_type=file_type,
                 file_path=file_path,
+                file=file,
                 preview_enabled=preview_enabled,
             )
 
