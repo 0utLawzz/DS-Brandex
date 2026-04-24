@@ -408,7 +408,7 @@ def export_application_pdf(request: HttpRequest, pk: int):
         except:
             pass
     
-    elements.append(Paragraph(site_settings.company_name|default:"Office IP Case Platform", title_style))
+    elements.append(Paragraph(site_settings.company_name or "Office IP Case Platform", title_style))
     elements.append(Spacer(1, 0.2*inch))
 
     # Case Information
@@ -419,9 +419,9 @@ def export_application_pdf(request: HttpRequest, pk: int):
         ["Application Type", application.get_application_type_display()],
         ["Application Name", application.application_name],
         ["Trademark No", application.trademark_no],
-        ["Case No (Official)", application.case_no|default:"-"],
+        ["Case No (Official)", application.case_no or "-"],
         ["Class", application.class_numbers],
-        ["Filing Date", application.filing_date|date:"d-M-Y" if application.filing_date else ""],
+        ["Filing Date", application.filing_date.strftime("%d-%b-%Y") if application.filing_date else ""],
         ["Applicant", application.applicant_name],
         ["Trading As", application.trading_as],
         ["City", application.city],
@@ -444,8 +444,8 @@ def export_application_pdf(request: HttpRequest, pk: int):
     # Status
     elements.append(Paragraph("Status", header_style))
     status_data = [
-        ["Stage", application.get_current_stage_display],
-        ["Sub-Status", application.get_current_sub_stage_display],
+        ["Stage", application.get_current_stage_display()],
+        ["Sub-Status", application.get_current_sub_stage_display()],
         ["Status", application.current_status],
     ]
     status_table = Table(status_data, colWidths=[2*inch, 4*inch])
@@ -466,10 +466,10 @@ def export_application_pdf(request: HttpRequest, pk: int):
     timeline_data = [["Date/Time", "Event Type", "Notes", "Deadline"]]
     for e in application.events.all():
         timeline_data.append([
-            e.event_datetime|date:"d-M-Y H:i",
-            f"{e.get_event_type_display} - {e.get_sub_stage_display}" if e.sub_stage else e.get_event_type_display,
+            e.event_datetime.strftime("%d-%b-%Y %H:%M"),
+            f"{e.get_event_type_display()} - {e.get_sub_stage_display()}" if e.sub_stage else e.get_event_type_display(),
             e.notes,
-            e.deadline_date|date:"d-M-Y" if e.deadline_date else ""
+            e.deadline_date.strftime("%d-%b-%Y") if e.deadline_date else ""
         ])
     timeline_table = Table(timeline_data, colWidths=[1.2*inch, 1.5*inch, 2*inch, 1.3*inch])
     timeline_table.setStyle(TableStyle([
@@ -492,8 +492,8 @@ def export_application_pdf(request: HttpRequest, pk: int):
     for a in application.assignments.all():
         assignment_data.append([
             a.assigned_to.username if a.assigned_to else "(Unassigned)",
-            a.due_date|date:"d-M-Y" if a.due_date else "",
-            a.get_status_display,
+            a.due_date.strftime("%d-%b-%Y") if a.due_date else "",
+            a.get_status_display(),
             a.notes
         ])
     assignment_table = Table(assignment_data, colWidths=[1.2*inch, 1*inch, 1*inch, 2.8*inch])
@@ -515,7 +515,7 @@ def export_application_pdf(request: HttpRequest, pk: int):
     elements.append(Paragraph("Documents", header_style))
     doc_data = [["Type", "Link"]]
     for d in application.documents.all():
-        doc_data.append([d.get_file_type_display, d.file_path])
+        doc_data.append([d.get_file_type_display(), d.file_path])
     doc_table = Table(doc_data, colWidths=[1.5*inch, 4.5*inch])
     doc_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
@@ -533,7 +533,7 @@ def export_application_pdf(request: HttpRequest, pk: int):
     # Footer
     elements.append(Spacer(1, 0.5*inch))
     elements.append(Paragraph(
-        f"{site_settings.company_name|default:'Office IP Case Platform'} | Generated: {datetime.date.today()|date:'d-M-Y H:i'}",
+        f"{site_settings.company_name or 'Office IP Case Platform'} | Generated: {datetime.datetime.now().strftime('%d-%b-%Y %H:%M')}",
         ParagraphStyle('Footer', parent=styles['Normal'], fontSize=8, textColor=colors.grey)
     ))
 
