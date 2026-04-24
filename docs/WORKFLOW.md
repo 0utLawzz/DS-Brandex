@@ -23,11 +23,13 @@ Since this is an office LAN tool, password reset is done by admin:
 ### 1.3 Create a New Application (Case)
 1. From Applications list (`/`), click **+ New Application**
 2. Fill:
-   - Folder # (Case ID) — e.g. `X-454-004`
-   - Client Type (N/X/A)
+   - Case # (optional, auto-generated if empty) — e.g. `X-352-001` (format: ClientType-ClientID-Sequence)
+   - Client Type (X/N/A)
+   - Client ID (required for auto-generation of case number)
    - Application Type (Trademark / Copyright / NTN / Company)
    - Application Name
    - Trademark No
+   - Case No (Official) — optional official case number
    - Applicant details + City
    - Agent details + Jurisdiction + Dispatch
    - Logo (optional image upload)
@@ -87,8 +89,10 @@ Assignments show as cards with color:
 
 ### 2.2 Data Models
 - **Application** (main case)
-  - Folder #, Client Type, Application Type, Application Name
-  - Trademark No, Application #, Class, Filing Date, Year
+  - Case # (auto-generated: ClientType-ClientID-Sequence, e.g., X-352-001)
+  - Client Type, Client ID, Sequence
+  - Application Type, Application Name
+  - Trademark No, Case No (Official), Class, Filing Date, Year
   - Applicant, Trading As, Applicant Type, Address, City
   - Agent, Agent Address, Jurisdiction, Dispatch Status
   - Logo upload (ImageField)
@@ -209,11 +213,12 @@ URLs:
 - Updates application sub-stage and creates timeline events automatically
 - Buttons added to application detail page Status Box
 
-### Folder Number Auto-Generator
-- Automatic folder number generation in format: `[ClientType]-[ClientID]-[Sequence]`
-- Example: `X-454-001`, `A-123-001`
-- Folder number is optional in forms - auto-generated if client_id is provided
+### Case Number Auto-Generator
+- Automatic case number generation in format: `[ClientType]-[ClientID]-[Sequence]`
+- Example: `X-352-001`, `N-123-001`
+- Case number is optional in forms - auto-generated if client_id is provided
 - Sequence auto-increments per client_type + client_id combination
+- Renamed from Folder # to Case # throughout the application
 
 ### Dashboard
 - Overview page with deadline summaries
@@ -232,3 +237,11 @@ URLs:
   - Completed assignments
   - Upcoming events for assigned applications
 - Accessible at `/my-tasks/`
+
+### Backup & Database Sync
+- **Automatic Backup**: Database backup command with auto-sync to Google Drive
+- **rclone Integration**: Uses rclone for automatic Google Drive backup sync
+- **Environment Variables**: Configurable backup interval, retention, and rclone path
+- **Backup Location**: Local backups stored in `backups/` folder
+- **Google Drive Sync**: Automatic sync to Google Drive after each backup
+- See `docs/BACKUP_GUIDE.md` for detailed setup instructions

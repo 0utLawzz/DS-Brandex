@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.0.4 - 24/Apr/26
+
+- rename: Folder # to Case # throughout the application
+- change: case number auto-generation format to ClientType-ClientID-Sequence (e.g., X-352-001)
+- change: Case No field renamed to Case No (Official) to distinguish from internal case number
+- add: rclone setup for automatic Google Drive backup sync
+- add: RCLONE_PATH environment variable for rclone.exe location configuration
+- add: padding to Quick Event Buttons popup for better UI
+- add: docs folder and moved documentation files (BACKUP_GUIDE.md, WORKFLOW.md, theme_guide.md)
+- rename: VICTORIAN_THEME_GUIDE.md to theme_guide.md
+
 ## v1.0.0.3 - 24/Apr/26
 
 - add: HOME button to header
