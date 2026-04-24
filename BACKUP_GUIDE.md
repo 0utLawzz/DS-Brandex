@@ -98,6 +98,7 @@ Configure backup behavior via environment variables:
 - `BACKUP_ENABLED`: Enable/disable backup (default: `true`)
 - `BACKUP_INTERVAL_HOURS`: Backup interval in hours (default: `6`)
 - `BACKUP_RETENTION_DAYS`: Number of days to keep backups (default: `7`)
+- `RCLONE_PATH`: Path to rclone.exe (default: `C:\rclone\rclone.exe`)
 - `RCLONE_REMOTE`: rclone remote name (default: `brandex-drive`)
 - `RCLONE_DESTINATION`: Google Drive folder (default: `IP-Case-Backups`)
 

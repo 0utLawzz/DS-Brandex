@@ -56,10 +56,11 @@ class Command(BaseCommand):
         # Sync to Google Drive using rclone
         rclone_remote = os.environ.get('RCLONE_REMOTE', 'brandex-drive')
         rclone_destination = os.environ.get('RCLONE_DESTINATION', 'IP-Case-Backups')
+        rclone_path = os.environ.get('RCLONE_PATH', r'C:\rclone\rclone.exe')
         
         # Check if rclone is available
         try:
-            subprocess.run(['rclone', 'version'], check=True, capture_output=True)
+            subprocess.run([rclone_path, 'version'], check=True, capture_output=True)
         except (subprocess.CalledProcessError, FileNotFoundError):
             self.stdout.write(
                 self.style.WARNING('rclone not found. Skipping Google Drive sync. Install rclone and configure it following BACKUP_GUIDE.md')
@@ -71,7 +72,7 @@ class Command(BaseCommand):
             self.stdout.write(f'Syncing backups to Google Drive ({rclone_remote}:{rclone_destination})...')
             result = subprocess.run(
                 [
-                    'rclone', 'sync',
+                    rclone_path, 'sync',
                     str(backup_dir),
                     f'{rclone_remote}:{rclone_destination}',
                     '--progress'
