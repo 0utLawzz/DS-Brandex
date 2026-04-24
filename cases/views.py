@@ -368,12 +368,17 @@ def export_application_pdf(request: HttpRequest, pk: int):
     from django.http import HttpResponse
     import datetime
 
+    site_settings = SiteSettings.objects.first()
+    if not site_settings:
+        site_settings = SiteSettings.objects.create()
+
     html_string = render_to_string('cases/application_pdf.html', {
         'application': application,
         'events': application.events.all(),
         'assignments': application.assignments.all(),
         'documents': application.documents.all(),
         'today': datetime.date.today(),
+        'site_settings': site_settings,
     })
 
     html = HTML(string=html_string)
