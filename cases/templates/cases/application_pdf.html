@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ application.case_number }} - Application Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            margin: 20px;
+            color: #000;
+        }
+        h1 {
+            font-size: 18pt;
+            color: #722F37;
+            border-bottom: 2px solid #722F37;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 14pt;
+            color: #2E5339;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        .kv-row {
+            display: flex;
+            margin-bottom: 5px;
+        }
+        .kv-key {
+            font-weight: bold;
+            width: 150px;
+        }
+        .kv-value {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ application.case_number }} - Application Details</h1>
+    
+    <h2>Case Information</h2>
+    <table>
+        <tr><td class="kv-key">Case #</td><td class="kv-value">{{ application.case_number }}</td></tr>
+        <tr><td class="kv-key">Client Type</td><td class="kv-value">{{ application.get_client_type_display }}</td></tr>
+        <tr><td class="kv-key">Application Type</td><td class="kv-value">{{ application.get_application_type_display }}</td></tr>
+        <tr><td class="kv-key">Application Name</td><td class="kv-value">{{ application.application_name }}</td></tr>
+        <tr><td class="kv-key">Trademark No</td><td class="kv-value">{{ application.trademark_no }}</td></tr>
+        <tr><td class="kv-key">Case No (Official)</td><td class="kv-value">{{ application.case_no|default:"-" }}</td></tr>
+        <tr><td class="kv-key">Class</td><td class="kv-value">{{ application.class_numbers }}</td></tr>
+        <tr><td class="kv-key">Filing Date</td><td class="kv-value">{% if application.filing_date %}{{ application.filing_date|date:"d-M-Y" }}{% endif %}</td></tr>
+        <tr><td class="kv-key">Applicant</td><td class="kv-value">{{ application.applicant_name }}</td></tr>
+        <tr><td class="kv-key">Trading As</td><td class="kv-value">{{ application.trading_as }}</td></tr>
+        <tr><td class="kv-key">City</td><td class="kv-value">{{ application.city }}</td></tr>
+        <tr><td class="kv-key">Agent</td><td class="kv-value">{{ application.agent_name }}</td></tr>
+        <tr><td class="kv-key">Dispatch Status</td><td class="kv-value">{{ application.dispatch_status }}</td></tr>
+    </table>
+    
+    <h2>Status</h2>
+    <table>
+        <tr><td class="kv-key">Stage</td><td class="kv-value">{{ application.get_current_stage_display }}</td></tr>
+        <tr><td class="kv-key">Sub-Status</td><td class="kv-value">{{ application.get_current_sub_stage_display }}</td></tr>
+        <tr><td class="kv-key">Status</td><td class="kv-value">{{ application.current_status }}</td></tr>
+    </table>
+    
+    <h2>Timeline</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date/Time</th>
+                <th>Event Type</th>
+                <th>Notes</th>
+                <th>Deadline</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in events %}
+            <tr>
+                <td>{{ e.event_datetime|date:"d-M-Y H:i" }}</td>
+                <td>{{ e.get_event_type_display }}{% if e.sub_stage %} - {{ e.get_sub_stage_display }}{% endif %}</td>
+                <td>{{ e.notes }}</td>
+                <td>{% if e.deadline_date %}{{ e.deadline_date|date:"d-M-Y" }}{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No Events</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <h2>Assignments (CASES)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Assigned To</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in assignments %}
+            <tr>
+                <td>{% if a.assigned_to %}{{ a.assigned_to.username }}{% else %}(Unassigned){% endif %}</td>
+                <td>{% if a.due_date %}{{ a.due_date|date:"d-M-Y" }}{% endif %}</td>
+                <td>{{ a.get_status_display }}</td>
+                <td>{{ a.notes }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No Assignments</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <h2>Documents</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in documents %}
+            <tr>
+                <td>{{ d.get_file_type_display }}</td>
+                <td>{{ d.file_path }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2">No Documents</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p style="margin-top: 30px; font-size: 10pt; color: #666;">
+        Generated on: {{ today|date:"d-M-Y H:i" }}
+    </p>
+</body>
+</html>

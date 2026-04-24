@@ -14,7 +14,10 @@
 
   <div class="dst-grid">
     <div class="victorian-card card dst-accent-blue">
-      <div class="card-header py-3 small-cap">Case Info</div>
+      <div class="card-header py-3 small-cap">
+        Case Info
+        <a class="btn victorian-btn small-cap float-end" href="{% url 'cases:export_application_pdf' application.pk %}" target="_blank">📄 Export PDF</a>
+      </div>
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between gap-3">
           <div class="dst-kv">

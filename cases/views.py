@@ -361,6 +361,30 @@ def add_document(request: HttpRequest, pk: int):
 
 
 @login_required
+def export_application_pdf(request: HttpRequest, pk: int):
+    application = get_object_or_404(Application, pk=pk)
+    from weasyprint import HTML
+    from django.template.loader import render_to_string
+    from django.http import HttpResponse
+    import datetime
+
+    html_string = render_to_string('cases/application_pdf.html', {
+        'application': application,
+        'events': application.events.all(),
+        'assignments': application.assignments.all(),
+        'documents': application.documents.all(),
+        'today': datetime.date.today(),
+    })
+
+    html = HTML(string=html_string)
+    pdf = html.write_pdf()
+
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{application.case_number}_application.pdf"'
+    return response
+
+
+@login_required
 def dashboard(request: HttpRequest):
     today = timezone.localdate()
 
