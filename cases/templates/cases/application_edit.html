@@ -1,0 +1,195 @@
+{% extends 'cases/base.html' %}
+
+{% block title %}Edit {{ application.folder_number }} - IP Case Platform{% endblock %}
+
+{% block content %}
+  <div class="mb-3">
+    <a class="victorian-link small-cap" href="{% url 'cases:application_detail' application.pk %}">← Cancel</a>
+  </div>
+
+  <div class="victorian-card card dst-accent-blue mb-4">
+    <div class="card-header py-3 small-cap">Edit Application: {{ application.folder_number }}</div>
+    <div class="card-body">
+      {% if errors %}
+        <div class="alert alert-danger">
+          <div class="fw-bold small-cap">Please Fix:</div>
+          <ul class="mb-0">
+            {% for e in errors %}
+              <li>{{ e }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row g-3">
+          <div class="col-12">
+            <hr class="my-4" style="border: 3px solid var(--line);" />
+            <h5 class="small-cap mb-3">Section 1</h5>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Client Type</label>
+            <select class="form-select victorian-input" name="client_type" required>
+              {% for value,label in client_type_choices %}
+                <option value="{{ value }}" {% if application.client_type == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Client ID</label>
+            <input class="form-control victorian-input" type="number" name="client_id" value="{{ application.client_id|default:'' }}" placeholder="e.g. 454" />
+            <div class="small text-muted">Required for auto-generation of folder number</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Folder # (optional)</label>
+            <input class="form-control victorian-input" name="folder_number" value="{{ application.folder_number|default:'' }}" placeholder="Auto-generated if empty: X-454-001" />
+            <div class="small text-muted">Leave empty for auto-generation</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Case No</label>
+            <input class="form-control victorian-input" name="case_no" value="{{ application.case_no|default:'' }}" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Application Type</label>
+            <select class="form-select victorian-input" name="application_type" required>
+              {% for value,label in application_type_choices %}
+                <option value="{{ value }}" {% if application.application_type == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Application Name</label>
+            <input class="form-control victorian-input" name="application_name" value="{{ application.application_name }}" required />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">TM No</label>
+            <input class="form-control victorian-input" name="trademark_no" value="{{ application.trademark_no|default:'' }}" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Class</label>
+            <select class="form-select victorian-input" name="class_numbers">
+              <option value="">Select Class</option>
+              {% for i in "123456789101112131415161718192021222324252627282930313233343536373839404142434445" %}
+                <option value="{{ i }}" {% if application.class_numbers == i %}selected{% endif %}>{{ i }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-12">
+            <hr class="my-4" style="border: 3px solid var(--line);" />
+            <h5 class="small-cap mb-3">Section 2</h5>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Filing Date</label>
+            <input class="form-control victorian-input" type="date" name="filing_date" value="{% if application.filing_date %}{{ application.filing_date|date:'Y-m-d' }}{% endif %}" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Application Year</label>
+            <input class="form-control victorian-input" type="number" name="application_year" value="{{ application.application_year|default:'' }}" placeholder="2026" />
+          </div>
+
+          <div class="col-md-4"></div>
+
+          <div class="col-12">
+            <hr class="my-4" style="border: 3px solid var(--line);" />
+            <h5 class="small-cap mb-3">Section 3</h5>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label small-cap">Applicant Name</label>
+            <input class="form-control victorian-input" name="applicant_name" value="{{ application.applicant_name }}" required />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label small-cap">Trading As</label>
+            <input class="form-control victorian-input" name="trading_as" value="{{ application.trading_as|default:'' }}" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Applicant Type</label>
+            <select class="form-select victorian-input" name="applicant_type">
+              {% for value,label in applicant_type_choices %}
+                <option value="{{ value }}" {% if application.applicant_type == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">City</label>
+            <select class="form-select victorian-input" name="city">
+              {% for value,label in city_choices %}
+                <option value="{{ value }}" {% if application.city == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-4"></div>
+
+          <div class="col-12">
+            <label class="form-label small-cap">Address</label>
+            <textarea class="form-control victorian-input" name="address" rows="3">{{ application.address|default:'' }}</textarea>
+          </div>
+
+          <div class="col-12">
+            <hr class="my-4" style="border: 3px solid var(--line);" />
+            <h5 class="small-cap mb-3">Section 4</h5>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label small-cap">Agent Name</label>
+            <input class="form-control victorian-input" name="agent_name" value="{{ application.agent_name|default:'' }}" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label small-cap">Jurisdiction</label>
+            <input class="form-control victorian-input" name="jurisdiction" value="{{ application.jurisdiction|default:'' }}" />
+          </div>
+
+          <div class="col-12">
+            <label class="form-label small-cap">Agent Address</label>
+            <textarea class="form-control victorian-input" name="agent_address" rows="2">{{ application.agent_address|default:'' }}</textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label small-cap">Dispatch Status</label>
+            <input class="form-control victorian-input" name="dispatch_status" value="{{ application.dispatch_status|default:'' }}" />
+          </div>
+
+          <div class="col-12">
+            <hr class="my-4" style="border: 3px solid var(--line);" />
+            <h5 class="small-cap mb-3">Section 5</h5>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label small-cap">Logo</label>
+            <input class="form-control victorian-input" type="file" name="logo" accept="image/*" />
+            {% if application.logo %}
+              <div class="small text-muted">Current: {{ application.logo.name }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label small-cap">Additional Files</label>
+            <input class="form-control victorian-input" type="file" name="files" multiple />
+          </div>
+
+          <div class="col-12 mt-4">
+            <button type="submit" class="btn victorian-btn">Save Changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

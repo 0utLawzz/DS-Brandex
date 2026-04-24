@@ -145,6 +145,104 @@ def application_create(request: HttpRequest):
 
 
 @login_required
+def application_edit(request: HttpRequest, pk: int):
+    application = get_object_or_404(Application, pk=pk)
+    site_settings = SiteSettings.objects.first()
+    if not site_settings:
+        site_settings = SiteSettings.objects.create()
+
+    if request.method == "POST":
+        folder_number = (request.POST.get("folder_number") or "").strip()
+        client_type = (request.POST.get("client_type") or "").strip()
+        client_id = request.POST.get("client_id") or None
+        application_type = (request.POST.get("application_type") or "").strip()
+        application_name = (request.POST.get("application_name") or "").strip()
+        trademark_no = (request.POST.get("trademark_no") or "").strip()
+        case_no = (request.POST.get("case_no") or "").strip()
+        class_numbers = (request.POST.get("class_numbers") or "").strip()
+        filing_date = request.POST.get("filing_date") or None
+        application_year = request.POST.get("application_year") or None
+        applicant_name = (request.POST.get("applicant_name") or "").strip()
+        trading_as = (request.POST.get("trading_as") or "").strip()
+        applicant_type = (request.POST.get("applicant_type") or "").strip()
+        address = (request.POST.get("address") or "").strip()
+        city = (request.POST.get("city") or "").strip()
+        agent_name = (request.POST.get("agent_name") or "").strip()
+        agent_address = (request.POST.get("agent_address") or "").strip()
+        jurisdiction = (request.POST.get("jurisdiction") or "").strip()
+        dispatch_status = (request.POST.get("dispatch_status") or "").strip()
+        logo = request.FILES.get("logo")
+        files = request.FILES.getlist("files")
+
+        errors = []
+        if folder_number and folder_number != application.folder_number and Application.objects.filter(folder_number=folder_number).exists():
+            errors.append("Folder number already exists")
+        if not folder_number and not client_id:
+            errors.append("Either folder number or client ID is required")
+        if not application_name:
+            errors.append("Application name is required")
+        if not applicant_name:
+            errors.append("Applicant name is required")
+        if client_type not in {c[0] for c in Application._meta.get_field("client_type").choices}:
+            errors.append("Invalid client type")
+        if application_type not in {c[0] for c in Application._meta.get_field("application_type").choices}:
+            errors.append("Invalid application type")
+        if applicant_type and applicant_type not in {c[0] for c in Application._meta.get_field("applicant_type").choices}:
+            errors.append("Invalid applicant type")
+
+        if errors:
+            context = {
+                "errors": errors,
+                "client_type_choices": Application._meta.get_field("client_type").choices,
+                "application_type_choices": Application._meta.get_field("application_type").choices,
+                "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
+                "city_choices": Application._meta.get_field("city").choices,
+                "application": application,
+                "site_settings": site_settings,
+            }
+            return render(request, "cases/application_edit.html", context)
+
+        application.folder_number = folder_number
+        application.client_type = client_type
+        application.client_id = client_id
+        application.application_type = application_type
+        application.application_name = application_name
+        application.trademark_no = trademark_no
+        application.case_no = case_no
+        application.class_numbers = class_numbers
+        application.filing_date = filing_date
+        application.application_year = application_year or None
+        application.applicant_name = applicant_name
+        application.trading_as = trading_as
+        application.applicant_type = applicant_type or Application._meta.get_field("applicant_type").default
+        application.address = address
+        application.city = city
+        application.agent_name = agent_name
+        application.agent_address = agent_address
+        application.jurisdiction = jurisdiction
+        application.dispatch_status = dispatch_status
+        if logo:
+            application.logo = logo
+
+        application.save()
+
+        for f in files:
+            FileUpload.objects.create(application=application, file=f)
+
+        return redirect("cases:application_detail", pk=application.pk)
+
+    context = {
+        "client_type_choices": Application._meta.get_field("client_type").choices,
+        "application_type_choices": Application._meta.get_field("application_type").choices,
+        "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
+        "city_choices": Application._meta.get_field("city").choices,
+        "application": application,
+        "site_settings": site_settings,
+    }
+    return render(request, "cases/application_edit.html", context)
+
+
+@login_required
 def application_detail(request: HttpRequest, pk: int):
     application = get_object_or_404(Application, pk=pk)
 

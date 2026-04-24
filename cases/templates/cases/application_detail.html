@@ -3,8 +3,9 @@
 {% block title %}{{ application.folder_number }} - IP Case Platform{% endblock %}
 
 {% block content %}
-  <div class="mb-3">
+  <div class="mb-3 d-flex justify-content-between align-items-center">
     <a class="victorian-link small-cap" href="{% url 'cases:application_list' %}">← Back To Applications</a>
+    <a class="btn victorian-btn" href="{% url 'cases:application_edit' application.pk %}">Edit</a>
   </div>
 
   <div class="dst-grid">

@@ -1,21 +1,25 @@
-:root {
-  --primary: #d32f2f;
-  --secondary: #1976d2;
-  --accent: #fdd835;
-  --background: #f5f5f5;
-  --surface: #ffffff;
-  --text: #000000;
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap');
 
-  --radius: 0px;
-  --border-width: 6px;
-  --shadow: 0px 0px;
-  --line: #000000;
+:root {
+  --primary: #722F37;
+  --secondary: #2E5339;
+  --accent: #B8860B;
+  --background: #F5E6D3;
+  --surface: #FDF5E6;
+  --text: #4A2932;
+
+  --radius: 4px;
+  --border-width: 3px;
+  --shadow: 0px 4px;
+  --line: #4A2932;
 }
 
 .victorian-bg {
   background: var(--background);
   color: var(--text);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
+  font-variant: small-caps;
+  letter-spacing: 0.5px;
 }
 
 .victorian-header {
@@ -28,11 +32,14 @@
   font-size: 1.35rem;
   letter-spacing: 0.2px;
   color: var(--text);
+  font-family: 'Playfair Display', serif;
+  font-variant: small-caps;
 }
 
 .victorian-subtitle {
   font-size: 0.9rem;
   color: rgba(0, 0, 0, 0.7);
+  font-variant: small-caps;
 }
 
 .victorian-card {
@@ -47,6 +54,7 @@
   border-bottom: var(--border-width) solid var(--line);
   font-weight: 700;
   color: var(--text);
+  font-variant: small-caps;
 }
 
 .victorian-btn {
@@ -55,16 +63,19 @@
   color: #fff;
   border-radius: var(--radius);
   box-shadow: none;
+  font-variant: small-caps;
+  font-weight: 600;
 }
 
 .victorian-btn:hover {
-  background: #b71c1c;
+  background: #5a252c;
   color: #fff;
 }
 
 .victorian-link {
   color: var(--secondary);
   text-decoration: none;
+  font-variant: small-caps;
 }
 
 .victorian-link:hover {
@@ -76,6 +87,7 @@
   background: var(--surface);
   color: var(--text);
   border-radius: 0;
+  font-variant: small-caps;
 }
 
 .victorian-table thead th {
@@ -83,6 +95,7 @@
   color: var(--text);
   background: var(--surface);
   border-bottom: var(--border-width) solid var(--line);
+  font-variant: small-caps;
 }
 
 .victorian-table > :not(caption) > * > * {
@@ -92,6 +105,7 @@
 .victorian-input {
   border-radius: var(--radius);
   border: 3px solid var(--line);
+  font-variant: small-caps;
 }
 
 .victorian-input:focus {
@@ -135,6 +149,7 @@
 
 .dst-kv .k {
   font-weight: 700;
+  font-variant: small-caps;
 }
 
 .dst-timeline {
@@ -181,11 +196,13 @@
 
 .dst-event-title {
   font-weight: 700;
+  font-variant: small-caps;
 }
 
 .dst-event-meta {
   font-size: 0.85rem;
   color: rgba(0, 0, 0, 0.7);
+  font-variant: small-caps;
 }
 
 .dst-assignment {
