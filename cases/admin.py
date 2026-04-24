@@ -60,7 +60,30 @@ class ApplicationAdmin(admin.ModelAdmin):
         "jurisdiction",
         "city",
     )
-    readonly_fields = ("created_at", "updated_at")
+    readonly_fields = ("created_at", "updated_at", "sequence")
+    fieldsets = (
+        (None, {
+            "fields": ("folder_number", "client_type", "client_id", "sequence")
+        }),
+        ("Application Details", {
+            "fields": ("application_name", "application_type", "trademark_no", "case_no", "class_numbers", "filing_date", "application_year")
+        }),
+        ("Applicant Information", {
+            "fields": ("applicant_name", "trading_as", "applicant_type", "address", "city")
+        }),
+        ("Agent Information", {
+            "fields": ("agent_name", "agent_address", "jurisdiction", "dispatch_status")
+        }),
+        ("Logo", {
+            "fields": ("logo",)
+        }),
+        ("Status", {
+            "fields": ("current_stage", "current_sub_stage", "current_status")
+        }),
+        ("Timestamps", {
+            "fields": ("created_at", "updated_at")
+        }),
+    )
     inlines = (EventInline, AssignmentInline, DocumentInline, FileUploadInline)
 
 

@@ -48,6 +48,7 @@ def application_create(request: HttpRequest):
     if request.method == "POST":
         folder_number = (request.POST.get("folder_number") or "").strip()
         client_type = (request.POST.get("client_type") or "").strip()
+        client_id = request.POST.get("client_id") or None
         application_type = (request.POST.get("application_type") or "").strip()
         application_name = (request.POST.get("application_name") or "").strip()
         trademark_no = (request.POST.get("trademark_no") or "").strip()
@@ -68,8 +69,13 @@ def application_create(request: HttpRequest):
         files = request.FILES.getlist("files")
 
         errors = []
-        if not folder_number:
-            errors.append("Folder number is required")
+        # Folder number is optional now - will be auto-generated if not provided
+        # If folder_number is provided, it must be unique
+        if folder_number and Application.objects.filter(folder_number=folder_number).exists():
+            errors.append("Folder number already exists")
+        # If folder_number is not provided, client_id is required for auto-generation
+        if not folder_number and not client_id:
+            errors.append("Either folder number or client ID is required")
         if not application_name:
             errors.append("Application name is required")
         if not applicant_name:
@@ -96,6 +102,7 @@ def application_create(request: HttpRequest):
         app = Application(
             folder_number=folder_number,
             client_type=client_type,
+            client_id=client_id,
             application_type=application_type,
             application_name=application_name,
             trademark_no=trademark_no,
@@ -240,3 +247,54 @@ def add_document(request: HttpRequest, pk: int):
         return redirect("cases:application_detail", pk=application.pk)
 
     return redirect("cases:application_detail", pk=application.pk)
+
+
+@login_required
+def dashboard(request: HttpRequest):
+    today = timezone.localdate()
+
+    # Get overdue assignments
+    overdue_assignments = Assignment.objects.filter(
+        due_date__lt=today,
+        status__in=["pending", "overdue"]
+    ).select_related('application', 'assigned_to').order_by('due_date')[:50]
+
+    # Get assignments due soon (within 3 days)
+    soon_due_date = today + timezone.timedelta(days=3)
+    soon_assignments = Assignment.objects.filter(
+        due_date__range=[today, soon_due_date],
+        status="pending"
+    ).select_related('application', 'assigned_to').order_by('due_date')[:50]
+
+    # Get events with deadlines
+    overdue_events = Event.objects.filter(
+        deadline_date__lt=today
+    ).select_related('application').order_by('deadline_date')[:50]
+
+    soon_events = Event.objects.filter(
+        deadline_date__range=[today, soon_due_date]
+    ).select_related('application').order_by('deadline_date')[:50]
+
+    # Get applications by stage summary
+    stage_summary = {}
+    for stage_choice in Stage.choices:
+        stage_summary[stage_choice[1]] = Application.objects.filter(current_stage=stage_choice[0]).count()
+
+    # Recent applications
+    recent_applications = Application.objects.order_by('-created_at')[:10]
+
+    site_settings = SiteSettings.objects.first()
+    if not site_settings:
+        site_settings = SiteSettings.objects.create()
+
+    context = {
+        "overdue_assignments": overdue_assignments,
+        "soon_assignments": soon_assignments,
+        "overdue_events": overdue_events,
+        "soon_events": soon_events,
+        "stage_summary": stage_summary,
+        "recent_applications": recent_applications,
+        "today": today,
+        "site_settings": site_settings,
+    }
+    return render(request, "cases/dashboard.html", context)

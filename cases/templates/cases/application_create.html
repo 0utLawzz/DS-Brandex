@@ -36,8 +36,15 @@
           </div>
 
           <div class="col-md-4">
-            <label class="form-label small-cap">Folder #</label>
-            <input class="form-control victorian-input" name="folder_number" value="{{ values.folder_number|default:'' }}" placeholder="X-454-004" required />
+            <label class="form-label small-cap">Client ID</label>
+            <input class="form-control victorian-input" type="number" name="client_id" value="{{ values.client_id|default:'' }}" placeholder="e.g. 454" />
+            <div class="small text-muted">Required for auto-generation of folder number</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Folder # (optional)</label>
+            <input class="form-control victorian-input" name="folder_number" value="{{ values.folder_number|default:'' }}" placeholder="Auto-generated if empty: X-454-001" />
+            <div class="small text-muted">Leave empty for auto-generation</div>
           </div>
 
           <div class="col-md-4">

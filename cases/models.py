@@ -100,7 +100,7 @@ class AuditActionType(models.TextChoices):
 
 
 class Application(models.Model):
-    folder_number = models.CharField(max_length=50, unique=True)
+    folder_number = models.CharField(max_length=50, unique=True, blank=True)
     client_type = models.CharField(max_length=1, choices=ClientType.choices, default=ClientType.DIRECT)
     client_id = models.PositiveIntegerField(null=True, blank=True)
     sequence = models.PositiveIntegerField(null=True, blank=True)
@@ -140,11 +140,31 @@ class Application(models.Model):
     def __str__(self) -> str:
         return f"{self.folder_number} - {self.application_name}"
 
+    def generate_folder_number(self) -> str:
+        """Generate folder number in format: [ClientType]-[ClientID]-[Sequence]"""
+        if not self.client_id:
+            raise ValueError("client_id is required for auto-generation")
+
+        # Get the next sequence number for this client_type + client_id combination
+        last_app = Application.objects.filter(
+            client_type=self.client_type,
+            client_id=self.client_id
+        ).order_by('-sequence').first()
+
+        next_sequence = (last_app.sequence + 1) if last_app else 1
+        self.sequence = next_sequence
+
+        return f"{self.client_type}-{self.client_id}-{next_sequence:03d}"
+
     def save(self, *args, **kwargs):
         is_create = self.pk is None
         old = None
         if not is_create:
             old = Application.objects.filter(pk=self.pk).first()
+
+        # Auto-generate folder number if not provided
+        if not self.folder_number and self.client_id:
+            self.folder_number = self.generate_folder_number()
 
         super().save(*args, **kwargs)
 
