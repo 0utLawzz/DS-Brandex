@@ -359,13 +359,135 @@ python manage.py sqlmigrate <app_name> <migration_number>
 
 Configure these in your environment or `.env` file:
 - `DJANGO_SECRET_KEY`: Django secret key
-- `DJANGO_DEBUG`: Debug mode (1 for True, 0 for False)
+- `DJANGO_DEBUG`: Debug mode (ON for True, OFF for False, or 1/0)
 - `DJANGO_ALLOWED_HOSTS`: Comma-separated allowed hosts
 - `DJANGO_CSRF_TRUSTED_ORIGINS`: Comma-separated trusted origins
 - `DB_ENGINE`: Database engine (sqlite/postgres)
 - `BACKUP_ENABLED`: Enable auto-backup (true/false)
 - `BACKUP_INTERVAL_HOURS`: Backup interval
 - `BACKUP_RETENTION_DAYS`: Backup retention period
+
+---
+
+## Settings File Configuration
+
+The main settings file is located at `ip_case_platform/settings.py`.
+
+### Key Settings
+
+#### DEBUG Mode
+```python
+DEBUG = os.environ.get("DJANGO_DEBUG", "ON") == "ON"
+```
+- **Development**: Set to "ON" or "1" for detailed error pages
+- **Production**: Set to "OFF" or "0" for security
+- **Default**: ON (for development)
+
+#### Allowed Hosts
+```python
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if h.strip()]
+```
+- Add your production domain here when deploying
+
+#### CSRF Trusted Origins
+```python
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get(
+        "DJANGO_CSRF_TRUSTED_ORIGINS",
+        "http://127.0.0.1,http://localhost,http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:56317,http://localhost:56317"
+    ).split(",")
+    if o.strip()
+]
+```
+- Add browser preview ports or production URLs here
+- Format: `http://domain:port`
+
+#### Database Configuration
+```python
+_db_engine = os.environ.get("DB_ENGINE", "sqlite").lower()
+
+if _db_engine in {"postgres", "postgresql"}:
+    # PostgreSQL configuration
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DB_NAME", "ip_case_platform"),
+            "USER": os.environ.get("DB_USER", "postgres"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+            "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
+        }
+    }
+else:
+    # SQLite configuration (default)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+```
+
+#### Backup Configuration
+```python
+BACKUP_ENABLED = os.environ.get('BACKUP_ENABLED', 'true').lower() == 'true'
+BACKUP_INTERVAL_HOURS = int(os.environ.get('BACKUP_INTERVAL_HOURS', '6'))
+BACKUP_RETENTION_DAYS = int(os.environ.get('BACKUP_RETENTION_DAYS', '7'))
+```
+
+#### Media and Static Files
+```python
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+```
+
+### When to Modify Settings
+
+#### After Changing Settings
+- **Server restart required** - stop and start the server
+- If using background server, kill it and restart
+
+#### Common Settings Changes
+
+1. **Toggle DEBUG Mode**
+   - Change `DJANGO_DEBUG` environment variable or default value
+   - Restart server
+
+2. **Add New Host/Domain**
+   - Add to `ALLOWED_HOSTS`
+   - Add to `CSRF_TRUSTED_ORIGINS`
+   - Restart server
+
+3. **Change Database**
+   - Set `DB_ENGINE` environment variable
+   - Configure database credentials
+   - Run migrations: `python manage.py migrate`
+
+4. **Change Time Zone**
+   - Modify `TIME_ZONE` setting
+   - No server restart needed
+
+5. **Update Backup Settings**
+   - Modify backup environment variables
+   - No server restart needed
+
+### Production Deployment Checklist
+
+Before deploying to production:
+- [ ] Set `DEBUG = False`
+- [ ] Set strong `SECRET_KEY` via environment variable
+- [ ] Add production domain to `ALLOWED_HOSTS`
+- [ ] Add production URL to `CSRF_TRUSTED_ORIGINS`
+- [ ] Configure production database (PostgreSQL recommended)
+- [ ] Set up proper email backend (SMTP)
+- [ ] Run `python manage.py collectstatic`
+- [ ] Configure proper web server (nginx + gunicorn)
+- [ ] Set up SSL/TLS certificates
+- [ ] Configure backup to remote storage
 
 ---
 
