@@ -17,7 +17,7 @@ def application_list(request: HttpRequest):
     applications = Application.objects.all()
     if q:
         applications = applications.filter(
-            models.Q(folder_number__icontains=q)
+            models.Q(case_number__icontains=q)
             | models.Q(application_name__icontains=q)
             | models.Q(case_no__icontains=q)
             | models.Q(applicant_name__icontains=q)
@@ -46,7 +46,7 @@ def application_create(request: HttpRequest):
         site_settings = SiteSettings.objects.create()
 
     if request.method == "POST":
-        folder_number = (request.POST.get("folder_number") or "").strip()
+        case_number = (request.POST.get("case_number") or "").strip()
         client_type = (request.POST.get("client_type") or "").strip()
         client_id = request.POST.get("client_id") or None
         application_type = (request.POST.get("application_type") or "").strip()
@@ -69,13 +69,13 @@ def application_create(request: HttpRequest):
         files = request.FILES.getlist("files")
 
         errors = []
-        # Folder number is optional now - will be auto-generated if not provided
-        # If folder_number is provided, it must be unique
-        if folder_number and Application.objects.filter(folder_number=folder_number).exists():
-            errors.append("Folder number already exists")
-        # If folder_number is not provided, client_id is required for auto-generation
-        if not folder_number and not client_id:
-            errors.append("Either folder number or client ID is required")
+        # Case number is optional now - will be auto-generated if not provided
+        # If case_number is provided, it must be unique
+        if case_number and Application.objects.filter(case_number=case_number).exists():
+            errors.append("Case number already exists")
+        # If case_number is not provided, client_id is required for auto-generation
+        if not case_number and not client_id:
+            errors.append("Either case number or client ID is required")
         if not application_name:
             errors.append("Application name is required")
         if not applicant_name:
@@ -100,7 +100,7 @@ def application_create(request: HttpRequest):
             return render(request, "cases/application_create.html", context)
 
         app = Application(
-            folder_number=folder_number,
+            case_number=case_number,
             client_type=client_type,
             client_id=client_id,
             application_type=application_type,
@@ -152,7 +152,7 @@ def application_edit(request: HttpRequest, pk: int):
         site_settings = SiteSettings.objects.create()
 
     if request.method == "POST":
-        folder_number = (request.POST.get("folder_number") or "").strip()
+        case_number = (request.POST.get("case_number") or "").strip()
         client_type = (request.POST.get("client_type") or "").strip()
         client_id = request.POST.get("client_id") or None
         application_type = (request.POST.get("application_type") or "").strip()
@@ -175,10 +175,10 @@ def application_edit(request: HttpRequest, pk: int):
         files = request.FILES.getlist("files")
 
         errors = []
-        if folder_number and folder_number != application.folder_number and Application.objects.filter(folder_number=folder_number).exists():
-            errors.append("Folder number already exists")
-        if not folder_number and not client_id:
-            errors.append("Either folder number or client ID is required")
+        if case_number and case_number != application.case_number and Application.objects.filter(case_number=case_number).exists():
+            errors.append("Case number already exists")
+        if not case_number and not client_id:
+            errors.append("Either case number or client ID is required")
         if not application_name:
             errors.append("Application name is required")
         if not applicant_name:
@@ -202,7 +202,7 @@ def application_edit(request: HttpRequest, pk: int):
             }
             return render(request, "cases/application_edit.html", context)
 
-        application.folder_number = folder_number
+        application.case_number = case_number
         application.client_type = client_type
         application.client_id = client_id
         application.application_type = application_type

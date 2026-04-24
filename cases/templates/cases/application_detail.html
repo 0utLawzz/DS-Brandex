@@ -1,6 +1,6 @@
 {% extends 'cases/base.html' %}
 
-{% block title %}{{ application.trademark_no|default:application.folder_number }} - IP Case Platform{% endblock %}
+{% block title %}{{ application.trademark_no|default:application.case_number }} - IP Case Platform{% endblock %}
 
 {% block extra_head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -18,7 +18,7 @@
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between gap-3">
           <div class="dst-kv">
-            <div class="k small-cap">Folder #</div><div>{{ application.folder_number }}</div>
+            <div class="k small-cap">Case #</div><div>{{ application.case_number }}</div>
             <div class="k small-cap">Client Type</div><div>{{ application.get_client_type_display }}</div>
             <div class="k small-cap">Application Type</div><div>{{ application.get_application_type_display }}</div>
             <div class="k small-cap">Application Name</div><div>{{ application.application_name }}</div>

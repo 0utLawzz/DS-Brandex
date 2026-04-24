@@ -100,7 +100,7 @@ class AuditActionType(models.TextChoices):
 
 
 class Application(models.Model):
-    folder_number = models.CharField(max_length=50, unique=True, blank=True)
+    case_number = models.CharField(max_length=50, unique=True, blank=True, verbose_name="Case #")
     client_type = models.CharField(max_length=1, choices=ClientType.choices, default=ClientType.DIRECT)
     client_id = models.PositiveIntegerField(null=True, blank=True)
     sequence = models.PositiveIntegerField(null=True, blank=True)
@@ -113,7 +113,7 @@ class Application(models.Model):
     application_year = models.PositiveIntegerField(null=True, blank=True)
     filing_date = models.DateField(null=True, blank=True)
 
-    case_no = models.CharField(max_length=100, blank=True, verbose_name="Case No")
+    case_no = models.CharField(max_length=100, blank=True, verbose_name="Case No (Official)")
     applicant_name = models.CharField(max_length=255)
     trading_as = models.CharField(max_length=255, blank=True)
     applicant_type = models.CharField(max_length=20, choices=ApplicantType.choices, default=ApplicantType.COMPANY)
@@ -138,10 +138,10 @@ class Application(models.Model):
         ordering = ["-updated_at"]
 
     def __str__(self) -> str:
-        return f"{self.folder_number} - {self.application_name}"
+        return f"{self.case_number} - {self.application_name}"
 
-    def generate_folder_number(self) -> str:
-        """Generate folder number in format: [ClientType]-[ClientID]-[Sequence]"""
+    def generate_case_number(self) -> str:
+        """Generate case number in format: [ClientType]-[ClientID]-[Sequence]"""
         if not self.client_id:
             raise ValueError("client_id is required for auto-generation")
 
@@ -162,9 +162,9 @@ class Application(models.Model):
         if not is_create:
             old = Application.objects.filter(pk=self.pk).first()
 
-        # Auto-generate folder number if not provided
-        if not self.folder_number and self.client_id:
-            self.folder_number = self.generate_folder_number()
+        # Auto-generate case number if not provided
+        if not self.case_number and self.client_id:
+            self.case_number = self.generate_case_number()
 
         super().save(*args, **kwargs)
 
@@ -174,7 +174,7 @@ class Application(models.Model):
                 action_type=AuditActionType.CREATED,
                 field_changed="application",
                 old_value="",
-                new_value=f"created folder_number={self.folder_number}",
+                new_value=f"created case_number={self.case_number}",
             )
             return
 
@@ -182,7 +182,7 @@ class Application(models.Model):
             return
 
         tracked_fields = [
-            "folder_number",
+            "case_number",
             "client_type",
             "client_id",
             "sequence",

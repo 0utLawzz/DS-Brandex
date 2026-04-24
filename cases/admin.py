@@ -34,7 +34,7 @@ class FileUploadInline(admin.TabularInline):
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = (
-        "folder_number",
+        "case_number",
         "client_type",
         "client_id",
         "sequence",
@@ -50,7 +50,7 @@ class ApplicationAdmin(admin.ModelAdmin):
         "current_status",
         "updated_at",
     )
-    search_fields = ("folder_number", "application_name", "case_no", "trademark_no", "applicant_name")
+    search_fields = ("case_number", "application_name", "case_no", "trademark_no", "applicant_name")
     list_filter = (
         "client_type",
         "application_type",
@@ -63,7 +63,7 @@ class ApplicationAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at", "sequence")
     fieldsets = (
         (None, {
-            "fields": ("folder_number", "client_type", "client_id", "sequence")
+            "fields": ("case_number", "client_type", "client_id", "sequence")
         }),
         ("Application Details", {
             "fields": ("application_name", "application_type", "trademark_no", "case_no", "class_numbers", "filing_date", "application_year")
@@ -90,7 +90,7 @@ class ApplicationAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ("application", "event_type", "event_datetime", "deadline_date", "stage", "sub_stage", "created_by")
-    search_fields = ("application__folder_number", "application__application_name", "notes")
+    search_fields = ("application__case_number", "application__application_name", "notes")
     list_filter = ("event_type", "stage", "sub_stage")
     readonly_fields = ("created_by", "created_at")
 
@@ -98,7 +98,7 @@ class EventAdmin(admin.ModelAdmin):
 @admin.register(Assignment)
 class AssignmentAdmin(admin.ModelAdmin):
     list_display = ("application", "assigned_to", "due_date", "status", "created_by", "assigned_date")
-    search_fields = ("application__folder_number", "application__application_name")
+    search_fields = ("application__case_number", "application__application_name")
     list_filter = ("status",)
     readonly_fields = ("created_by", "created_at", "assigned_date")
 
@@ -106,7 +106,7 @@ class AssignmentAdmin(admin.ModelAdmin):
 @admin.register(DocumentLink)
 class DocumentLinkAdmin(admin.ModelAdmin):
     list_display = ("application", "file_type", "file_path", "preview_enabled", "uploaded_by", "uploaded_date")
-    search_fields = ("application__folder_number", "application__application_name", "file_path")
+    search_fields = ("application__case_number", "application__application_name", "file_path")
     list_filter = ("file_type", "preview_enabled")
     readonly_fields = ("uploaded_by", "uploaded_date")
 
@@ -114,7 +114,7 @@ class DocumentLinkAdmin(admin.ModelAdmin):
 @admin.register(AuditLog)
 class AuditLogAdmin(admin.ModelAdmin):
     list_display = ("application", "action_type", "field_changed", "changed_by", "timestamp")
-    search_fields = ("application__folder_number", "application__application_name", "field_changed", "old_value", "new_value")
+    search_fields = ("application__case_number", "application__application_name", "field_changed", "old_value", "new_value")
     list_filter = ("action_type", "field_changed")
     readonly_fields = (
         "application",

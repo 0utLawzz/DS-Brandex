@@ -25,8 +25,8 @@
             {% for app in page_obj %}
               <a class="victorian-link" href="{% url 'cases:application_detail' app.pk %}">
                 <div class="p-2" style="border: 1px solid black;">
-                  <div>{{ app.trademark_no|default:app.folder_number }} - {{ app.application_name }}</div>
-                  <div class="small text-muted">Folder #: {{ app.folder_number }}</div>
+                  <div>{{ app.trademark_no|default:app.case_number }} - {{ app.application_name }}</div>
+                  <div class="small text-muted">Case #: {{ app.case_number }}</div>
                   <div class="small text-muted">Stage: {{ app.get_current_stage_display }}</div>
                 </div>
               </a>

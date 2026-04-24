@@ -1,6 +1,6 @@
 {% extends 'cases/base.html' %}
 
-{% block title %}Edit {{ application.folder_number }} - IP Case Platform{% endblock %}
+{% block title %}Edit {{ application.case_number }} - IP Case Platform{% endblock %}
 
 {% block content %}
   <div class="mb-3">
@@ -8,7 +8,7 @@
   </div>
 
   <div class="victorian-card card dst-accent-blue mb-4">
-    <div class="card-header py-3 small-cap">Edit Application: {{ application.folder_number }}</div>
+    <div class="card-header py-3 small-cap">Edit Application: {{ application.case_number }}</div>
     <div class="card-body">
       {% if errors %}
         <div class="alert alert-danger">
@@ -41,18 +41,18 @@
 
           <div class="col-md-4">
             <label class="form-label small-cap">Client ID</label>
-            <input class="form-control victorian-input" type="number" name="client_id" value="{{ application.client_id|default:'' }}" placeholder="e.g. 454" />
-            <div class="small text-muted">Required for auto-generation of folder number</div>
+            <input class="form-control victorian-input" type="number" name="client_id" value="{{ application.client_id|default:'' }}" placeholder="e.g. 352" />
+            <div class="small text-muted">Required for auto-generation of case number</div>
           </div>
 
           <div class="col-md-4">
-            <label class="form-label small-cap">Folder # (optional)</label>
-            <input class="form-control victorian-input" name="folder_number" value="{{ application.folder_number|default:'' }}" placeholder="Auto-generated if empty: X-454-001" />
-            <div class="small text-muted">Leave empty for auto-generation</div>
+            <label class="form-label small-cap">Case # (optional)</label>
+            <input class="form-control victorian-input" name="case_number" value="{{ application.case_number|default:'' }}" placeholder="Auto-generated if empty: X-352-001" />
+            <div class="small text-muted">Leave empty for auto-generation (format: ClientType-ClientID-Sequence)</div>
           </div>
 
           <div class="col-md-4">
-            <label class="form-label small-cap">Case No</label>
+            <label class="form-label small-cap">Case No (Official)</label>
             <input class="form-control victorian-input" name="case_no" value="{{ application.case_no|default:'' }}" />
           </div>
 

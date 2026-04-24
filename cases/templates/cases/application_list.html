@@ -8,7 +8,7 @@
     <div class="card-body">
       <form class="row g-2" method="get" action="">
         <div class="col-sm-8">
-          <input class="form-control victorian-input small-cap" type="text" name="q" value="{{ q }}" placeholder="Search: folder #, application name, case #, applicant" />
+          <input class="form-control victorian-input small-cap" type="text" name="q" value="{{ q }}" placeholder="Search: case #, application name, case #, applicant" />
         </div>
         <div class="col-sm-4 d-grid">
           <button class="btn victorian-btn small-cap" type="submit">Search</button>
@@ -43,7 +43,7 @@
           <thead>
             <tr>
               <th class="small-cap">Creation Date</th>
-              <th class="small-cap">Folder No</th>
+              <th class="small-cap">Case No</th>
               <th class="small-cap">Type</th>
               <th class="small-cap">TM No</th>
               <th class="small-cap">Application Name</th>
@@ -59,7 +59,7 @@
               <tr>
                 <td class="small">{{ a.created_at|date:"d-M-y" }}</td>
                 <td>
-                  <a class="victorian-link" href="{% url 'cases:application_detail' a.pk %}"><strong>{{ a.folder_number }}</strong></a>
+                  <a class="victorian-link" href="{% url 'cases:application_detail' a.pk %}">{{ a.case_number }}</a>
                 </td>
                 <td>
                   {% if a.application_type == 'trademark' %}

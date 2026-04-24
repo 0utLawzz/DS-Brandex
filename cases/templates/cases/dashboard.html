@@ -55,7 +55,7 @@
           <div class="d-grid gap-2">
             {% for assignment in overdue_assignments %}
               <div class="dst-assignment overdue p-2">
-                <div>{{ assignment.application.trademark_no|default:assignment.application.folder_number }} - {{ assignment.application.application_name }}</div>
+                <div>{{ assignment.application.trademark_no|default:assignment.application.case_number }} - {{ assignment.application.application_name }}</div>
                 <div class="small">Assigned to: {% if assignment.assigned_to %}{{ assignment.assigned_to.username }}{% else %}(unassigned){% endif %}</div>
                 <div class="small">Due: {{ assignment.due_date|date:"Y-m-d" }} ({{ assignment.due_date|timesince:today }} ago)</div>
               </div>
@@ -74,7 +74,7 @@
           <div class="d-grid gap-2">
             {% for assignment in soon_assignments %}
               <div class="dst-assignment soon p-2">
-                <div>{{ assignment.application.trademark_no|default:assignment.application.folder_number }} - {{ assignment.application.application_name }}</div>
+                <div>{{ assignment.application.trademark_no|default:assignment.application.case_number }} - {{ assignment.application.application_name }}</div>
                 <div class="small">Assigned to: {% if assignment.assigned_to %}{{ assignment.assigned_to.username }}{% else %}(unassigned){% endif %}</div>
                 <div class="small">Due: {{ assignment.due_date|date:"Y-m-d" }}</div>
               </div>
@@ -95,7 +95,7 @@
           <div class="d-grid gap-2">
             {% for event in overdue_events %}
               <div class="p-2" style="border-left: 3px solid red;">
-                <div>{{ event.application.trademark_no|default:event.application.folder_number }} - {{ event.get_event_type_display }}</div>
+                <div>{{ event.application.trademark_no|default:event.application.case_number }} - {{ event.get_event_type_display }}</div>
                 <div class="small">Deadline: {{ event.deadline_date|date:"Y-m-d" }} ({{ event.deadline_date|timesince:today }} ago)</div>
                 {% if event.notes %}<div class="small">{{ event.notes }}</div>{% endif %}
               </div>
@@ -114,7 +114,7 @@
           <div class="d-grid gap-2">
             {% for event in soon_events %}
               <div class="p-2" style="border-left: 3px solid yellow;">
-                <div>{{ event.application.trademark_no|default:event.application.folder_number }} - {{ event.get_event_type_display }}</div>
+                <div>{{ event.application.trademark_no|default:event.application.case_number }} - {{ event.get_event_type_display }}</div>
                 <div class="small">Deadline: {{ event.deadline_date|date:"Y-m-d" }}</div>
                 {% if event.notes %}<div class="small">{{ event.notes }}</div>{% endif %}
               </div>
@@ -163,7 +163,7 @@
             {% for app in recent_applications %}
               <a class="victorian-link" href="{% url 'cases:application_detail' app.pk %}">
                 <div class="p-2" style="border: 1px solid black;">
-                  <div>{{ app.trademark_no|default:app.folder_number }} - {{ app.application_name }}</div>
+                  <div>{{ app.trademark_no|default:app.case_number }} - {{ app.application_name }}</div>
                   <div class="small text-muted">Created: {{ app.created_at|date:"Y-m-d H:i" }}</div>
                 </div>
               </a>
