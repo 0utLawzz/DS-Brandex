@@ -1,5 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
 
+@font-face {
+  font-family: 'Syndra';
+  src: url('./fonts/Syndra-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mision';
+  src: url('./fonts/Mision.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --primary: #722F37;
   --secondary: #2E5339;
@@ -8,6 +24,9 @@
   --surface: #FDF5E6;
   --text: #4A2932;
   --text-muted: #7A5C5C;
+
+  --font-heading: 'Syndra', 'Playfair Display', serif;
+  --font-body: 'Mision', 'Inter', sans-serif;
 
   --radius: 4px;
   --border-width: 3px;
@@ -18,9 +37,8 @@
 .victorian-bg {
   background: var(--background);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
-  font-variant: small-caps;
-  letter-spacing: 0.5px;
+  font-family: var(--font-body);
+  letter-spacing: normal;
 }
 
 .victorian-header {
@@ -33,15 +51,13 @@
   font-size: 1.35rem;
   letter-spacing: 0.5px;
   color: var(--text);
-  font-family: 'Playfair Display', serif;
-  font-variant: small-caps;
+  font-family: var(--font-heading);
   text-transform: uppercase;
 }
 
 .victorian-subtitle {
   font-size: 0.9rem;
   color: var(--text-muted);
-  font-variant: small-caps;
 }
 
 .victorian-card {
@@ -49,6 +65,30 @@
   border-radius: var(--radius);
   border: 2px solid var(--line);
   box-shadow: var(--shadow);
+  position: relative;
+}
+
+.victorian-card::before,
+.victorian-card::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.victorian-card::before {
+  top: 8px;
+  left: 8px;
+  border-top: 2px solid var(--line);
+  border-left: 2px solid var(--line);
+}
+
+.victorian-card::after {
+  bottom: 8px;
+  right: 8px;
+  border-bottom: 2px solid var(--line);
+  border-right: 2px solid var(--line);
 }
 
 .victorian-card .card-header {
@@ -56,8 +96,7 @@
   border-bottom: 2px solid var(--line);
   font-weight: 700;
   color: var(--text);
-  font-variant: small-caps;
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -68,9 +107,9 @@
   color: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  font-variant: small-caps;
   font-weight: 600;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body);
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
 
 .victorian-btn:hover {
@@ -78,10 +117,44 @@
   color: #fff;
 }
 
+.victorian-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0px 3px 0px rgba(0,0,0,0.15);
+}
+
+.victorian-btn.btn-secondary,
+.victorian-btn.victorian-btn-secondary {
+  background: var(--secondary);
+  border-color: var(--line);
+}
+
+.victorian-btn.btn-secondary:hover,
+.victorian-btn.victorian-btn-secondary:hover {
+  background: #24422e;
+}
+
+.victorian-btn.victorian-btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--line);
+}
+
+.victorian-btn.victorian-btn-outline:hover {
+  background: rgba(184, 134, 11, 0.12);
+  color: var(--primary);
+}
+
+.victorian-btn:disabled,
+.victorian-btn.disabled {
+  background: rgba(245, 230, 211, 0.9);
+  color: rgba(74, 41, 50, 0.55);
+  border-color: rgba(184, 134, 11, 0.5);
+  box-shadow: none;
+}
+
 .victorian-link {
   color: var(--secondary);
   text-decoration: none;
-  font-variant: small-caps;
   border-bottom: 1px solid transparent;
   transition: all 0.2s ease;
 }
@@ -97,20 +170,38 @@
   background: var(--surface);
   color: var(--text);
   border-radius: 0;
-  font-variant: small-caps;
+}
+
+.victorian-table {
+  border: 2px solid var(--line);
+  font-size: 0.82rem;
+}
+
+.victorian-table th,
+.victorian-table td {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
 }
 
 .victorian-table thead th {
-  font-weight: 700;
+  font-weight: 600;
   color: #fff;
   background: var(--primary);
   border-bottom: 2px solid var(--line);
-  font-variant: small-caps;
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
 }
 
 .victorian-table > :not(caption) > * > * {
   border-bottom: 2px solid var(--line);
+}
+
+.victorian-table > :not(caption) > * > * {
+  border-right: 1px solid rgba(184, 134, 11, 0.5);
+}
+
+.victorian-table > :not(caption) > * > :last-child {
+  border-right: none;
 }
 
 .victorian-table tbody tr:nth-child(even) {
@@ -124,14 +215,20 @@
 .victorian-input {
   border-radius: var(--radius);
   border: 2px solid var(--line);
-  font-variant: small-caps;
   background: var(--surface);
+  color: var(--text);
 }
 
 .victorian-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(114, 47, 55, 0.2);
+  box-shadow: 0 0 0 2px rgba(114, 47, 55, 0.22);
   outline: none;
+}
+
+.form-label.small-cap,
+.form-check-label.small-cap {
+  font-family: var(--font-heading);
+  letter-spacing: 0.5px;
 }
 
 .dst-grid {
@@ -170,7 +267,6 @@
 
 .dst-kv .k {
   font-weight: 700;
-  font-variant: small-caps;
 }
 
 .dst-timeline {
@@ -220,13 +316,11 @@
 
 .dst-event-title {
   font-weight: 700;
-  font-variant: small-caps;
 }
 
 .dst-event-meta {
   font-size: 0.85rem;
   color: rgba(0, 0, 0, 0.7);
-  font-variant: small-caps;
 }
 
 .dst-assignment {
@@ -273,6 +367,10 @@
   margin: 5vh auto 0;
   border: 2px solid var(--line);
   background: var(--surface);
+}
+
+.modal-content.victorian-card {
+  border-width: var(--border-width);
 }
 
 .small-cap {
