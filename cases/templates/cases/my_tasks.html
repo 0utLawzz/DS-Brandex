@@ -42,7 +42,7 @@
   <div class="row g-3 mb-4">
     <div class="col-md-6">
       <div class="victorian-card card dst-accent-red">
-        <div class="card-header py-3">Overdue Assignments</div>
+        <div class="card-header py-3">Overdue CASES</div>
         <div class="card-body">
           <div class="d-grid gap-2">
             {% for assignment in overdue_assignments %}
@@ -54,7 +54,7 @@
                 {% if assignment.notes %}<div class="small">{{ assignment.notes }}</div>{% endif %}
               </div>
             {% empty %}
-              <div class="text-muted">No overdue assignments.</div>
+              <div class="text-muted">No overdue CASES.</div>
             {% endfor %}
           </div>
         </div>
@@ -63,7 +63,7 @@
 
     <div class="col-md-6">
       <div class="victorian-card card dst-accent-yellow">
-        <div class="card-header py-3">Pending Assignments</div>
+        <div class="card-header py-3">Pending CASES</div>
         <div class="card-body">
           <div class="d-grid gap-2">
             {% for assignment in pending_assignments %}
@@ -75,7 +75,7 @@
                 {% if assignment.notes %}<div class="small">{{ assignment.notes }}</div>{% endif %}
               </div>
             {% empty %}
-              <div class="text-muted">No pending assignments.</div>
+              <div class="text-muted">No pending CASES.</div>
             {% endfor %}
           </div>
         </div>
@@ -84,7 +84,7 @@
   </div>
 
   <div class="victorian-card card mb-4">
-    <div class="card-header py-3">Completed Assignments</div>
+    <div class="card-header py-3">Completed CASES</div>
     <div class="card-body">
       <div class="d-grid gap-2">
         {% for assignment in completed_assignments %}
@@ -95,7 +95,7 @@
             <div class="small">Completed: {{ assignment.assigned_date|date:"Y-m-d" }}</div>
           </div>
         {% empty %}
-          <div class="text-muted">No completed assignments.</div>
+          <div class="text-muted">No completed CASES.</div>
         {% endfor %}
       </div>
     </div>

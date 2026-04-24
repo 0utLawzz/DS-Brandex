@@ -15,7 +15,7 @@
           <div class="victorian-card card dst-accent-red">
             <div class="card-body text-center">
               <div class="h2 mb-0">{{ overdue_assignments|length }}</div>
-              <div class="small text-muted">Overdue Assignments</div>
+              <div class="small text-muted">Overdue CASES</div>
             </div>
           </div>
         </div>
@@ -50,7 +50,7 @@
   <div class="row g-3 mb-4">
     <div class="col-md-6">
       <div class="victorian-card card dst-accent-red">
-        <div class="card-header py-3">Overdue Assignments</div>
+        <div class="card-header py-3">Overdue CASES</div>
         <div class="card-body">
           <div class="d-grid gap-2">
             {% for assignment in overdue_assignments %}
@@ -60,7 +60,7 @@
                 <div class="small">Due: {{ assignment.due_date|date:"Y-m-d" }} ({{ assignment.due_date|timesince:today }} ago)</div>
               </div>
             {% empty %}
-              <div class="text-muted">No overdue assignments.</div>
+              <div class="text-muted">No overdue CASES.</div>
             {% endfor %}
           </div>
         </div>
@@ -69,7 +69,7 @@
 
     <div class="col-md-6">
       <div class="victorian-card card dst-accent-yellow">
-        <div class="card-header py-3">Assignments Due Soon</div>
+        <div class="card-header py-3">CASES Due Soon</div>
         <div class="card-body">
           <div class="d-grid gap-2">
             {% for assignment in soon_assignments %}
@@ -79,7 +79,7 @@
                 <div class="small">Due: {{ assignment.due_date|date:"Y-m-d" }}</div>
               </div>
             {% empty %}
-              <div class="text-muted">No assignments due soon.</div>
+              <div class="text-muted">No CASES due soon.</div>
             {% endfor %}
           </div>
         </div>
@@ -200,22 +200,15 @@
 
     const ctx = document.getElementById('stageChart').getContext('2d');
     new Chart(ctx, {
-      type: 'bar',
+      type: 'doughnut',
       data: stageData,
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: false
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1
-            }
+            display: true,
+            position: 'bottom'
           }
         }
       }

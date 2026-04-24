@@ -96,7 +96,7 @@
     </div>
 
     <div class="victorian-card card dst-accent-red">
-      <div class="card-header py-3 small-cap">Assignments</div>
+      <div class="card-header py-3 small-cap">CASES</div>
       <div class="card-body">
         <form class="row g-2 mb-3" method="post" action="{% url 'cases:add_assignment' application.pk %}">
           {% csrf_token %}
@@ -135,7 +135,7 @@
               {% if a.notes %}<div class="small mt-1">{{ a.notes }}</div>{% endif %}
             </div>
           {% empty %}
-            <div class="text-muted small-cap">No Assignments.</div>
+            <div class="text-muted small-cap">No CASES.</div>
           {% endfor %}
         </div>
       </div>
@@ -301,7 +301,7 @@
       data: {
         labels: Object.keys(assignmentStatusCounts),
         datasets: [{
-          label: 'Assignments',
+          label: 'CASES',
           data: Object.values(assignmentStatusCounts),
           backgroundColor: ['#B8860B', '#2E5339', '#722F37'],
           borderColor: '#000000',
