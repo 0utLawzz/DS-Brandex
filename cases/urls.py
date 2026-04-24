@@ -15,4 +15,7 @@ urlpatterns = [
     path("applications/<int:pk>/add-event/", views.add_event, name="add_event"),
     path("applications/<int:pk>/add-assignment/", views.add_assignment, name="add_assignment"),
     path("applications/<int:pk>/add-document/", views.add_document, name="add_document"),
+    path("applications/<int:pk>/dispatch/received/", views.dispatch_certificate_received, name="dispatch_received"),
+    path("applications/<int:pk>/dispatch/print/", views.dispatch_certificate_print, name="dispatch_print"),
+    path("applications/<int:pk>/dispatch/dispatch/", views.dispatch_certificate_dispatch, name="dispatch_dispatch"),
 ]

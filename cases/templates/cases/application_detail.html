@@ -59,6 +59,15 @@
             <button class="btn victorian-btn small-cap" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="certificate">🏆 Certificate</button>
           </div>
         </div>
+
+        <div class="mt-3">
+          <div class="fw-bold mb-2 small-cap">Dispatch Workflow</div>
+          <div class="d-flex flex-wrap gap-2">
+            <a class="btn victorian-btn small-cap" href="{% url 'cases:dispatch_received' application.pk %}">📥 Certificate Received</a>
+            <a class="btn victorian-btn small-cap" href="{% url 'cases:dispatch_print' application.pk %}">🖨️ Certificate Print</a>
+            <a class="btn victorian-btn small-cap" href="{% url 'cases:dispatch_dispatch' application.pk %}">📤 Certificate Dispatch</a>
+          </div>
+        </div>
       </div>
     </div>
 

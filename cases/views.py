@@ -433,3 +433,60 @@ def my_tasks(request: HttpRequest):
         "site_settings": site_settings,
     }
     return render(request, "cases/my_tasks.html", context)
+
+
+@login_required
+def dispatch_certificate_received(request: HttpRequest, pk: int):
+    """Mark certificate as received in dispatch workflow"""
+    application = get_object_or_404(Application, pk=pk)
+    application.current_sub_stage = SubStage.CERTIFICATE_RECEIVED
+    application.dispatch_status = "Certificate Received"
+    application.save()
+
+    Event.objects.create(
+        application=application,
+        event_type=EventType.CERTIFICATE,
+        notes="Certificate marked as received (dispatch workflow)",
+        sub_stage=SubStage.CERTIFICATE_RECEIVED,
+        stage=Stage.STAGE_4,
+    )
+
+    return redirect("cases:application_detail", pk=pk)
+
+
+@login_required
+def dispatch_certificate_print(request: HttpRequest, pk: int):
+    """Mark certificate as printed in dispatch workflow"""
+    application = get_object_or_404(Application, pk=pk)
+    application.current_sub_stage = SubStage.CERTIFICATE_PRINT
+    application.dispatch_status = "Certificate Printed"
+    application.save()
+
+    Event.objects.create(
+        application=application,
+        event_type=EventType.CERTIFICATE,
+        notes="Certificate marked as printed (dispatch workflow)",
+        sub_stage=SubStage.CERTIFICATE_PRINT,
+        stage=Stage.STAGE_4,
+    )
+
+    return redirect("cases:application_detail", pk=pk)
+
+
+@login_required
+def dispatch_certificate_dispatch(request: HttpRequest, pk: int):
+    """Mark certificate as dispatched in dispatch workflow"""
+    application = get_object_or_404(Application, pk=pk)
+    application.current_sub_stage = SubStage.CERTIFICATE_DISPATCH
+    application.dispatch_status = "Certificate Dispatched"
+    application.save()
+
+    Event.objects.create(
+        application=application,
+        event_type=EventType.CERTIFICATE,
+        notes="Certificate marked as dispatched (dispatch workflow)",
+        sub_stage=SubStage.CERTIFICATE_DISPATCH,
+        stage=Stage.STAGE_4,
+    )
+
+    return redirect("cases:application_detail", pk=pk)
