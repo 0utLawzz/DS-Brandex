@@ -154,12 +154,7 @@
             <label class="form-label small-cap">Jurisdiction</label>
             <input class="form-control victorian-input" name="jurisdiction" value="{{ application.jurisdiction|default:'' }}" />
           </div>
-selecsele>
-             <option ">Select Agent</option>
-              % for value,label in agent_choices %}
-                <option value="{vlue }}" {% if a == value %}selecte{% ndi %}>{{ lbe }}</opion>
-              {% endfor%
-           <select
+
           <div class="col-12">
             <label class="form-label small-cap">Address</label>
             <textarea class="form-control victorian-input" name="address" rows="3">{{ application.address|default:'' }}</textarea>

@@ -139,13 +139,8 @@
           </div>
 
           <div class="col-md-4">
-            <label class="form-label small-cap">Agentel>
-            <selecct class="formsele-l victorian-input" name="agent_name">
-              <option value="">Select Agent</option>
-              {% for value,label in agent_choices %}
-  >             <option  }}" {% if value == value %}selecte{% ndi %}>{{ lbe }}</opion>
-              {% endfor%
-           <select
+            <label class="form-label small-cap">Agent</label>
+            <select class="form-select victorian-input" name="agent_name">
               <option value="">Select Agent</option>
               {% for value,label in agent_choices %}
                 <option value="{{ value }}" {% if values.agent_name == value %}selected{% endif %}>{{ label }}</option>
