@@ -126,7 +126,7 @@ class Application(models.Model):
     trading_as = models.CharField(max_length=255, blank=True)
     applicant_type = models.CharField(max_length=20, choices=ApplicantType.choices, default=ApplicantType.COMPANY)
     address = models.TextField(blank=True)
-    city = models.CharField(max_length=50, blank=True, choices=[("Lahore", "Lahore"), ("Karachi", "Karachi"), ("Islamabad", "Islamabad"), ("Peshawar", "Peshawar")])
+    city = models.CharField(max_length=50, blank=True, choices=[("ISB", "Islamabad"), ("LHR", "Lahore"), ("KHI", "Karachi")])
 
     agent_name = models.CharField(max_length=50, blank=True, choices=AgentChoice.choices)
     agent_address = models.TextField(blank=True)
