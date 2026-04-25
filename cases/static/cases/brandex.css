@@ -21,7 +21,7 @@
 
 @font-face {
   font-family: 'FakeHope';
-  src: url('{% static "cases/fonts/FakeHope.ttf" %}') format('truetype');
+  src: url('fonts/FakeHope.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
