@@ -91,7 +91,7 @@ class AssignmentStatus(models.TextChoices):
     OVERDUE = "overdue", "Overdue"
 
 
-class Agent(models.TextChoices):
+class AgentChoice(models.TextChoices):
     FASIAL = "Fasial", "Fasial"
     RASHID = "Rashid", "Rashid"
     UZMA = "Uzma", "Uzma"
@@ -128,7 +128,7 @@ class Application(models.Model):
     address = models.TextField(blank=True)
     city = models.CharField(max_length=50, blank=True, choices=[("Lahore", "Lahore"), ("Karachi", "Karachi"), ("Islamabad", "Islamabad"), ("Peshawar", "Peshawar")])
 
-    agent_name = models.CharField(max_length=255, blank=True)
+    agent_name = models.CharField(max_length=50, blank=True, choices=AgentChoice.choices)
     agent_address = models.TextField(blank=True)
 
     jurisdiction = models.CharField(max_length=100, blank=True)

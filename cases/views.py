@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from django.contrib.auth import get_user_model
 
-from .models import Application, Assignment, DocumentLink, Event, EventType, Stage, SubStage, FileUpload, SiteSettings, Agent
+from .models import Application, Assignment, DocumentLink, Event, EventType, Stage, SubStage, FileUpload, SiteSettings, AgentChoice
 
 
 @login_required
@@ -95,7 +95,7 @@ def application_create(request: HttpRequest):
                 "application_type_choices": Application._meta.get_field("application_type").choices,
                 "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
                 "city_choices": Application._meta.get_field("city").choices,
-                "agent_choices": Agent.choices,
+                "agent_choices": AgentChoice.choices,
                 "values": request.POST,
                 "site_settings": site_settings,
             }
@@ -140,7 +140,7 @@ def application_create(request: HttpRequest):
         "client_type_choices": Application._meta.get_field("client_type").choices,
         "application_type_choices": Application._meta.get_field("application_type").choices,
         "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
-        "agent_choices": Agent.choices,
+        "agent_choices": AgentChoice.choices,
         "city_choices": Application._meta.get_field("city").choices,
         "values": {},
         "site_settings": site_settings,
@@ -202,7 +202,7 @@ def application_edit(request: HttpRequest, pk: int):
                 "application_type_choices": Application._meta.get_field("application_type").choices,
                 "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
                 "city_choices": Application._meta.get_field("city").choices,
-                "agent_choices": Agent.choices,
+                "agent_choices": AgentChoice.choices,
                 "application": application,
                 "site_settings": site_settings,
             }
@@ -243,7 +243,7 @@ def application_edit(request: HttpRequest, pk: int):
         "application_type_choices": Application._meta.get_field("application_type").choices,
         "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
         "city_choices": Application._meta.get_field("city").choices,
-        "agent_choices": Agent.choices,
+        "agent_choices": AgentChoice.choices,
         "application": application,
         "site_settings": site_settings,
     }
