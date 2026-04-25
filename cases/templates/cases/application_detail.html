@@ -155,11 +155,9 @@
           </div>
           {% with deadline=application.get_stage3_deadline %}
             {% if deadline %}
-              {% with days_remaining=(deadline|date:"Y-m-d") %}
                 <div class="stage3-timer-display small" style="padding:8px;background:var(--yellow);border:2px solid var(--border);">
                   Deadline: {{ deadline|date:"d-M-Y" }}
                 </div>
-              {% endwith %}
             {% else %}
               <div class="small text-muted">Set filing date to calculate deadline</div>
             {% endif %}
