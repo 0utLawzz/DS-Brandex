@@ -46,6 +46,11 @@
           </div>
 
           <div class="col-md-4">
+            <label class="form-label small-cap">Folder No</label>
+            <input class="form-control victorian-input" name="folder_number" value="{{ application.folder_number|default:'' }}" placeholder="e.g. F-2024-001" />
+          </div>
+
+          <div class="col-md-4">
             <label class="form-label small-cap">Case # (optional)</label>
             <input class="form-control victorian-input" name="case_number" value="{{ application.case_number|default:'' }}" placeholder="Auto-generated if empty: X-352-001" />
             <div class="small text-muted">Leave empty for auto-generation (format: ClientType-ClientID-Sequence)</div>
@@ -135,8 +140,26 @@
             </select>
           </div>
 
-          <div class="col-md-4"></div>
+          <div class="col-md-4">
+            <label class="form-label small-cap">Agent</label>
+            <select class="form-select victorian-input" name="agent_name">
+              <option value="">Select Agent</option>
+              {% for value,label in agent_choices %}
+                <option value="{{ value }}" {% if application.agent_name == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
+          <div class="col-md-4">
+            <label class="form-label small-cap">Jurisdiction</label>
+            <input class="form-control victorian-input" name="jurisdiction" value="{{ application.jurisdiction|default:'' }}" />
+          </div>
+selecsele>
+             <option ">Select Agent</option>
+              % for value,label in agent_choices %}
+                <option value="{vlue }}" {% if a == value %}selecte{% ndi %}>{{ lbe }}</opion>
+              {% endfor%
+           <select
           <div class="col-12">
             <label class="form-label small-cap">Address</label>
             <textarea class="form-control victorian-input" name="address" rows="3">{{ application.address|default:'' }}</textarea>

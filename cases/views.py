@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from django.contrib.auth import get_user_model
 
-from .models import Application, Assignment, DocumentLink, Event, EventType, Stage, SubStage, FileUpload, SiteSettings
+from .models import Application, Assignment, DocumentLink, Event, EventType, Stage, SubStage, FileUpload, SiteSettings, Agent
 
 
 @login_required
@@ -46,6 +46,7 @@ def application_create(request: HttpRequest):
         site_settings = SiteSettings.objects.create()
 
     if request.method == "POST":
+        folder_number = (request.POST.get("folder_number") or "").strip()
         case_number = (request.POST.get("case_number") or "").strip()
         client_type = (request.POST.get("client_type") or "").strip()
         client_id = request.POST.get("client_id") or None
@@ -94,6 +95,7 @@ def application_create(request: HttpRequest):
                 "application_type_choices": Application._meta.get_field("application_type").choices,
                 "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
                 "city_choices": Application._meta.get_field("city").choices,
+                "agent_choices": Agent.choices,
                 "values": request.POST,
                 "site_settings": site_settings,
             }
@@ -103,6 +105,7 @@ def application_create(request: HttpRequest):
             case_number=case_number,
             client_type=client_type,
             client_id=client_id,
+            folder_number=folder_number,
             application_type=application_type,
             application_name=application_name,
             trademark_no=trademark_no,
@@ -137,6 +140,7 @@ def application_create(request: HttpRequest):
         "client_type_choices": Application._meta.get_field("client_type").choices,
         "application_type_choices": Application._meta.get_field("application_type").choices,
         "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
+        "agent_choices": Agent.choices,
         "city_choices": Application._meta.get_field("city").choices,
         "values": {},
         "site_settings": site_settings,
@@ -152,6 +156,7 @@ def application_edit(request: HttpRequest, pk: int):
         site_settings = SiteSettings.objects.create()
 
     if request.method == "POST":
+        folder_number = (request.POST.get("folder_number") or "").strip()
         case_number = (request.POST.get("case_number") or "").strip()
         client_type = (request.POST.get("client_type") or "").strip()
         client_id = request.POST.get("client_id") or None
@@ -197,6 +202,7 @@ def application_edit(request: HttpRequest, pk: int):
                 "application_type_choices": Application._meta.get_field("application_type").choices,
                 "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
                 "city_choices": Application._meta.get_field("city").choices,
+                "agent_choices": Agent.choices,
                 "application": application,
                 "site_settings": site_settings,
             }
@@ -205,6 +211,7 @@ def application_edit(request: HttpRequest, pk: int):
         application.case_number = case_number
         application.client_type = client_type
         application.client_id = client_id
+        application.folder_number = folder_number
         application.application_type = application_type
         application.application_name = application_name
         application.trademark_no = trademark_no
@@ -236,6 +243,7 @@ def application_edit(request: HttpRequest, pk: int):
         "application_type_choices": Application._meta.get_field("application_type").choices,
         "applicant_type_choices": Application._meta.get_field("applicant_type").choices,
         "city_choices": Application._meta.get_field("city").choices,
+        "agent_choices": Agent.choices,
         "application": application,
         "site_settings": site_settings,
     }
@@ -708,4 +716,6 @@ def search_by_tm(request: HttpRequest):
         "q": q,
         "site_settings": site_settings,
     }
+    return render(request, "cases/search_tm.html", context)
+    return render(request, "cases/search_tm.html", context)
     return render(request, "cases/search_tm.html", context)

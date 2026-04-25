@@ -91,6 +91,13 @@ class AssignmentStatus(models.TextChoices):
     OVERDUE = "overdue", "Overdue"
 
 
+class Agent(models.TextChoices):
+    FASIAL = "Fasial", "Fasial"
+    RASHID = "Rashid", "Rashid"
+    UZMA = "Uzma", "Uzma"
+    SULMAN = "Sulman", "Sulman"
+
+
 class AuditActionType(models.TextChoices):
     CREATED = "created", "Created"
     UPDATED = "updated", "Updated"
@@ -105,6 +112,7 @@ class Application(models.Model):
     client_id = models.PositiveIntegerField(null=True, blank=True)
     sequence = models.PositiveIntegerField(null=True, blank=True)
 
+    folder_number = models.CharField(max_length=100, blank=True, verbose_name="Folder No")
     application_name = models.CharField(max_length=255)
     application_type = models.CharField(max_length=30, choices=ApplicationType.choices, default=ApplicationType.TRADEMARK)
     trademark_no = models.CharField(max_length=100, blank=True)
@@ -155,6 +163,13 @@ class Application(models.Model):
         self.sequence = next_sequence
 
         return f"{self.client_type}-{self.client_id}-{next_sequence:03d}"
+
+    def get_stage3_deadline(self):
+        """Calculate Stage 3 deadline (4 months 15 days = 135 days) from filing date"""
+        from datetime import timedelta
+        if self.filing_date:
+            return self.filing_date + timedelta(days=135)
+        return None
 
     def save(self, *args, **kwargs):
         is_create = self.pk is None

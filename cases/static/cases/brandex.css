@@ -130,12 +130,14 @@ body {
   text-transform: uppercase;
   font-size: 11px;
   letter-spacing: 0.6px;
+  background: var(--white);
+  color: var(--text-main);
   cursor: pointer;
-  transition: all 0.1s;
+  transition: all 0.15s ease;
+  box-shadow: 3px 3px 0 var(--black);
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--white);
   color: var(--black);
   box-shadow: var(--shadow);
 }
@@ -356,5 +358,62 @@ body {
 .dv {
   font-size: 11px;
   font-family: var(--font-mono);
+}
+
+/* Timeline styles */
+.timeline {
+  position: relative;
+  padding-left: 20px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 20px;
+  padding-left: 30px;
+  border-left: 3px solid var(--line);
+}
+
+.timeline-item:before {
+  content: '';
+  position: absolute;
+  left: -9px;
+  top: 0;
+  width: 15px;
+  height: 15px;
+  background: var(--yellow);
+  border: 3px solid var(--border);
+  border-radius: 50%;
+}
+
+.timeline-item:last-child {
+  border-left: 3px solid transparent;
+  padding-bottom: 0;
+}
+
+.timeline-time {
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.timeline-action {
+  font-size: 12px;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.timeline-field {
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+
+.timeline-change {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.timeline-user {
+  font-size: 10px;
+  margin-bottom: 8px;
 }
 
