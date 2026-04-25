@@ -1,402 +1,687 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+/* ═══════════════════════════════════════════════════════════
+   DS-BRANDEX  —  Victorian IP Case Platform
+   Custom Theme CSS  |  Bootstrap 5.3 override layer
+   ═══════════════════════════════════════════════════════════ */
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap');
+
+/* ── Custom fonts (loaded from /static/cases/fonts/) ── */
 @font-face {
   font-family: 'Syndra';
-  src: url('./fonts/Syndra.otf') format('opentype');
-  font-weight: 400;
+  src: url('./fonts/Syndra-SemiBold.otf') format('opentype');
+  font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Belriner';
-  src: url('./fonts/Belriner.ttf') format('truetype');
+  font-family: 'Driftune';
+  src: url('./fonts/Driftune.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   CSS VARIABLES — change colors here to retheme the entire app
+   ═══════════════════════════════════════════════════════════ */
 :root {
-  --primary: #722F37;
-  --secondary: #2E5339;
-  --accent: #B8860B;
-  --background: #F5E6D3;
-  --surface: #FDF5E6;
-  --text: #4A2932;
-  --text-muted: #7A5C5C;
+  /* Core palette */
+  --primary:      #722F37;   /* deep crimson — buttons, accents */
+  --primary-dark: #5a252c;   /* hover state for primary */
+  --secondary:    #2E5339;   /* forest green — secondary actions */
+  --secondary-dark:#24422e;  /* hover state for secondary */
+  --accent:       #B8860B;   /* antique gold — borders, lines, highlights */
+  --accent-light: rgba(184,134,11,0.12); /* pale gold tint for hovers */
 
+  /* Backgrounds */
+  --background:   #F5E6D3;   /* warm parchment — page bg */
+  --surface:      #FDF5E6;   /* lighter parchment — card/panel bg */
+  --surface-alt:  #FAF0DC;   /* slightly deeper surface for alternating rows */
+
+  /* Text */
+  --text:         #4A2932;   /* dark burgundy — main text */
+  --text-muted:   #7A5C5C;   /* muted rose-brown — secondary text */
+  --text-light:   #a07070;   /* very light — placeholder / disabled */
+
+  /* Structural */
+  --line:         #B8860B;   /* gold — all decorative borders */
+  --radius:       4px;
+  --border-width: 2px;
+  --shadow:       0 3px 0 rgba(0,0,0,0.13), 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-lg:    0 6px 0 rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.10);
+
+  /* Typography */
   --font-heading: 'Syndra', 'Playfair Display', serif;
-  --font-body: 'Belriner', 'Inter', sans-serif;
-
-  --radius: 4px;
-  --border-width: 3px;
-  --shadow: 0px 4px 0px rgba(0,0,0,0.15);
-  --line: #B8860B;
+  --font-body:    'Driftune', 'Inter', sans-serif;
 }
 
-.victorian-bg {
-  background: var(--background);
+/* ═══════════════════════════════════════════════════════════
+   BASE / RESET
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body.victorian-bg {
+  background-color: var(--background);
+  /* Subtle parchment texture using a CSS repeating pattern */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 39px,
+      rgba(184,134,11,0.04) 39px,
+      rgba(184,134,11,0.04) 40px
+    );
   color: var(--text);
   font-family: var(--font-body);
-  letter-spacing: normal;
-  font-size: 0.917rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  min-height: 100vh;
 }
 
-/* Override Bootstrap fw-bold to use normal weight */
-.fw-bold {
-  font-weight: 400 !important;
-}
+/* Bootstrap fw-bold stays readable with our serif fonts */
+.fw-bold { font-weight: 600 !important; }
 
-/* Override Bootstrap heading classes for stat boxes */
-.victorian-card .h1,
-.victorian-card .h2,
-.victorian-card .h3,
-.victorian-card .h4,
-.victorian-card .h5,
-.victorian-card .h6 {
-  font-weight: 400 !important;
-  font-size: 1rem !important;
-}
-
-/* Ensure stat card numbers match normal text */
-.victorian-card .card-body .h2 {
-  font-size: 1rem !important;
-  font-weight: 400 !important;
-}
-
+/* ═══════════════════════════════════════════════════════════
+   HEADER / NAVIGATION
+   ═══════════════════════════════════════════════════════════ */
 .victorian-header {
   background: var(--surface);
-  border-bottom: var(--border-width) solid var(--line) !important;
+  border-bottom: 3px solid var(--line);
+  /* Top accent stripe */
+  border-top: 4px solid var(--primary);
+  position: sticky;
+  top: 0;
+  z-index: 1030;  /* stay above Bootstrap modals backdrop */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
 }
 
+.vhdr-inner {
+  /* Full-width inner wrapper inside header */
+  width: 100%;
+}
+
+.vhdr-logo {
+  height: 44px;
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  padding: 2px;
+}
+
+/* Fallback scale-of-justice icon when no logo uploaded */
+.vhdr-icon {
+  font-size: 2rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+/* Company name in header */
 .victorian-title {
-  font-weight: 400;
-  font-size: 1rem;
-  letter-spacing: 0.5px;
-  color: var(--text);
   font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* "IP Case Management Platform" subtitle */
+.victorian-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.4px;
   text-transform: uppercase;
 }
 
-.victorian-subtitle {
-  font-size: 0.9rem;
-  color: var(--text-muted);
+/* Each nav link pill in the header */
+.nav-pill {
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  letter-spacing: 0.6px;
+  border-left: 1px solid rgba(184,134,11,0.25);
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
 }
 
-.victorian-card {
-  background: var(--surface);
-  border-radius: var(--radius);
-  border: 2px solid var(--line);
-  box-shadow: var(--shadow);
-  position: relative;
+.nav-pill:hover {
+  background: var(--accent-light);
+  color: var(--primary);
 }
 
-.victorian-card::before,
-.victorian-card::after {
-  content: "";
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  pointer-events: none;
+/* Active page highlight — add class "active" in template if needed */
+.nav-pill.active {
+  background: var(--primary);
+  color: #fff;
 }
 
-.victorian-card::before {
-  top: 8px;
-  left: 8px;
-  border-top: 2px solid var(--line);
+/* Logged-in user section (right side of header) */
+.vhdr-user {
   border-left: 2px solid var(--line);
 }
 
-.victorian-card::after {
-  bottom: 8px;
-  right: 8px;
-  border-bottom: 2px solid var(--line);
-  border-right: 2px solid var(--line);
+.user-badge {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.4px;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════ */
+.footer-bar {
+  border-top: 2px solid rgba(184,134,11,0.35);
+  padding-top: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FLASH MESSAGE ALERTS  (success / error / info)
+   ═══════════════════════════════════════════════════════════ */
+.victorian-alert-success {
+  background: #edf7ef;
+  border: 2px solid var(--secondary);
+  color: var(--secondary-dark);
+  border-radius: var(--radius);
+}
+
+.victorian-alert-error {
+  background: #fdf0f0;
+  border: 2px solid var(--primary);
+  color: var(--primary-dark);
+  border-radius: var(--radius);
+}
+
+.victorian-alert-info {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  color: var(--text);
+  border-radius: var(--radius);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CARDS  — victorian-card
+   Used for every panel/section on all pages
+   Corner ornament trick: ::before = top-left, ::after = bottom-right
+   ═══════════════════════════════════════════════════════════ */
+.victorian-card {
+  background: var(--surface);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: visible; /* allow corner ornaments to show */
+}
+
+/* Top-left corner bracket ornament */
+.victorian-card::before {
+  content: "";
+  position: absolute;
+  top:  7px;
+  left: 7px;
+  width:  16px;
+  height: 16px;
+  border-top:  2px solid var(--line);
+  border-left: 2px solid var(--line);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Bottom-right corner bracket ornament */
+.victorian-card::after {
+  content: "";
+  position: absolute;
+  bottom: 7px;
+  right:  7px;
+  width:  16px;
+  height: 16px;
+  border-bottom: 2px solid var(--line);
+  border-right:  2px solid var(--line);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Card header bar (e.g. "Dashboard", "Case Info") */
 .victorian-card .card-header {
   background: var(--surface);
   border-bottom: 2px solid var(--line);
-  font-weight: 400;
-  color: var(--text);
   font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
+  padding: 10px 16px;
 }
 
+/* Stat boxes on dashboard — keep numbers from being huge Bootstrap defaults */
+.victorian-card .h1,
+.victorian-card .h2,
+.victorian-card .h3 {
+  font-family: var(--font-heading);
+  font-size: 2rem !important;
+  font-weight: 600 !important;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STAT CARDS — the 4 number boxes on dashboard
+   ═══════════════════════════════════════════════════════════ */
+.stat-number {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUTTONS — victorian-btn
+   ═══════════════════════════════════════════════════════════ */
 .victorian-btn {
   background: var(--primary);
   border: 2px solid var(--line);
   color: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  font-weight: 400;
-  font-family: var(--font-heading);
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.82rem;
+  letter-spacing: 0.3px;
+  padding: 5px 14px;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
 }
 
 .victorian-btn:hover {
-  background: #5a252c;
+  background: var(--primary-dark);
   color: #fff;
+  border-color: var(--line);
 }
 
 .victorian-btn:active {
   transform: translateY(1px);
-  box-shadow: 0px 3px 0px rgba(0,0,0,0.15);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.13);
 }
 
+/* Green secondary variant */
 .victorian-btn.btn-secondary,
 .victorian-btn.victorian-btn-secondary {
   background: var(--secondary);
   border-color: var(--line);
 }
-
 .victorian-btn.btn-secondary:hover,
 .victorian-btn.victorian-btn-secondary:hover {
-  background: #24422e;
+  background: var(--secondary-dark);
+  color: #fff;
 }
 
+/* Transparent outline variant */
 .victorian-btn.victorian-btn-outline {
   background: transparent;
   color: var(--primary);
   border: 2px solid var(--line);
 }
-
 .victorian-btn.victorian-btn-outline:hover {
-  background: rgba(184, 134, 11, 0.12);
+  background: var(--accent-light);
   color: var(--primary);
 }
 
+/* Disabled state */
 .victorian-btn:disabled,
 .victorian-btn.disabled {
-  background: rgba(245, 230, 211, 0.9);
-  color: rgba(74, 41, 50, 0.55);
-  border-color: rgba(184, 134, 11, 0.5);
+  background: rgba(245,230,211,0.9);
+  color: rgba(74,41,50,0.45);
+  border-color: rgba(184,134,11,0.4);
   box-shadow: none;
+  cursor: not-allowed;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   LINKS
+   ═══════════════════════════════════════════════════════════ */
 .victorian-link {
   color: var(--secondary);
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s, color 0.15s;
 }
-
 .victorian-link:hover {
+  color: var(--secondary-dark);
+  border-bottom-color: var(--secondary);
   text-decoration: none;
-  border-bottom: 1px solid var(--secondary);
-  color: #3D6648;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   BADGES — used for Stage, Type, Sub-Status labels
+   Color-coded: stage 1=red, 2=gold, 3=green, 4=blue
+   ═══════════════════════════════════════════════════════════ */
 .victorian-badge {
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   background: var(--surface);
   color: var(--text);
-  border-radius: 0;
-}
-
-.victorian-table {
-  border: 2px solid var(--line);
-  font-size: 0.82rem;
-}
-
-.victorian-table th,
-.victorian-table td {
-  padding-top: 0.35rem;
-  padding-bottom: 0.35rem;
-}
-
-.victorian-table thead th {
-  font-weight: 600;
-  color: #fff;
-  background: var(--primary);
-  border-bottom: 2px solid var(--line);
+  border-radius: 2px;
+  font-size: 0.72rem;
   font-family: var(--font-heading);
-  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+  padding: 2px 7px;
 }
 
-.victorian-table > :not(caption) > * > * {
-  border-bottom: 2px solid var(--line);
-}
+/* Stage-specific badge colors */
+.badge-stage-1 { background: #fde8ea; color: #722F37; border-color: #722F37; }
+.badge-stage-2 { background: #fdf3d0; color: #8a6200; border-color: #B8860B; }
+.badge-stage-3 { background: #e8f5ec; color: #2E5339; border-color: #2E5339; }
+.badge-stage-4 { background: #e6edf8; color: #2a4a7f; border-color: #2a4a7f; }
 
-.victorian-table > :not(caption) > * > * {
-  border-right: 1px solid rgba(184, 134, 11, 0.5);
-}
+/* Type badges */
+.badge-type-tm  { background: #fde8ea; color: #722F37; border-color: #722F37; }
+.badge-type-cr  { background: #e8f5ec; color: #2E5339; border-color: #2E5339; }
+.badge-type-ntn { background: #fdf3d0; color: #8a6200; border-color: #B8860B; }
 
-.victorian-table > :not(caption) > * > :last-child {
-  border-right: none;
-}
-
-.victorian-table tbody tr:nth-child(even) {
-  background: rgba(245, 230, 211, 0.5);
-}
-
-.victorian-table tbody tr:hover {
-  background: rgba(184, 134, 11, 0.1);
-}
-
-.victorian-input {
-  border-radius: var(--radius);
+/* ═══════════════════════════════════════════════════════════
+   FORMS — inputs, selects, textareas
+   ═══════════════════════════════════════════════════════════ */
+.victorian-input,
+.victorian-input.form-control,
+.victorian-input.form-select {
   border: 2px solid var(--line);
+  border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.87rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.victorian-input:focus {
+.victorian-input:focus,
+.victorian-input.form-control:focus,
+.victorian-input.form-select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(114, 47, 55, 0.22);
+  box-shadow: 0 0 0 3px rgba(114,47,55,0.15);
   outline: none;
+  background: #fffaf4;
+}
+
+.victorian-input::placeholder {
+  color: var(--text-light);
 }
 
 .form-label.small-cap,
 .form-check-label.small-cap {
   font-family: var(--font-heading);
-  letter-spacing: 0.5px;
+  font-size: 0.78rem;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   TABLES — victorian-table
+   ═══════════════════════════════════════════════════════════ */
+.victorian-table {
+  border: 2px solid var(--line);
+  font-size: 0.82rem;
+  margin-bottom: 0;
+}
+
+.victorian-table thead th {
+  background: var(--primary);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--line);
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.victorian-table td,
+.victorian-table th {
+  padding: 6px 10px;
+  vertical-align: middle;
+  border-color: rgba(184,134,11,0.30);
+}
+
+/* Alternating row shading */
+.victorian-table tbody tr:nth-child(even) {
+  background: var(--surface-alt);
+}
+
+/* Row hover highlight */
+.victorian-table tbody tr:hover {
+  background: rgba(184,134,11,0.10);
+  cursor: pointer;
+}
+
+/* Right border between columns */
+.victorian-table > :not(caption) > * > * {
+  border-right: 1px solid rgba(184,134,11,0.25);
+}
+.victorian-table > :not(caption) > * > :last-child {
+  border-right: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOP-ACCENT STRIPES on cards (colored top border)
+   ═══════════════════════════════════════════════════════════ */
+.dst-accent-red    { border-top: 3px solid var(--primary); }
+.dst-accent-yellow { border-top: 3px solid var(--accent); }
+.dst-accent-blue   { border-top: 3px solid var(--secondary); }
+
+/* ═══════════════════════════════════════════════════════════
+   TWO-COLUMN GRID for detail page panels
+   ═══════════════════════════════════════════════════════════ */
 .dst-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 18px;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1024px) {
   .dst-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
 
+/* Span both columns (e.g. Documents, Audit Log sections) */
 .dst-span-2 {
   grid-column: 1 / -1;
 }
 
-.dst-accent-red {
-  border-top: var(--border-width) solid var(--primary);
-}
-
-.dst-accent-blue {
-  border-top: var(--border-width) solid var(--secondary);
-}
-
-.dst-accent-yellow {
-  border-top: var(--border-width) solid var(--accent);
-}
-
+/* ═══════════════════════════════════════════════════════════
+   KEY-VALUE GRID  (label: value pairs in Case Info panel)
+   ═══════════════════════════════════════════════════════════ */
 .dst-kv {
   display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 6px 14px;
+  grid-template-columns: 160px 1fr;
+  gap: 5px 12px;
+  align-items: start;
 }
 
 .dst-kv .k {
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding-top: 2px;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   TIMELINE  (event log on detail page)
+   ═══════════════════════════════════════════════════════════ */
 .dst-timeline {
   position: relative;
-  padding-left: 22px;
+  padding-left: 26px;
 }
 
+/* Vertical gold line */
 .dst-timeline::before {
   content: "";
   position: absolute;
-  left: 7px;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  background: var(--line);
-  border-radius: 3px;
+  left: 8px;
+  top: 4px;
+  bottom: 4px;
+  width: 4px;
+  background: linear-gradient(to bottom, var(--accent), rgba(184,134,11,0.2));
+  border-radius: 2px;
 }
 
+/* Individual timeline event card */
 .dst-event {
   position: relative;
   padding: 10px 12px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   border: 2px solid var(--line);
   background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
 
+/* Diamond bullet on the timeline */
 .dst-event::before {
   content: "";
   position: absolute;
-  left: -22px;
-  top: 14px;
-  width: 18px;
-  height: 18px;
+  left: -26px;
+  top: 13px;
+  width: 14px;
+  height: 14px;
   background: var(--secondary);
-  border: 3px solid var(--line);
+  border: 2px solid var(--line);
+  border-radius: 2px;
+  transform: rotate(45deg);
 }
 
-.dst-event.is-alert::before {
-  background: var(--primary);
-}
+/* Overdue = red bullet */
+.dst-event.is-alert::before { background: var(--primary); }
+/* Due today = gold bullet */
+.dst-event.is-attn::before  { background: var(--accent); }
 
-.dst-event.is-attn::before {
-  background: var(--accent);
-}
+.dst-event-title { font-weight: 600; font-size: 0.85rem; }
+.dst-event-meta  { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
 
-.dst-event-title {
-  font-weight: 700;
-}
-
-.dst-event-meta {
-  font-size: 0.85rem;
-  color: rgba(0, 0, 0, 0.7);
-}
-
+/* ═══════════════════════════════════════════════════════════
+   ASSIGNMENT CARDS  (task/case cards in detail page)
+   Left border color shows urgency level
+   ═══════════════════════════════════════════════════════════ */
 .dst-assignment {
   border: 2px solid var(--line);
   background: var(--surface);
-  padding: 12px;
+  padding: 10px 12px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  border-left-width: 4px;   /* thicker left accent */
 }
 
-.dst-assignment.overdue {
-  border-left: 3px solid var(--primary);
+.dst-assignment.overdue { border-left-color: var(--primary); }
+.dst-assignment.soon    { border-left-color: var(--accent); }
+.dst-assignment.normal  { border-left-color: var(--secondary); }
+
+/* ═══════════════════════════════════════════════════════════
+   RECENT APPLICATION ITEMS (dashboard list)
+   Replaces the old "border: 1px solid black" hardcoded style
+   ═══════════════════════════════════════════════════════════ */
+.recent-app-item {
+  border: 2px solid rgba(184,134,11,0.35);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.recent-app-item:hover {
+  background: var(--accent-light);
+  border-color: var(--accent);
 }
 
-.dst-assignment.soon {
-  border-left: 3px solid var(--accent);
-}
-
-.dst-assignment.normal {
-  border-left: 3px solid var(--secondary);
-}
-
+/* ═══════════════════════════════════════════════════════════
+   LOGO THUMBNAIL (trademark logo image in detail page)
+   ═══════════════════════════════════════════════════════════ */
 .dst-thumb {
   width: 80px;
   height: 80px;
   object-fit: cover;
   border: 2px solid var(--line);
-  cursor: pointer;
+  border-radius: var(--radius);
+  cursor: zoom-in;
   background: var(--surface);
+  transition: transform 0.15s;
 }
+.dst-thumb:hover { transform: scale(1.05); }
 
+/* ═══════════════════════════════════════════════════════════
+   IMAGE PREVIEW OVERLAY  (click thumbnail → fullscreen)
+   ═══════════════════════════════════════════════════════════ */
 #dst-preview {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 1050;
+  background: rgba(0,0,0,0.75);
+  z-index: 1055;
+  cursor: zoom-out;
 }
-
 #dst-preview img {
   max-width: 85vw;
   max-height: 85vh;
   display: block;
-  margin: 5vh auto 0;
-  border: 2px solid var(--line);
-  background: var(--surface);
+  margin: 6vh auto 0;
+  border: 3px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   MODAL OVERRIDE  (Bootstrap modal styled victorian)
+   ═══════════════════════════════════════════════════════════ */
 .modal-content.victorian-card {
-  border-width: var(--border-width);
+  border-width: 3px;
+}
+.modal-content.victorian-card .card-header {
+  padding: 12px 16px;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════ */
+
+/* Small-caps text — used on labels, headings, nav pills */
 .small-cap {
   font-variant: small-caps;
   letter-spacing: 0.5px;
+}
+
+/* Divider line with gold color */
+.victorian-divider {
+  border: none;
+  border-top: 2px solid rgba(184,134,11,0.35);
+  margin: 14px 0;
+}
+
+/* Section page title (h1-level) */
+.page-heading {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 6px;
+  margin-bottom: 16px;
 }

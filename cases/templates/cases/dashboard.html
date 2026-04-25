@@ -1,224 +1,347 @@
 {% extends 'cases/base.html' %}
 
-{% block title %}Dashboard - IP Case Platform{% endblock %}
+{% block title %}Dashboard — IP Case Platform{% endblock %}
 
 {% block extra_head %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Chart.js loaded only on dashboard (not needed on other pages) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block content %}
+
+  <!-- ══════════════════════════════════════════════
+       STAT CARDS ROW  — 4 overview numbers
+  ══════════════════════════════════════════════ -->
+  <div class="row g-3 mb-4">
+
+    <!-- Overdue Cases (red accent) -->
+    <div class="col-6 col-md-3">
+      <div class="victorian-card card dst-accent-red h-100">
+        <div class="card-body text-center py-3">
+          <div class="stat-number">{{ overdue_assignments|length }}</div>
+          <div class="stat-label">Overdue Cases</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Due Soon (gold accent) -->
+    <div class="col-6 col-md-3">
+      <div class="victorian-card card dst-accent-yellow h-100">
+        <div class="card-body text-center py-3">
+          <div class="stat-number">{{ soon_assignments|length }}</div>
+          <div class="stat-label">Due Soon (3 days)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overdue Events (green accent) -->
+    <div class="col-6 col-md-3">
+      <div class="victorian-card card dst-accent-blue h-100">
+        <div class="card-body text-center py-3">
+          <div class="stat-number">{{ overdue_events|length }}</div>
+          <div class="stat-label">Overdue Events</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Events Due Soon (green accent) -->
+    <div class="col-6 col-md-3">
+      <div class="victorian-card card dst-accent-blue h-100">
+        <div class="card-body text-center py-3">
+          <div class="stat-number">{{ soon_events|length }}</div>
+          <div class="stat-label">Events Due Soon</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- END STAT CARDS -->
+
+  <!-- ══════════════════════════════════════════════
+       QUICK ACTION BUTTONS
+  ══════════════════════════════════════════════ -->
+  <div class="d-flex gap-2 flex-wrap mb-4">
+    <a class="btn victorian-btn small-cap" href="{% url 'cases:application_list' %}">
+      View All Cases
+    </a>
+    <a class="btn victorian-btn victorian-btn-secondary small-cap" href="{% url 'cases:application_create' %}">
+      + New Case
+    </a>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       RECENT APPLICATIONS
+       Fixed: was using hardcoded "border:1px solid black"
+       Now uses .recent-app-item from victorian.css
+  ══════════════════════════════════════════════ -->
   <div class="victorian-card card mb-4">
-    <div class="card-header py-3">Dashboard</div>
+    <div class="card-header">Recent Applications</div>
     <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-3">
-          <div class="victorian-card card dst-accent-red">
-            <div class="card-body text-center">
-              <div class="h2 mb-0">{{ overdue_assignments|length }}</div>
-              <div class="small text-muted">Overdue CASES</div>
+      <div class="d-grid gap-2">
+        {% for app in recent_applications %}
+          <a class="victorian-link text-decoration-none"
+             href="{% url 'cases:application_detail' app.pk %}">
+            <div class="recent-app-item">
+              <div class="fw-bold small-cap" style="font-size:0.85rem;">
+                {{ app.trademark_no|default:app.case_number }}
+                &mdash;
+                {{ app.application_name }}
+              </div>
+              <div class="small" style="color:var(--text-muted);">
+                Created: {{ app.created_at|date:"d-M-Y H:i" }}
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="victorian-card card dst-accent-yellow">
-            <div class="card-body text-center">
-              <div class="h2 mb-0">{{ soon_assignments|length }}</div>
-              <div class="small text-muted">Due Soon (3 days)</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="victorian-card card dst-accent-blue">
-            <div class="card-body text-center">
-              <div class="h2 mb-0">{{ overdue_events|length }}</div>
-              <div class="small text-muted">Overdue Events</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="victorian-card card dst-accent-blue">
-            <div class="card-body text-center">
-              <div class="h2 mb-0">{{ soon_events|length }}</div>
-              <div class="small text-muted">Events Due Soon</div>
-            </div>
-          </div>
-        </div>
+          </a>
+        {% empty %}
+          <div class="text-muted small-cap">No recent applications.</div>
+        {% endfor %}
       </div>
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════════════
+       OVERDUE + DUE SOON  (2 columns)
+  ══════════════════════════════════════════════ -->
   <div class="row g-3 mb-4">
-    <div class="col-md-12">
-      <div class="victorian-card card">
-        <div class="card-header py-3">Recent Applications</div>
-        <div class="card-body">
-          <div class="d-grid gap-2">
-            {% for app in recent_applications %}
-              <a class="victorian-link" href="{% url 'cases:application_detail' app.pk %}">
-                <div class="p-2" style="border: 1px solid black;">
-                  <div>{{ app.trademark_no|default:app.case_number }} - {{ app.application_name }}</div>
-                  <div class="small text-muted">Created: {{ app.created_at|date:"Y-m-d H:i" }}</div>
-                </div>
-              </a>
-            {% empty %}
-              <div class="text-muted">No recent applications.</div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="row g-3 mb-4">
+    <!-- Overdue Cases -->
     <div class="col-md-6">
-      <div class="victorian-card card dst-accent-red">
-        <div class="card-header py-3">Overdue CASES</div>
+      <div class="victorian-card card dst-accent-red h-100">
+        <div class="card-header">Overdue Cases</div>
         <div class="card-body">
           <div class="d-grid gap-2">
             {% for assignment in overdue_assignments %}
-              <div class="dst-assignment overdue p-2">
-                <div>{{ assignment.application.trademark_no|default:assignment.application.case_number }} - {{ assignment.application.application_name }}</div>
-                <div class="small">Assigned to: {% if assignment.assigned_to %}{{ assignment.assigned_to.username }}{% else %}(unassigned){% endif %}</div>
-                <div class="small">Due: {{ assignment.due_date|date:"Y-m-d" }} ({{ assignment.due_date|timesince:today }} ago)</div>
+              <div class="dst-assignment overdue">
+                <div class="small-cap" style="font-size:0.82rem;font-weight:600;">
+                  {{ assignment.application.trademark_no|default:assignment.application.case_number }}
+                  &mdash;
+                  {{ assignment.application.application_name }}
+                </div>
+                <div class="small" style="color:var(--text-muted);">
+                  Assigned to:
+                  {% if assignment.assigned_to %}
+                    {{ assignment.assigned_to.username }}
+                  {% else %}
+                    (Unassigned)
+                  {% endif %}
+                </div>
+                <div class="small" style="color:var(--primary);">
+                  Due: {{ assignment.due_date|date:"d-M-Y" }}
+                  &nbsp;({{ assignment.due_date|timesince:today }} ago)
+                </div>
               </div>
             {% empty %}
-              <div class="text-muted">No overdue CASES.</div>
+              <div class="text-muted small small-cap">No overdue cases.</div>
             {% endfor %}
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Cases Due Soon -->
     <div class="col-md-6">
-      <div class="victorian-card card dst-accent-yellow">
-        <div class="card-header py-3">CASES Due Soon</div>
+      <div class="victorian-card card dst-accent-yellow h-100">
+        <div class="card-header">Cases Due Soon</div>
         <div class="card-body">
           <div class="d-grid gap-2">
             {% for assignment in soon_assignments %}
-              <div class="dst-assignment soon p-2">
-                <div>{{ assignment.application.trademark_no|default:assignment.application.case_number }} - {{ assignment.application.application_name }}</div>
-                <div class="small">Assigned to: {% if assignment.assigned_to %}{{ assignment.assigned_to.username }}{% else %}(unassigned){% endif %}</div>
-                <div class="small">Due: {{ assignment.due_date|date:"Y-m-d" }}</div>
+              <div class="dst-assignment soon">
+                <div class="small-cap" style="font-size:0.82rem;font-weight:600;">
+                  {{ assignment.application.trademark_no|default:assignment.application.case_number }}
+                  &mdash;
+                  {{ assignment.application.application_name }}
+                </div>
+                <div class="small" style="color:var(--text-muted);">
+                  Assigned to:
+                  {% if assignment.assigned_to %}
+                    {{ assignment.assigned_to.username }}
+                  {% else %}
+                    (Unassigned)
+                  {% endif %}
+                </div>
+                <div class="small" style="color:var(--accent);">
+                  Due: {{ assignment.due_date|date:"d-M-Y" }}
+                </div>
               </div>
             {% empty %}
-              <div class="text-muted">No CASES due soon.</div>
+              <div class="text-muted small small-cap">No cases due soon.</div>
             {% endfor %}
           </div>
         </div>
       </div>
     </div>
+
   </div>
 
+  <!-- ══════════════════════════════════════════════
+       OVERDUE EVENTS + EVENTS DUE SOON  (2 columns)
+  ══════════════════════════════════════════════ -->
   <div class="row g-3 mb-4">
+
+    <!-- Overdue Events -->
     <div class="col-md-6">
-      <div class="victorian-card card dst-accent-blue">
-        <div class="card-header py-3">Overdue Events</div>
+      <div class="victorian-card card dst-accent-red h-100">
+        <div class="card-header">Overdue Events</div>
         <div class="card-body">
           <div class="d-grid gap-2">
             {% for event in overdue_events %}
-              <div class="p-2" style="border-left: 3px solid red;">
-                <div>{{ event.application.trademark_no|default:event.application.case_number }} - {{ event.get_event_type_display }}</div>
-                <div class="small">Deadline: {{ event.deadline_date|date:"Y-m-d" }} ({{ event.deadline_date|timesince:today }} ago)</div>
-                {% if event.notes %}<div class="small">{{ event.notes }}</div>{% endif %}
+              <div class="dst-assignment overdue">
+                <div class="small-cap" style="font-size:0.82rem;font-weight:600;">
+                  {{ event.application.trademark_no|default:event.application.case_number }}
+                  &mdash;
+                  {{ event.get_event_type_display }}
+                </div>
+                <div class="small" style="color:var(--primary);">
+                  Deadline: {{ event.deadline_date|date:"d-M-Y" }}
+                  &nbsp;({{ event.deadline_date|timesince:today }} ago)
+                </div>
+                {% if event.notes %}
+                  <div class="small" style="color:var(--text-muted);">{{ event.notes }}</div>
+                {% endif %}
               </div>
             {% empty %}
-              <div class="text-muted">No overdue events.</div>
+              <div class="text-muted small small-cap">No overdue events.</div>
             {% endfor %}
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Events Due Soon -->
     <div class="col-md-6">
-      <div class="victorian-card card dst-accent-blue">
-        <div class="card-header py-3">Events Due Soon</div>
+      <div class="victorian-card card dst-accent-yellow h-100">
+        <div class="card-header">Events Due Soon</div>
         <div class="card-body">
           <div class="d-grid gap-2">
             {% for event in soon_events %}
-              <div class="p-2" style="border-left: 3px solid yellow;">
-                <div>{{ event.application.trademark_no|default:event.application.case_number }} - {{ event.get_event_type_display }}</div>
-                <div class="small">Deadline: {{ event.deadline_date|date:"Y-m-d" }}</div>
-                {% if event.notes %}<div class="small">{{ event.notes }}</div>{% endif %}
+              <div class="dst-assignment soon">
+                <div class="small-cap" style="font-size:0.82rem;font-weight:600;">
+                  {{ event.application.trademark_no|default:event.application.case_number }}
+                  &mdash;
+                  {{ event.get_event_type_display }}
+                </div>
+                <div class="small" style="color:var(--accent);">
+                  Deadline: {{ event.deadline_date|date:"d-M-Y" }}
+                </div>
+                {% if event.notes %}
+                  <div class="small" style="color:var(--text-muted);">{{ event.notes }}</div>
+                {% endif %}
               </div>
             {% empty %}
-              <div class="text-muted">No events due soon.</div>
+              <div class="text-muted small small-cap">No events due soon.</div>
             {% endfor %}
           </div>
         </div>
       </div>
     </div>
+
   </div>
 
+  <!-- ══════════════════════════════════════════════
+       STAGE SUMMARY  — Chart + Table side by side
+  ══════════════════════════════════════════════ -->
   <div class="row g-3 mb-4">
+
+    <!-- Bar Chart -->
     <div class="col-md-6">
-      <div class="victorian-card card">
-        <div class="card-header py-3">Stage Summary (Chart)</div>
+      <div class="victorian-card card h-100">
+        <div class="card-header">Stage Summary — Chart</div>
         <div class="card-body">
-          <canvas id="stageChart" style="max-height: 300px;"></canvas>
+          <canvas id="stageChart" style="max-height:280px;"></canvas>
         </div>
       </div>
     </div>
 
+    <!-- Table -->
     <div class="col-md-6">
-      <div class="victorian-card card">
-        <div class="card-header py-3">Stage Summary (Table)</div>
-        <div class="card-body">
-          <table class="table victorian-table">
-            {% for stage_name, count in stage_summary.items %}
+      <div class="victorian-card card h-100">
+        <div class="card-header">Stage Summary — Table</div>
+        <div class="card-body p-0">
+          <table class="table victorian-table mb-0">
+            <thead>
               <tr>
-                <td>{{ stage_name }}</td>
-                <td class="text-end">{{ count }}</td>
+                <th class="small-cap">Stage</th>
+                <th class="small-cap text-end">Count</th>
               </tr>
-            {% endfor %}
+            </thead>
+            <tbody>
+              {% for stage_name, count in stage_summary.items %}
+                <tr>
+                  <td class="small-cap">{{ stage_name }}</td>
+                  <td class="text-end fw-bold">{{ count }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="2" class="text-muted small-cap">No data.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
           </table>
         </div>
       </div>
     </div>
+
   </div>
 
-  <div class="d-grid gap-2">
-    <a class="btn victorian-btn" href="{% url 'cases:application_list' %}">View All Applications</a>
-    <a class="btn victorian-btn" href="{% url 'cases:application_create' %}">Create New Application</a>
-  </div>
+{% endblock %}
 
-  <script>
-    const stageData = {
-      labels: [{% for stage_name, count in stage_summary.items %}'{{ stage_name }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+{% block extra_js %}
+<script>
+  // ── STAGE BAR CHART ──────────────────────────────────────
+  // Reads stage_summary dict from Django context and renders
+  // a bar chart using Chart.js (loaded in extra_head above)
+  const stageLabels = [
+    {% for stage_name, count in stage_summary.items %}
+      '{{ stage_name }}'{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  const stageCounts = [
+    {% for stage_name, count in stage_summary.items %}
+      {{ count }}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  const stageCtx = document.getElementById('stageChart').getContext('2d');
+  new Chart(stageCtx, {
+    type: 'bar',
+    data: {
+      labels: stageLabels,
       datasets: [{
-        label: 'Applications',
-        data: [{% for stage_name, count in stage_summary.items %}{{ count }}{% if not forloop.last %},{% endif %}{% endfor %}],
-        backgroundColor: [
-          '#722F37',
-          '#2E5339',
-          '#B8860B',
-          '#4A2932'
-        ],
-        borderColor: '#000000',
-        borderWidth: 2
+        label: 'Cases',
+        data: stageCounts,
+        // Each bar gets a themed color cycling through palette
+        backgroundColor: ['#722F37', '#2E5339', '#B8860B', '#4A2932'],
+        borderColor: '#4A2932',
+        borderWidth: 2,
+        borderRadius: 3,
       }]
-    };
-
-    const ctx = document.getElementById('stageChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: stageData,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#FDF5E6',
+          borderColor: '#B8860B',
+          borderWidth: 2,
+          titleColor: '#4A2932',
+          bodyColor: '#4A2932',
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1, color: '#7A5C5C' },
+          grid: { color: 'rgba(184,134,11,0.15)' }
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1
-            }
-          }
+        x: {
+          ticks: { color: '#7A5C5C' },
+          grid: { display: false }
         }
       }
-    });
-  </script>
+    }
+  });
+</script>
 {% endblock %}

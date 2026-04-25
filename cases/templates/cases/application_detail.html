@@ -1,107 +1,248 @@
 {% extends 'cases/base.html' %}
 
-{% block title %}{{ application.trademark_no|default:application.case_number }} - IP Case Platform{% endblock %}
+{% block title %}{{ application.trademark_no|default:application.case_number }} — IP Case Platform{% endblock %}
 
 {% block extra_head %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Chart.js — only loaded on detail page -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block content %}
+
+  <!-- ══════════════════════════════════════════════
+       TOP BAR: back link + edit button
+  ══════════════════════════════════════════════ -->
   <div class="mb-3 d-flex justify-content-between align-items-center">
-    <a class="victorian-link small-cap" href="{% url 'cases:application_list' %}">← Back To Applications</a>
-    <a class="btn victorian-btn" href="{% url 'cases:application_edit' application.pk %}">Edit</a>
+    <a class="victorian-link small-cap"
+       href="{% url 'cases:application_list' %}">&#8592; Back to Cases</a>
+    <a class="btn victorian-btn small-cap"
+       href="{% url 'cases:application_edit' application.pk %}">Edit Case</a>
   </div>
 
+  <!-- ══════════════════════════════════════════════
+       TWO-COLUMN DETAIL GRID
+       (all panels use dst-grid / dst-span-2)
+  ══════════════════════════════════════════════ -->
   <div class="dst-grid">
+
+    <!-- ─── PANEL 1: Case Info ────────────────── -->
     <div class="victorian-card card dst-accent-blue">
-      <div class="card-header py-3 small-cap">
-        Case Info
-        <a class="btn victorian-btn small-cap float-end" href="{% url 'cases:export_application_pdf' application.pk %}" target="_blank">📄 Export PDF</a>
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="small-cap">Case Info</span>
+        <a class="btn victorian-btn btn-sm small-cap"
+           href="{% url 'cases:export_application_pdf' application.pk %}"
+           target="_blank">
+          Export PDF
+        </a>
       </div>
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between gap-3">
-          <div class="dst-kv">
-            <div class="k small-cap">Case #</div><div>{{ application.case_number }}</div>
-            <div class="k small-cap">Client Type</div><div>{{ application.get_client_type_display }}</div>
-            <div class="k small-cap">Application Type</div><div>{{ application.get_application_type_display }}</div>
-            <div class="k small-cap">Application Name</div><div>{{ application.application_name }}</div>
-            <div class="k small-cap">Trademark No</div><div>{{ application.trademark_no }}</div>
-            <div class="k small-cap">Case No</div><div>{{ application.case_no|default:"-" }}</div>
-            <div class="k small-cap">Class</div><div>{{ application.class_numbers }}</div>
-            <div class="k small-cap">Filing Date</div><div>{% if application.filing_date %}{{ application.filing_date|date:"d-M-y" }}{% endif %}</div>
-            <div class="k small-cap">Applicant</div><div>{{ application.applicant_name }}</div>
-            <div class="k small-cap">Trading As</div><div>{{ application.trading_as }}</div>
-            <div class="k small-cap">City</div><div>{{ application.city }}</div>
-            <div class="k small-cap">Agent</div><div>{{ application.agent_name }}</div>
-            <div class="k small-cap">Dispatch</div><div>{{ application.dispatch_status }}</div>
+
+          <!-- Key-value pairs -->
+          <div class="dst-kv flex-grow-1">
+            <div class="k">Case #</div>
+            <div>{{ application.case_number }}</div>
+
+            <div class="k">Client Type</div>
+            <div>{{ application.get_client_type_display }}</div>
+
+            <div class="k">App. Type</div>
+            <div>{{ application.get_application_type_display }}</div>
+
+            <div class="k">App. Name</div>
+            <div><strong>{{ application.application_name }}</strong></div>
+
+            <div class="k">Trademark No</div>
+            <div>{{ application.trademark_no|default:"—" }}</div>
+
+            <div class="k">Case No</div>
+            <div>{{ application.case_no|default:"—" }}</div>
+
+            <div class="k">Class</div>
+            <div>{{ application.class_numbers|default:"—" }}</div>
+
+            <div class="k">Filing Date</div>
+            <div>
+              {% if application.filing_date %}
+                {{ application.filing_date|date:"d-M-Y" }}
+              {% else %}—{% endif %}
+            </div>
+
+            <div class="k">Applicant</div>
+            <div>{{ application.applicant_name|default:"—" }}</div>
+
+            <div class="k">Trading As</div>
+            <div>{{ application.trading_as|default:"—" }}</div>
+
+            <div class="k">City</div>
+            <div>{{ application.city|default:"—" }}</div>
+
+            <div class="k">Agent</div>
+            <div>{{ application.agent_name|default:"—" }}</div>
+
+            <div class="k">Dispatch</div>
+            <div>{{ application.dispatch_status|default:"—" }}</div>
           </div>
-          <div>
+
+          <!-- Trademark logo thumbnail -->
+          <div class="flex-shrink-0">
             {% if application.logo %}
-              <img class="dst-thumb" src="{{ application.logo.url }}" alt="logo" onclick="openDstImage(this.src)" />
+              <img class="dst-thumb"
+                   src="{{ application.logo.url }}"
+                   alt="Logo"
+                   onclick="openDstImage(this.src)"
+                   title="Click to enlarge" />
             {% else %}
-              <div class="small text-muted small-cap">No Logo</div>
+              <div class="small text-muted small-cap"
+                   style="width:80px;height:80px;border:2px dashed var(--line);
+                          display:flex;align-items:center;justify-content:center;
+                          font-size:0.7rem;text-align:center;">
+                No Logo
+              </div>
             {% endif %}
           </div>
+
         </div>
       </div>
     </div>
 
+    <!-- ─── PANEL 2: Status Box ───────────────── -->
     <div class="victorian-card card dst-accent-yellow">
-      <div class="card-header py-3 small-cap">Status Box</div>
+      <div class="card-header small-cap">Status</div>
       <div class="card-body">
-        <div class="dst-kv">
-          <div class="k small-cap">Stage</div><div><span class="badge victorian-badge">{{ application.get_current_stage_display }}</span></div>
-          <div class="k small-cap">Sub-Status</div><div><span class="badge victorian-badge">{{ application.get_current_sub_stage_display }}</span></div>
-          <div class="k small-cap">Status</div><div><span class="badge victorian-badge">{{ application.current_status }}</span></div>
-          <div class="k small-cap">Last Updated</div><div class="small text-muted">{{ application.updated_at|date:"d-M-y H:i" }}</div>
-        </div>
 
-        <div class="mt-3">
-          <div class="mb-2 small-cap">Quick Event Buttons</div>
-          <div class="d-flex flex-wrap gap-2">
-            <button class="btn victorian-btn small-cap" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="filing">➕ Filing</button>
-            <button class="btn victorian-btn small-cap" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="objection">⚠️ Objection</button>
-            <button class="btn victorian-btn small-cap" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="publication">📢 Publication</button>
-            <button class="btn victorian-btn small-cap" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="demand">💰 Demand</button>
-            <button class="btn victorian-btn small-cap" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" data-event-type="certificate">🏆 Certificate</button>
+        <!-- Current stage / sub-status / status -->
+        <div class="dst-kv mb-3">
+          <div class="k">Stage</div>
+          <div>
+            {% if application.current_stage == 1 %}
+              <span class="badge victorian-badge badge-stage-1">S1 — {{ application.get_current_stage_display }}</span>
+            {% elif application.current_stage == 2 %}
+              <span class="badge victorian-badge badge-stage-2">S2 — {{ application.get_current_stage_display }}</span>
+            {% elif application.current_stage == 3 %}
+              <span class="badge victorian-badge badge-stage-3">S3 — {{ application.get_current_stage_display }}</span>
+            {% elif application.current_stage == 4 %}
+              <span class="badge victorian-badge badge-stage-4">S4 — {{ application.get_current_stage_display }}</span>
+            {% else %}
+              <span class="badge victorian-badge">{{ application.get_current_stage_display }}</span>
+            {% endif %}
+          </div>
+
+          <div class="k">Sub-Status</div>
+          <div>
+            <span class="badge victorian-badge">{{ application.get_current_sub_stage_display|default:"—" }}</span>
+          </div>
+
+          <div class="k">Status</div>
+          <div>
+            <span class="badge victorian-badge">{{ application.current_status|default:"—" }}</span>
+          </div>
+
+          <div class="k">Updated</div>
+          <div class="small" style="color:var(--text-muted);">
+            {{ application.updated_at|date:"d-M-Y H:i" }}
           </div>
         </div>
 
-        <div class="mt-3">
-          <div class="mb-2 small-cap">Dispatch Workflow</div>
-          <div class="d-flex flex-wrap gap-2">
-            <a class="btn victorian-btn small-cap" href="{% url 'cases:dispatch_received' application.pk %}">📥 Certificate Received</a>
-            <a class="btn victorian-btn small-cap" href="{% url 'cases:dispatch_print' application.pk %}">🖨️ Certificate Print</a>
-            <a class="btn victorian-btn small-cap" href="{% url 'cases:dispatch_dispatch' application.pk %}">📤 Certificate Dispatch</a>
-          </div>
+        <hr class="victorian-divider" />
+
+        <!-- Quick Event Buttons -->
+        <div class="mb-1 small small-cap" style="color:var(--text-muted);">Quick Event</div>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <button class="btn victorian-btn btn-sm small-cap"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#eventModal"
+                  data-event-type="filing">Filing</button>
+          <button class="btn victorian-btn btn-sm small-cap"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#eventModal"
+                  data-event-type="objection">Objection</button>
+          <button class="btn victorian-btn btn-sm small-cap"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#eventModal"
+                  data-event-type="publication">Publication</button>
+          <button class="btn victorian-btn btn-sm small-cap"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#eventModal"
+                  data-event-type="demand">Demand</button>
+          <button class="btn victorian-btn btn-sm small-cap"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#eventModal"
+                  data-event-type="certificate">Certificate</button>
         </div>
+
+        <!-- Dispatch Workflow -->
+        <div class="mb-1 small small-cap" style="color:var(--text-muted);">Dispatch Workflow</div>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn victorian-btn btn-sm victorian-btn-secondary small-cap"
+             href="{% url 'cases:dispatch_received' application.pk %}">
+            Cert. Received
+          </a>
+          <a class="btn victorian-btn btn-sm victorian-btn-secondary small-cap"
+             href="{% url 'cases:dispatch_print' application.pk %}">
+            Cert. Print
+          </a>
+          <a class="btn victorian-btn btn-sm victorian-btn-secondary small-cap"
+             href="{% url 'cases:dispatch_dispatch' application.pk %}">
+            Cert. Dispatch
+          </a>
+        </div>
+
       </div>
     </div>
 
+    <!-- ─── PANEL 3: Timeline ─────────────────── -->
     <div class="victorian-card card dst-accent-blue">
-      <div class="card-header py-3 small-cap">Timeline</div>
+      <div class="card-header small-cap">Timeline</div>
       <div class="card-body">
         <div class="dst-timeline">
           {% for e in events %}
-            <div class="dst-event {% if e.deadline_date and e.deadline_date < today %}is-alert{% elif e.deadline_date and e.deadline_date == today %}is-attn{% endif %}">
-              <div class="dst-event-title">{{ e.get_event_type_display }}{% if e.sub_stage %} — {{ e.get_sub_stage_display }}{% endif %}</div>
-              <div class="dst-event-meta">{{ e.event_datetime|date:"d-M-y H:i" }}{% if e.deadline_date %} | Deadline: {{ e.deadline_date|date:"d-M-y" }}{% endif %}</div>
+            <div class="dst-event
+              {% if e.deadline_date and e.deadline_date < today %}is-alert
+              {% elif e.deadline_date and e.deadline_date == today %}is-attn
+              {% endif %}">
+              <div class="dst-event-title">
+                {{ e.get_event_type_display }}
+                {% if e.sub_stage %} &mdash; {{ e.get_sub_stage_display }}{% endif %}
+              </div>
+              <div class="dst-event-meta">
+                {{ e.event_datetime|date:"d-M-Y H:i" }}
+                {% if e.deadline_date %}
+                  &nbsp;| Deadline: {{ e.deadline_date|date:"d-M-Y" }}
+                {% endif %}
+              </div>
               {% if e.document_link %}
-                <div class="small"><a class="victorian-link" href="{{ e.document_link }}" target="_blank">Document</a></div>
+                <div class="small mt-1">
+                  <a class="victorian-link" href="{{ e.document_link }}" target="_blank">
+                    View Document
+                  </a>
+                </div>
               {% endif %}
-              {% if e.notes %}<div class="small">{{ e.notes }}</div>{% endif %}
+              {% if e.notes %}
+                <div class="small mt-1" style="color:var(--text-muted);">{{ e.notes }}</div>
+              {% endif %}
             </div>
           {% empty %}
-            <div class="text-muted small-cap">No Events Yet.</div>
+            <div class="text-muted small small-cap">No events yet.</div>
           {% endfor %}
         </div>
       </div>
     </div>
 
+    <!-- ─── PANEL 4: Assignments ──────────────── -->
     <div class="victorian-card card dst-accent-red">
-      <div class="card-header py-3 small-cap">CASES</div>
+      <div class="card-header small-cap">Assignments</div>
       <div class="card-body">
-        <form class="row g-2 mb-3" method="post" action="{% url 'cases:add_assignment' application.pk %}">
+
+        <!-- Add assignment form -->
+        <form class="row g-2 mb-3"
+              method="post"
+              action="{% url 'cases:add_assignment' application.pk %}">
           {% csrf_token %}
           <div class="col-md-6">
             <select class="form-select victorian-input" name="assigned_to">
@@ -125,36 +266,54 @@
             <button class="btn victorian-btn w-100 small-cap" type="submit">Add</button>
           </div>
           <div class="col-12">
-            <textarea class="form-control victorian-input" name="notes" rows="2" placeholder="Notes..."></textarea>
+            <textarea class="form-control victorian-input"
+                      name="notes"
+                      rows="2"
+                      placeholder="Notes..."></textarea>
           </div>
         </form>
 
-        <div class="d-grid gap-3">
-          {% for a,urgency in assignments %}
+        <!-- Existing assignment cards -->
+        <div class="d-grid gap-2">
+          {% for a, urgency in assignments %}
             <div class="dst-assignment {{ urgency }}">
-              <div>{% if a.assigned_to %}{{ a.assigned_to.username }}{% else %}(Unassigned){% endif %}</div>
-              <div class="small">Due: {% if a.due_date %}{{ a.due_date|date:"d-M-y" }}{% else %}-{% endif %}</div>
-              <div class="small">Status: {{ a.get_status_display }}</div>
-              {% if a.notes %}<div class="small mt-1">{{ a.notes }}</div>{% endif %}
+              <div class="small-cap" style="font-size:0.82rem;font-weight:600;">
+                {% if a.assigned_to %}{{ a.assigned_to.username }}{% else %}(Unassigned){% endif %}
+              </div>
+              <div class="small" style="color:var(--text-muted);">
+                Due: {% if a.due_date %}{{ a.due_date|date:"d-M-Y" }}{% else %}—{% endif %}
+                &nbsp;|&nbsp; Status: {{ a.get_status_display }}
+              </div>
+              {% if a.notes %}
+                <div class="small mt-1">{{ a.notes }}</div>
+              {% endif %}
             </div>
           {% empty %}
-            <div class="text-muted small-cap">No CASES.</div>
+            <div class="text-muted small small-cap">No assignments.</div>
           {% endfor %}
         </div>
+
       </div>
     </div>
 
+    <!-- ─── PANEL 5: Assignment Chart ────────── -->
     <div class="victorian-card card dst-accent-blue">
-      <div class="card-header py-3 small-cap">Assignment History</div>
+      <div class="card-header small-cap">Assignment Status Chart</div>
       <div class="card-body">
-        <canvas id="assignmentChart" style="max-height: 250px;"></canvas>
+        <canvas id="assignmentChart" style="max-height:240px;"></canvas>
       </div>
     </div>
 
+    <!-- ─── PANEL 6: Documents (full width) ──── -->
     <div class="victorian-card card dst-span-2 dst-accent-yellow">
-      <div class="card-header py-3 small-cap">Documents</div>
+      <div class="card-header small-cap">Documents</div>
       <div class="card-body">
-        <form class="row g-2 mb-3" method="post" action="{% url 'cases:add_document' application.pk %}" enctype="multipart/form-data">
+
+        <!-- Add document form -->
+        <form class="row g-2 mb-3"
+              method="post"
+              action="{% url 'cases:add_document' application.pk %}"
+              enctype="multipart/form-data">
           {% csrf_token %}
           <div class="col-md-3">
             <select class="form-select victorian-input" name="file_type">
@@ -165,53 +324,72 @@
             </select>
           </div>
           <div class="col-md-6">
-            <input class="form-control victorian-input" type="text" name="file_path" placeholder="Paste Shared Drive / SharePoint Link" />
+            <input class="form-control victorian-input"
+                   type="text"
+                   name="file_path"
+                   placeholder="Paste Shared Drive / SharePoint Link" />
           </div>
           <div class="col-md-3">
             <input class="form-control victorian-input" type="file" name="file" />
           </div>
-          <div class="col-12">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="preview_enabled" id="preview_enabled" checked />
-              <label class="form-check-label small-cap" for="preview_enabled">Preview Enabled</label>
+          <div class="col-md-8">
+            <div class="form-check mt-1">
+              <input class="form-check-input" type="checkbox"
+                     name="preview_enabled" id="preview_enabled" checked />
+              <label class="form-check-label small-cap" for="preview_enabled">
+                Preview Enabled
+              </label>
             </div>
           </div>
-          <div class="col-12 d-grid">
-            <button class="btn victorian-btn small-cap" type="submit">Add Document Link</button>
+          <div class="col-md-4 d-grid">
+            <button class="btn victorian-btn small-cap" type="submit">Add Document</button>
           </div>
         </form>
 
+        <!-- Documents table -->
         <div class="table-responsive">
-          <table class="table victorian-table align-middle">
+          <table class="table victorian-table align-middle mb-0">
             <thead>
               <tr>
-                <th class="small-cap">Type</th>
-                <th class="small-cap">Link</th>
+                <th class="small-cap" style="width:120px;">Type</th>
+                <th class="small-cap">Link / Path</th>
               </tr>
             </thead>
             <tbody>
               {% for d in documents %}
                 <tr>
-                  <td class="small"><span class="badge victorian-badge">{{ d.get_file_type_display }}</span></td>
-                  <td class="small"><a class="victorian-link" href="{{ d.file_path }}" target="_blank">{{ d.file_path }}</a></td>
+                  <td>
+                    <span class="badge victorian-badge">{{ d.get_file_type_display }}</span>
+                  </td>
+                  <td class="small">
+                    <a class="victorian-link" href="{{ d.file_path }}" target="_blank">
+                      {{ d.file_path }}
+                    </a>
+                  </td>
                 </tr>
               {% empty %}
-                <tr><td colspan="2" class="text-muted small-cap">No Documents.</td></tr>
+                <tr>
+                  <td colspan="2" class="text-muted text-center small-cap py-3">
+                    No documents.
+                  </td>
+                </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
+
       </div>
     </div>
 
+    <!-- ─── PANEL 7: Audit Log (full width) ──── -->
     <div class="victorian-card card dst-span-2 dst-accent-blue">
-      <div class="card-header py-3 small-cap">Audit Log (Latest)</div>
-      <div class="card-body">
+      <div class="card-header small-cap">Audit Log (Latest)</div>
+      <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table victorian-table align-middle">
+          <table class="table victorian-table align-middle mb-0">
             <thead>
               <tr>
-                <th class="small-cap">Time</th>
+                <th class="small-cap" style="width:130px;">Time</th>
                 <th class="small-cap">Action</th>
                 <th class="small-cap">Field</th>
                 <th class="small-cap">User</th>
@@ -220,134 +398,194 @@
             <tbody>
               {% for l in audit_logs %}
                 <tr>
-                  <td class="small text-muted">{{ l.timestamp|date:"d-M-y H:i" }}</td>
+                  <td class="small" style="color:var(--text-muted);white-space:nowrap;">
+                    {{ l.timestamp|date:"d-M-Y H:i" }}
+                  </td>
                   <td class="small">{{ l.get_action_type_display }}</td>
                   <td class="small">{{ l.field_changed }}</td>
-                  <td class="small">{% if l.changed_by %}{{ l.changed_by.username }}{% else %}<span class="text-muted">(System)</span>{% endif %}</td>
+                  <td class="small">
+                    {% if l.changed_by %}
+                      {{ l.changed_by.username }}
+                    {% else %}
+                      <span style="color:var(--text-muted);">(System)</span>
+                    {% endif %}
+                  </td>
                 </tr>
               {% empty %}
-                <tr><td colspan="4" class="text-muted small-cap">No Audit Logs.</td></tr>
+                <tr>
+                  <td colspan="4" class="text-muted text-center small-cap py-3">
+                    No audit logs.
+                  </td>
+                </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  </div>
 
+  </div>
+  <!-- END DST-GRID -->
+
+  <!-- ── IMAGE PREVIEW OVERLAY ── -->
   <div id="dst-preview" onclick="this.style.display='none'">
-    <img id="dst-preview-img" alt="preview" />
+    <img id="dst-preview-img" alt="Preview" />
   </div>
 
-  <div class="modal" id="eventModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content victorian-card p-3">
-        <div class="card-header py-3 small-cap">Add Event</div>
+  <!-- ── ADD EVENT MODAL ── -->
+  <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content victorian-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="small-cap">Add Event</span>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
         <div class="card-body">
-          <form class="row g-2" method="post" action="{% url 'cases:add_event' application.pk %}" enctype="multipart/form-data">
+          <form class="row g-3"
+                method="post"
+                action="{% url 'cases:add_event' application.pk %}"
+                enctype="multipart/form-data">
             {% csrf_token %}
+
             <div class="col-12">
               <label class="form-label small-cap">Event Type</label>
-              <select class="form-select victorian-input" name="event_type" id="event_type" required>
-                {% for value,label in event_type_choices %}
+              <select class="form-select victorian-input"
+                      name="event_type"
+                      id="event_type"
+                      required>
+                {% for value, label in event_type_choices %}
                   <option value="{{ value }}">{{ label }}</option>
                 {% endfor %}
               </select>
             </div>
+
             <div class="col-12">
-              <label class="form-label small-cap">Sub-Status</label>
+              <label class="form-label small-cap">Sub-Status (optional)</label>
               <select class="form-select victorian-input" name="sub_stage">
-                <option value="">(Optional)</option>
-                {% for value,label in sub_stage_choices %}
+                <option value="">(None)</option>
+                {% for value, label in sub_stage_choices %}
                   <option value="{{ value }}">{{ label }}</option>
                 {% endfor %}
               </select>
             </div>
+
             <div class="col-12">
-              <label class="form-label small-cap">Deadline</label>
+              <label class="form-label small-cap">Deadline Date</label>
               <input class="form-control victorian-input" type="date" name="deadline_date" />
             </div>
+
             <div class="col-12">
               <label class="form-label small-cap">Document Link</label>
-              <input class="form-control victorian-input" type="text" name="document_link" />
+              <input class="form-control victorian-input"
+                     type="text"
+                     name="document_link"
+                     placeholder="https://..." />
             </div>
+
             <div class="col-12">
               <label class="form-label small-cap">File Upload</label>
               <input class="form-control victorian-input" type="file" name="file" />
             </div>
+
             <div class="col-12">
               <label class="form-label small-cap">Notes</label>
-              <textarea class="form-control victorian-input" name="notes" rows="3"></textarea>
+              <textarea class="form-control victorian-input"
+                        name="notes"
+                        rows="3"
+                        placeholder="Optional notes..."></textarea>
             </div>
+
             <div class="col-12 d-grid">
-              <button class="btn victorian-btn small-cap" type="submit">Save</button>
+              <button class="btn victorian-btn small-cap" type="submit">Save Event</button>
             </div>
+
           </form>
         </div>
       </div>
     </div>
   </div>
+  <!-- END MODAL -->
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    function openDstImage(src) {
-      document.getElementById('dst-preview').style.display = 'block';
-      document.getElementById('dst-preview-img').src = src;
-    }
+{% endblock %}
 
-    // Assignment status chart
-    const assignmentStatusCounts = {
-      'Pending': 0,
-      'Completed': 0,
-      'Overdue': 0
-    };
-    {% for a,urgency in assignments %}
-      assignmentStatusCounts['{{ a.get_status_display }}']++;
-    {% endfor %}
+{% block extra_js %}
+<script>
+  // ── IMAGE PREVIEW ────────────────────────────────────────
+  // Opens a fullscreen overlay when a trademark logo is clicked
+  function openDstImage(src) {
+    document.getElementById('dst-preview').style.display = 'block';
+    document.getElementById('dst-preview-img').src = src;
+  }
 
-    const assignmentCtx = document.getElementById('assignmentChart').getContext('2d');
-    new Chart(assignmentCtx, {
-      type: 'bar',
-      data: {
-        labels: Object.keys(assignmentStatusCounts),
-        datasets: [{
-          label: 'CASES',
-          data: Object.values(assignmentStatusCounts),
-          backgroundColor: ['#B8860B', '#2E5339', '#722F37'],
-          borderColor: '#000000',
-          borderWidth: 2
-        }]
+  // ── ASSIGNMENT STATUS CHART ──────────────────────────────
+  // Counts assignment statuses from Django template context
+  // and renders a bar chart using Chart.js
+  const assignmentStatusCounts = { 'Pending': 0, 'Completed': 0, 'Overdue': 0 };
+  {% for a, urgency in assignments %}
+    assignmentStatusCounts['{{ a.get_status_display }}'] =
+      (assignmentStatusCounts['{{ a.get_status_display }}'] || 0) + 1;
+  {% endfor %}
+
+  const assignmentCtx = document.getElementById('assignmentChart').getContext('2d');
+  new Chart(assignmentCtx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(assignmentStatusCounts),
+      datasets: [{
+        label: 'Assignments',
+        data: Object.values(assignmentStatusCounts),
+        backgroundColor: ['#B8860B', '#2E5339', '#722F37'],
+        borderColor: '#4A2932',
+        borderWidth: 2,
+        borderRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#FDF5E6',
+          borderColor: '#B8860B',
+          borderWidth: 2,
+          titleColor: '#4A2932',
+          bodyColor: '#4A2932',
+        }
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1, color: '#7A5C5C' },
+          grid: { color: 'rgba(184,134,11,0.15)' }
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1
-            }
-          }
+        x: {
+          ticks: { color: '#7A5C5C' },
+          grid: { display: false }
         }
       }
-    });
-
-    const eventModal = document.getElementById('eventModal');
-    if (eventModal) {
-      eventModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        if (!button) return;
-        const type = button.getAttribute('data-event-type');
-        const select = document.getElementById('event_type');
-        if (type && select) {
-          select.value = type;
-        }
-      });
     }
-  </script>
+  });
+
+  // ── EVENT MODAL: pre-select event type from button ───────
+  // When a Quick Event button is clicked, it passes
+  // data-event-type attribute — modal auto-selects it
+  const eventModal = document.getElementById('eventModal');
+  if (eventModal) {
+    eventModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      if (!button) return;
+      const type = button.getAttribute('data-event-type');
+      const select = document.getElementById('event_type');
+      if (type && select) select.value = type;
+    });
+  }
+
+  // ── BOOTSTRAP JS NOTE ───────────────────────────────────
+  // Bootstrap bundle is now loaded globally in base.html
+  // No need to load it again here (was causing double-load before)
+</script>
 {% endblock %}
