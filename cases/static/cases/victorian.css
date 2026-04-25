@@ -7,16 +7,16 @@
 
 /* ── Custom fonts (loaded from /static/cases/fonts/) ── */
 @font-face {
-  font-family: 'Syndra';
-  src: url('./fonts/Syndra-SemiBold.otf') format('opentype');
+  font-family: 'TTOctosquares';
+  src: url('./fonts/TT Octosquares Trial DemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Driftune';
-  src: url('./fonts/Driftune.otf') format('opentype');
+  font-family: 'NameSmile';
+  src: url('./fonts/Name Smile.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -52,8 +52,8 @@
   --shadow-lg:    0 6px 0 rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.10);
 
   /* Typography */
-  --font-heading: 'Syndra', 'Playfair Display', serif;
-  --font-body:    'Driftune', 'Inter', sans-serif;
+  --font-heading: 'TTOctosquares', 'Playfair Display', serif;
+  --font-body:    'NameSmile', 'Inter', sans-serif;
 }
 
 /* ═══════════════════════════════════════════════════════════
