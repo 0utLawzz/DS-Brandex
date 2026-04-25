@@ -1,11 +1,17 @@
+# Django Imports
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+# Local Imports
 from .current_user import get_current_user
 
 
+# ==================== CHOICE CLASSES ====================
+# These classes define the available options for various fields in the Application model
+
 class ApplicantType(models.TextChoices):
+    """Types of applicants for trademark/copyright applications"""
     SOLE_PROPRIETOR = "sole_proprietor", "Sole Proprietor"
     PARTNER = "partner", "Partner"
     CEO = "ceo", "CEO"
@@ -13,12 +19,14 @@ class ApplicantType(models.TextChoices):
 
 
 class ClientType(models.TextChoices):
+    """Types of clients for case management"""
     CONSULTANT = "A", "A (consultant)"
     DIRECT = "X", "X (CLIENTS)"
     NORMAL = "N", "N (NOOR BAAF)"
 
 
 class ApplicationType(models.TextChoices):
+    """Types of IP applications"""
     TRADEMARK = "trademark", "Trademark"
     COPYRIGHT = "copyright", "Copyright"
     NTN = "ntn", "NTN"
@@ -26,6 +34,7 @@ class ApplicationType(models.TextChoices):
 
 
 class Stage(models.IntegerChoices):
+    """Stages of the IP application process"""
     STAGE_1 = 1, "Stage 1: Filing"
     STAGE_2 = 2, "Stage 2: Examination"
     STAGE_3 = 3, "Stage 3: Financial / Legal"
@@ -33,16 +42,21 @@ class Stage(models.IntegerChoices):
 
 
 class SubStage(models.TextChoices):
+    """Sub-stages within each stage of the application process"""
+    # Stage 1 sub-stages
     FILED = "filed", "FILED"
     ACKNOWLEDGMENT_RECEIVED = "ack_received", "ACKNOWLEDGMENT RECEIVED"
 
+    # Stage 2 sub-stages
     EXAMINATION_DONE = "examination_done", "EXAMINATION DONE"
     ACCEPTANCE_DONE = "acceptance_done", "ACCEPTANCE DONE"
     HEARING = "hearing", "HEARING"
 
+    # Stage 3 sub-stages
     DEMAND_NOTE_RECEIVED = "demand_note_received", "DEMAND NOTE RECEIVED"
     DEMAND_NOTE_SUBMITTED = "demand_note_submitted", "DEMAND NOTE SUBMITTED"
 
+    # Stage 4 sub-stages
     PUBLISHED = "published", "PUBLISHED"
     CERTIFICATE_RECEIVED = "certificate_received", "CERTIFICATE RECEIVED"
     CERTIFICATE_PRINT = "certificate_print", "CERTIFICATE PRINT"
@@ -105,6 +119,9 @@ class AuditActionType(models.TextChoices):
     ASSIGNMENT_ADDED = "assignment_added", "Assignment Added"
     EVENT_ADDED = "event_added", "Event Added"
 
+
+# ==================== MAIN APPLICATION MODEL ====================
+# This is the core model for IP case management
 
 class Application(models.Model):
     case_number = models.CharField(max_length=50, unique=True, blank=True, verbose_name="Case #")
