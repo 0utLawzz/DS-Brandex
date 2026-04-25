@@ -287,6 +287,55 @@ body {
   border-color: var(--black);
 }
 
+/* Badge styles */
+.victorian-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border: 2px solid var(--black);
+  background: var(--white);
+  display: inline-block;
+  letter-spacing: 0.5px;
+}
+
+/* Type badges */
+.badge-type-tm {
+  background: var(--red);
+  color: var(--white);
+}
+
+.badge-type-cr {
+  background: var(--green);
+  color: var(--white);
+}
+
+.badge-type-ntn {
+  background: var(--orange);
+  color: var(--white);
+}
+
+/* Stage badges */
+.badge-stage-1 {
+  background: var(--red);
+  color: var(--white);
+}
+
+.badge-stage-2 {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+.badge-stage-3 {
+  background: var(--green);
+  color: var(--white);
+}
+
+.badge-stage-4 {
+  background: var(--blue);
+  color: var(--white);
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-main);
   font-weight: normal;
