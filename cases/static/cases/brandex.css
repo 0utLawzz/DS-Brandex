@@ -281,6 +281,13 @@ body {
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.victorian-card .card-header .material-icons {
+  font-size: 16px;
 }
 
 .victorian-table {

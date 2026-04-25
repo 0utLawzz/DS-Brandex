@@ -28,7 +28,10 @@
     <!-- ─── PANEL 1: Case Info ────────────────── -->
     <div class="victorian-card card dst-accent-blue">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <span class="small-cap">Case Info</span>
+        <div class="d-flex align-items-center gap-2">
+          <span class="material-icons">info</span>
+          <span class="small-cap">Case Info</span>
+        </div>
         <a class="btn victorian-btn btn-sm small-cap"
            href="{% url 'cases:export_application_pdf' application.pk %}"
            target="_blank">
@@ -116,7 +119,10 @@
 
     <!-- ─── PANEL 2: Status Box ───────────────── -->
     <div class="victorian-card card dst-accent-yellow">
-      <div class="card-header small-cap">Status</div>
+      <div class="card-header small-cap">
+      <span class="material-icons" style="vertical-align:middle;margin-right:8px;">verified</span>
+      Status
+    </div>
       <div class="card-body">
 
         <!-- Current stage / sub-status / status -->
@@ -223,7 +229,10 @@
 
     <!-- ─── PANEL 3: Timeline ─────────────────── -->
     <div class="victorian-card card dst-accent-blue">
-      <div class="card-header small-cap">Timeline</div>
+      <div class="card-header small-cap">
+      <span class="material-icons" style="vertical-align:middle;margin-right:8px;">schedule</span>
+      Timeline
+    </div>
       <div class="card-body">
         <div class="dst-timeline">
           {% for e in events %}
@@ -261,7 +270,10 @@
 
     <!-- ─── PANEL 4: Assignments ──────────────── -->
     <div class="victorian-card card dst-accent-red">
-      <div class="card-header small-cap">Assignments</div>
+      <div class="card-header small-cap">
+      <span class="material-icons" style="vertical-align:middle;margin-right:8px;">assignment</span>
+      Assignments
+    </div>
       <div class="card-body">
 
         <!-- Add assignment form -->
@@ -312,6 +324,9 @@
               {% if a.notes %}
                 <div class="small mt-1">{{ a.notes }}</div>
               {% endif %}
+      <span class="material-icons" style="vertical-align:middle;margin-right:8px;">pie_chart</span>
+      
+    
             </div>
           {% empty %}
             <div class="text-muted small small-cap">No assignments.</div>
@@ -320,6 +335,9 @@
 
       </div>
     </div>
+      <span class="material-icons" style="vertical-align:middle;margin-right:8px;">folder</span>
+      
+    
 
     <!-- ─── PANEL 5: Assignment Chart ────────── -->
     <div class="victorian-card card dst-accent-blue">
@@ -394,6 +412,9 @@
                 </tr>
               {% empty %}
                 <tr>
+      <span class="material-icons" style="vertical-align:middle;margin-right:8px;">history</span>
+      
+    
                   <td colspan="2" class="text-muted text-center small-cap py-3">
                     No documents.
                   </td>
@@ -436,7 +457,10 @@
               </div>
             </div>
           {% empty %}
-            <div class="text-muted text-center small-cap py-3">
+           div cla s="d-flex align-items-center gap-2">
+            <s<div class=material-icons">event</span>
+            <"pan class="stext-muted text-center sm>
+          </divall-cap py-3">
               No history records.
             </div>
           {% endfor %}
