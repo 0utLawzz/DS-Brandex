@@ -155,6 +155,13 @@
             <input class="form-control victorian-input" name="jurisdiction" value="{{ application.jurisdiction|default:'' }}" />
           </div>
 
+          {% if application.current_stage >= 3 %}
+          <div class="col-md-4">
+            <label class="form-label small-cap">Demand Note Date</label>
+            <input class="form-control victorian-input" type="date" name="demand_note_date" value="{% if application.demand_note_date %}{{ application.demand_note_date|date:'Y-m-d' }}{% endif %}" />
+          </div>
+          {% endif %}
+
           <div class="col-12">
             <label class="form-label small-cap">Address</label>
             <textarea class="form-control victorian-input" name="address" rows="3">{{ application.address|default:'' }}</textarea>

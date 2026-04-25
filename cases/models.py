@@ -133,6 +133,7 @@ class Application(models.Model):
 
     jurisdiction = models.CharField(max_length=100, blank=True)
     dispatch_status = models.CharField(max_length=100, blank=True)
+    demand_note_date = models.DateField(null=True, blank=True, verbose_name="Demand Note Date")
 
     logo = models.ImageField(upload_to="logos/", null=True, blank=True)
 
@@ -217,6 +218,7 @@ class Application(models.Model):
             "agent_address",
             "jurisdiction",
             "dispatch_status",
+            "demand_note_date",
             "logo",
             "current_stage",
             "current_sub_stage",

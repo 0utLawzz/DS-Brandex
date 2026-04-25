@@ -66,6 +66,7 @@ def application_create(request: HttpRequest):
         agent_address = (request.POST.get("agent_address") or "").strip()
         jurisdiction = (request.POST.get("jurisdiction") or "").strip()
         dispatch_status = (request.POST.get("dispatch_status") or "").strip()
+        demand_note_date = request.POST.get("demand_note_date") or None
         logo = request.FILES.get("logo")
         files = request.FILES.getlist("files")
 
@@ -122,6 +123,7 @@ def application_create(request: HttpRequest):
             agent_address=agent_address,
             jurisdiction=jurisdiction,
             dispatch_status=dispatch_status,
+            demand_note_date=demand_note_date,
             current_stage=Stage.STAGE_1,
             current_sub_stage=SubStage.FILED,
             current_status="",
@@ -176,6 +178,7 @@ def application_edit(request: HttpRequest, pk: int):
         agent_address = (request.POST.get("agent_address") or "").strip()
         jurisdiction = (request.POST.get("jurisdiction") or "").strip()
         dispatch_status = (request.POST.get("dispatch_status") or "").strip()
+        demand_note_date = request.POST.get("demand_note_date") or None
         logo = request.FILES.get("logo")
         files = request.FILES.getlist("files")
 
@@ -228,6 +231,7 @@ def application_edit(request: HttpRequest, pk: int):
         application.agent_address = agent_address
         application.jurisdiction = jurisdiction
         application.dispatch_status = dispatch_status
+        application.demand_note_date = demand_note_date
         if logo:
             application.logo = logo
 

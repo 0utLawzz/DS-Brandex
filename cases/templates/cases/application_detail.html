@@ -85,6 +85,11 @@
 
             <div class="k">Dispatch</div>
             <div>{{ application.dispatch_status|default:"—" }}</div>
+
+            {% if application.current_stage >= 3 %}
+            <div class="k">Demand Note Date</div>
+            <div>{{ application.demand_note_date|date:"d-M-Y"|default:"—" }}</div>
+            {% endif %}
           </div>
 
           <!-- Trademark logo thumbnail -->
