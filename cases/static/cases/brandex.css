@@ -127,10 +127,9 @@ body {
   padding: 9px 18px;
   border: var(--border);
   font-family: var(--font-main);
-  font-size: 12px;
-  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 11px;
+  letter-spacing: 0.6px;
   cursor: pointer;
   transition: all 0.1s;
   display: inline-flex;
@@ -327,4 +326,35 @@ body {
 
 .dst-assignment.overdue { background: #fff5f5; }
 .dst-assignment.soon { background: #fffbf0; }
+
+.sec-title {
+  font-size: 24px;
+}
+
+.detail-card-header {
+  background: var(--yellow);
+  border-bottom: var(--border);
+  padding: 8px 14px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.settings-card-head {
+  background: var(--yellow);
+  border-bottom: var(--border);
+  padding: 10px 14px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.cases-table td {
+  font-size: 12px;
+}
+
+.dv {
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
 
