@@ -16,7 +16,15 @@
   --shadow-lg: 6px 6px 0px #0a0a0a;
   --shadow-xl: 8px 8px 0px #0a0a0a;
   --font-main: 'Space Grotesk', sans-serif;
+  --font-heading: 'Reflex', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
+}
+
+@font-face {
+  font-family: 'Reflex';
+  src: url('{% static "cases/fonts/Reflex.ttf" %}') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -264,9 +272,15 @@ body {
   border-color: var(--black);
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: normal;
+}
+
 .small-cap {
   text-transform: uppercase;
   letter-spacing: 0.6px;
+  font-family: var(--font-heading);
   font-weight: 800;
 }
 
