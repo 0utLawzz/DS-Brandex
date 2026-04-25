@@ -252,20 +252,36 @@ body {
   box-shadow: var(--shadow);
 }
 
+.victorian-card .card-body {
+  padding: 16px;
+}
+
+.victorian-card .card-body > hr {
+  margin: 16px 0;
+}
+
+.victorian-card .card-body > .d-flex {
+  margin-bottom: 12px;
+}
+
+.victorian-card .card-body > .mb-3 {
+  margin-bottom: 16px;
+}
+
 .victorian-card .card-header {
   background: var(--yellow);
   border-bottom: var(--border);
   font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.5px;hedg
+  letter-spacing: 0.5px;
 }
 
 .victorian-table {
   border-color: var(--black);
 }
 
-h1, h2, h3, h4, h5, h6 {hedg
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-main);
   font-weight: normal;
 }
