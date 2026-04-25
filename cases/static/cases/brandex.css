@@ -15,23 +15,9 @@
   --shadow: 4px 4px 0px #0a0a0a;
   --shadow-lg: 6px 6px 0px #0a0a0a;
   --shadow-xl: 8px 8px 0px #0a0a0a;
-  --font-main: 'FakeHope', sans-serif;
-  --font-heading: 'Belgrado', sans-serif;
+  --font-main: "Unica One", sans-serif;
+  --font-heading: "Bodoni Moda SC", serif;
   --font-mono: 'IBM Plex Mono', monospace;
-}
-
-@font-face {
-  font-family: 'FakeHope';
-  src: url('fonts/FakeHope.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Belgrado';
-  src: url('./fonts/Belgrado.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
