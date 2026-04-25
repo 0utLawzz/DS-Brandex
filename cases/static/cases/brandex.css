@@ -16,12 +16,20 @@
   --shadow-lg: 6px 6px 0px #0a0a0a;
   --shadow-xl: 8px 8px 0px #0a0a0a;
   --font-main: 'FakeHope', sans-serif;
+  --font-heading: 'Belgrado', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 }
 
 @font-face {
   font-family: 'FakeHope';
   src: url('fonts/FakeHope.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Belgrado';
+  src: url('fonts/Belgrado.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -264,14 +272,14 @@ body {
   font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.5px;hedg
 }
 
 .victorian-table {
   border-color: var(--black);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6 {hedg
   font-family: var(--font-main);
   font-weight: normal;
 }
