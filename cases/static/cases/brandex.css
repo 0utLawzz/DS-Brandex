@@ -250,6 +250,7 @@ body {
   background: var(--card);
   border: var(--border);
   box-shadow: var(--shadow);
+  margin-bottom: 24px;
 }
 
 .victorian-card .card-body {
