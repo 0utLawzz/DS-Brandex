@@ -310,37 +310,44 @@ body {
 .badge-type-tm {
   background: var(--red);
   color: var(--white);
+  font-weight: 800;
 }
 
 .badge-type-cr {
   background: var(--green);
   color: var(--white);
+  font-weight: 800;
 }
 
 .badge-type-ntn {
   background: var(--orange);
-  color: var(--white);
+  color: var(--black);
+  font-weight: 800;
 }
 
 /* Stage badges */
 .badge-stage-1 {
   background: var(--red);
   color: var(--white);
+  font-weight: 800;
 }
 
 .badge-stage-2 {
   background: var(--yellow);
   color: var(--black);
+  font-weight: 800;
 }
 
 .badge-stage-3 {
   background: var(--green);
   color: var(--white);
+  font-weight: 800;
 }
 
 .badge-stage-4 {
   background: var(--blue);
   color: var(--white);
+  font-weight: 800;
 }
 
 h1, h2, h3, h4, h5, h6 {
