@@ -5,6 +5,7 @@ This guide provides comprehensive information about all commands, procedures, an
 ## Table of Contents
 - [Development Commands](#development-commands)
 - [Database Commands](#database-commands)
+- [Import/Export Commands](#importexport-commands)
 - [When to Run Each Command](#when-to-run-each-command)
 - [CSRF Token Issues](#csrf-token-issues)
 - [Git Workflow](#git-workflow)
@@ -60,6 +61,50 @@ python manage.py backup_db
 **When to use:** Before making significant changes or regularly to ensure data safety.
 
 **What it does:** Creates a backup of the database in the `backups/` folder and syncs to Google Drive (if configured).
+
+---
+
+## Import/Export Commands
+
+### Export Applications to CSV
+**Via Web Interface:**
+1. Go to Applications list page (`/`)
+2. Click **Export CSV** button
+3. CSV file downloads automatically
+
+**Features:**
+- Exports all application fields
+- Includes timestamps (created_at, updated_at)
+- Proper date formatting (YYYY-MM-DD)
+- Ordered by creation date (newest first)
+
+### Import Applications from CSV
+**Via Web Interface:**
+1. Go to Applications list page (`/`)
+2. Click **Import CSV** button
+3. Select a CSV file from your computer
+4. Click **Import CSV**
+5. Review import summary (success count + any errors)
+
+**CSV Format Requirements:**
+- Must have header row with these columns:
+  - Case Number, Client Type, Client ID, Sequence, Folder Number, Application Name, Application Type, Trademark No, Case No, Class Numbers, Filing Date, Application Year, Applicant Name, Trading As, Applicant Type, Address, City, Agent Name, Agent Address, Jurisdiction, Dispatch Status, Demand Note Date, Current Stage, Current Sub Stage, Current Status, Created At, Updated At
+- Dates must be in YYYY-MM-DD format
+- Case Numbers are checked for duplicates (skipped if exists)
+- Download sample CSV template from import page
+
+**Import Behavior:**
+- Skips duplicate case numbers
+- Shows error messages for failed rows
+- Continues processing even if some rows fail
+- Creates audit logs for imported applications
+
+**Best Practices:**
+1. Export current data first as backup
+2. Review CSV file before importing
+3. Start with small batch to test
+4. Check import summary for errors
+5. Verify imported data in application list
 
 ---
 

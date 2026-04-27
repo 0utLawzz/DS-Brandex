@@ -245,3 +245,32 @@ URLs:
 - **Backup Location**: Local backups stored in `backups/` folder
 - **Google Drive Sync**: Automatic sync to Google Drive after each backup
 - See `docs/BACKUP_GUIDE.md` for detailed setup instructions
+
+### Stage-Aware Forms (April 2026)
+- **Conditional Field Display**: Fields now show/hide based on application stage
+- **Demand Note Date**: New field that appears for Stage 3 and above
+- Template and view logic updated to support stage-specific fields
+- Migration created for new field
+
+### Badge System (April 2026)
+- **Type Badges**: Color-coded badges for application types (TM=red, CR=green, NTN=orange)
+- **Stage Badges**: Color-coded stage indicators (S1=red, S2=yellow, S3=green, S4=blue)
+- **Sub-Status Badges**: Display current sub-stage in application list
+- **CSS Enhancements**: NeoBrutalism color scheme with high contrast
+
+### Google Material Icons (April 2026)
+- **Icon Integration**: Google Material Icons added to all card headers
+- **Enhanced UI**: Icons improve visual hierarchy and user experience
+- **Icons Used**: search, list, info, verified, schedule, assignment, pie_chart, folder, history, event
+
+### CSV Import/Export (April 2026)
+- **Export to CSV**: Export all applications to CSV file for backup or migration
+- **Import from CSV**: Import applications from CSV file with duplicate checking
+- **UI Buttons**: Import/Export buttons added to application list page
+- **Error Handling**: Detailed feedback on import success/failure
+
+### Code Review & Documentation (April 2026)
+- **Code Comments**: Added detailed comments to models.py choice classes and Application model
+- **Code Review**: Comprehensive review completed - no critical bugs found
+- **Backup Branch**: Created backup branch `Backup-25-Apr-2026-Office-Sat` locally and remotely
+- **File Organization**: Verified all files properly organized and unnecessary data removed
