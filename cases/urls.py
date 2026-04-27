@@ -19,5 +19,7 @@ urlpatterns = [
     path("applications/<int:pk>/dispatch/received/", views.dispatch_certificate_received, name="dispatch_received"),
     path("applications/<int:pk>/dispatch/print/", views.dispatch_certificate_print, name="dispatch_print"),
     path("applications/<int:pk>/dispatch/dispatch/", views.dispatch_certificate_dispatch, name="dispatch_dispatch"),
+    path("applications/export/csv/", views.export_applications_csv, name="export_applications_csv"),
+    path("applications/import/csv/", views.import_applications_csv, name="import_applications_csv"),
     path("search/tm/", views.search_by_tm, name="search_tm"),
 ]

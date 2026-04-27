@@ -1,0 +1,65 @@
+{% extends 'cases/base.html' %}
+
+{% block title %}Import Applications — IP Case Platform{% endblock %}
+
+{% block content %}
+  <div class="victorian-card card mb-4">
+    <div class="card-header">
+      <span class="material-icons">upload_file</span>
+      <span>Import Applications</span>
+    </div>
+    <div class="card-body">
+
+      {% if success %}
+        <div class="alert" style="background: var(--green); color: var(--white); border: var(--border); padding: 15px; margin-bottom: 20px;">
+          <h5 class="small-cap" style="margin-bottom: 10px;">Import Complete</h5>
+          <p class="mb-0">{{ imported_count }} application(s) imported successfully.</p>
+          {% if errors %}
+            <p class="mb-0 mt-2"><small>{{ errors|length }} error(s) occurred:</small></p>
+            <ul style="margin-top: 10px; margin-bottom: 0;">
+              {% for error in errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+        <a class="btn victorian-btn small-cap" href="{% url 'cases:application_list' %}">
+          Back to Applications
+        </a>
+      {% else %}
+
+        {% if error %}
+          <div class="alert" style="background: var(--red); color: var(--white); border: var(--border); padding: 15px; margin-bottom: 20px;">
+            <p class="mb-0">{{ error }}</p>
+          </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label small-cap">Select CSV File</label>
+            <input class="form-control victorian-input" type="file" name="csv_file" accept=".csv" required />
+            <small class="text-muted" style="font-size: 0.8rem;">
+              CSV file must have headers: Case Number, Client Type, Client ID, Folder Number, Application Name, Application Type, Trademark No, Case No, Class Numbers, Filing Date, Applicant Name, Address, City, Agent Name, Jurisdiction, Dispatch Status, Demand Note Date, Current Stage, Current Sub Stage, Current Status
+            </small>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn victorian-btn small-cap" type="submit">Import CSV</button>
+            <a class="btn victorian-btn victorian-btn-secondary small-cap" href="{% url 'cases:application_list' %}">
+              Cancel
+            </a>
+          </div>
+        </form>
+
+        <div class="mt-4">
+          <h6 class="small-cap" style="margin-bottom: 10px;">Download Sample CSV Template</h6>
+          <a class="btn victorian-btn victorian-btn-secondary btn-sm small-cap" href="{% url 'cases:export_applications_csv' %}">
+            Download Sample CSV
+          </a>
+        </div>
+
+      {% endif %}
+
+    </div>
+  </div>
+{% endblock %}

@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import models
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+import csv
+import io
 
 from django.contrib.auth import get_user_model
 
@@ -720,6 +722,136 @@ def search_by_tm(request: HttpRequest):
         "q": q,
         "site_settings": site_settings,
     }
-    return render(request, "cases/search_tm.html", context)
-    return render(request, "cases/search_tm.html", context)
-    return render(request, "cases/search_tm.html", context)
+    return render(request, "cases/application_list.html", context)
+
+
+@login_required
+def export_applications_csv(request: HttpRequest):
+    """Export all applications to CSV file"""
+    applications = Application.objects.all().order_by('-created_at')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="applications_export.csv"'
+
+    writer = csv.writer(response)
+    
+    # Write header row
+    writer.writerow([
+        'Case Number', 'Client Type', 'Client ID', 'Sequence',
+        'Folder Number', 'Application Name', 'Application Type',
+        'Trademark No', 'Case No', 'Class Numbers', 'Filing Date',
+        'Application Year', 'Applicant Name', 'Trading As',
+        'Applicant Type', 'Address', 'City', 'Agent Name',
+        'Agent Address', 'Jurisdiction', 'Dispatch Status',
+        'Demand Note Date', 'Current Stage', 'Current Sub Stage',
+        'Current Status', 'Created At', 'Updated At'
+    ])
+
+    # Write data rows
+    for app in applications:
+        writer.writerow([
+            app.case_number or '',
+            app.client_type or '',
+            app.client_id or '',
+            app.sequence or '',
+            app.folder_number or '',
+            app.application_name or '',
+            app.application_type or '',
+            app.trademark_no or '',
+            app.case_no or '',
+            app.class_numbers or '',
+            app.filing_date.strftime('%Y-%m-%d') if app.filing_date else '',
+            app.application_year or '',
+            app.applicant_name or '',
+            app.trading_as or '',
+            app.applicant_type or '',
+            app.address or '',
+            app.city or '',
+            app.agent_name or '',
+            app.agent_address or '',
+            app.jurisdiction or '',
+            app.dispatch_status or '',
+            app.demand_note_date.strftime('%Y-%m-%d') if app.demand_note_date else '',
+            app.current_stage or '',
+            app.current_sub_stage or '',
+            app.current_status or '',
+            app.created_at.strftime('%Y-%m-%d %H:%M:%S') if app.created_at else '',
+            app.updated_at.strftime('%Y-%m-%d %H:%M:%S') if app.updated_at else ''
+        ])
+
+    return response
+
+
+@login_required
+def import_applications_csv(request: HttpRequest):
+    """Import applications from CSV file"""
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        if not csv_file:
+            return render(request, 'cases/import_applications.html', {
+                'error': 'Please select a CSV file to import.'
+            })
+
+        if not csv_file.name.endswith('.csv'):
+            return render(request, 'cases/import_applications.html', {
+                'error': 'Please upload a CSV file.'
+            })
+
+        # Read CSV file
+        decoded_file = csv_file.read().decode('utf-8')
+        io_string = io.StringIO(decoded_file)
+        reader = csv.DictReader(io_string)
+
+        imported_count = 0
+        errors = []
+
+        for row in reader:
+            try:
+                # Skip if case number already exists
+                case_number = row.get('Case Number', '').strip()
+                if case_number and Application.objects.filter(case_number=case_number).exists():
+                    errors.append(f"Case {case_number} already exists - skipped")
+                    continue
+
+                # Create application from CSV row
+                app = Application(
+                    case_number=case_number or None,
+                    client_type=row.get('Client Type', 'X') or 'X',
+                    client_id=int(row.get('Client ID', 0)) if row.get('Client ID') else None,
+                    sequence=int(row.get('Sequence', 0)) if row.get('Sequence') else None,
+                    folder_number=row.get('Folder Number', '').strip() or '',
+                    application_name=row.get('Application Name', '').strip(),
+                    application_type=row.get('Application Type', 'trademark') or 'trademark',
+                    trademark_no=row.get('Trademark No', '').strip() or '',
+                    case_no=row.get('Case No', '').strip() or '',
+                    class_numbers=row.get('Class Numbers', '').strip() or '',
+                    filing_date=row.get('Filing Date', '').strip() or None,
+                    application_year=row.get('Application Year', '').strip() or None,
+                    applicant_name=row.get('Applicant Name', '').strip(),
+                    trading_as=row.get('Trading As', '').strip() or '',
+                    applicant_type=row.get('Applicant Type', '').strip() or '',
+                    address=row.get('Address', '').strip() or '',
+                    city=row.get('City', '').strip() or '',
+                    agent_name=row.get('Agent Name', '').strip() or '',
+                    agent_address=row.get('Agent Address', '').strip() or '',
+                    jurisdiction=row.get('Jurisdiction', '').strip() or '',
+                    dispatch_status=row.get('Dispatch Status', '').strip() or '',
+                    demand_note_date=row.get('Demand Note Date', '').strip() or None,
+                    current_stage=int(row.get('Current Stage', 1)) if row.get('Current Stage') else 1,
+                    current_sub_stage=row.get('Current Sub Stage', 'filed') or 'filed',
+                    current_status=row.get('Current Status', '').strip() or '',
+                )
+                app.save()
+                imported_count += 1
+
+            except Exception as e:
+                errors.append(f"Error importing row: {str(e)}")
+                continue
+
+        return render(request, 'cases/import_applications.html', {
+            'success': True,
+            'imported_count': imported_count,
+            'errors': errors
+        })
+
+    return render(request, 'cases/import_applications.html')
