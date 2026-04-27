@@ -35,7 +35,7 @@ CSRF_TRUSTED_ORIGINS = [
     o.strip()
     for o in os.environ.get(
         "DJANGO_CSRF_TRUSTED_ORIGINS",
-        "http://127.0.0.1,http://localhost,http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:56317,http://localhost:56317,http://127.0.0.1:51043,http://localhost:51043",
+        "http://127.0.0.1,http://localhost,http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:56317,http://localhost:56317,http://127.0.0.1:51043,http://localhost:51043,http://127.0.0.1:59843,http://localhost:59843,http://127.0.0.1:63866,http://localhost:63866"
     ).split(",")
     if o.strip()
 ]
@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'cases.middleware.DynamicCSRFMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'cases.middleware.CurrentUserMiddleware',
