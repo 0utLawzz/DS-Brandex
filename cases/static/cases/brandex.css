@@ -467,7 +467,7 @@ body {
   border: 2px solid var(--black);
   box-shadow: var(--shadow);
   background: var(--white);
-  padding: 16px;
+  padding: 20px;
   position: relative;
   overflow: hidden;
 }
@@ -938,6 +938,10 @@ body {
 }
 
 @media (max-width: 480px) {
+  .metric-grid { grid-template-columns: 1fr 1fr; }
+  .search-bar { flex-direction: column; }
+  .logo-frame { width: 80px; height: 80px; }
+}
   .metric-grid { grid-template-columns: 1fr 1fr; }
   .search-bar { flex-direction: column; }
   .logo-frame { width: 80px; height: 80px; }
