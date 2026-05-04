@@ -21,7 +21,7 @@
     <a class="btn btn-dark small-cap" href="{% url 'cases:application_edit' application.pk %}">
       <span class="material-icons-round" style="font-size:14px">edit</span> Edit
     </a>
-    <button class="btn btn-cyan small-cap" onclick="window.print()">
+    <button class="btn btn-cyan small-cap" onclick="window.print(); return false;">
       <span class="material-icons-round" style="font-size:14px">print</span> Print
     </button>
     <a class="btn small-cap" href="{% url 'cases:export_application_pdf' application.pk %}" target="_blank">

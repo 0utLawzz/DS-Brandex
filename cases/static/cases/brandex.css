@@ -596,10 +596,10 @@ body {
 }
 
 .tl-dot .material-icons-round {
-  font-size: 16px !important;
+  font-size: 14px !important;
   display: inline-block !important;
-  width: 16px !important;
-  height: 16px !important;
+  width: 14px !important;
+  height: 14px !important;
   overflow: hidden !important;
 }
 
@@ -756,7 +756,7 @@ body {
   border: 2px solid var(--black);
   box-shadow: var(--shadow-sm);
   background: var(--white);
-  padding: 11px 20px;
+  padding: 11px 30px !important;
   margin-bottom: 10px;
   border-left: 5px solid var(--black);
 }
