@@ -597,6 +597,10 @@ body {
 
 .tl-dot .material-icons-round {
   font-size: 16px !important;
+  display: inline-block !important;
+  width: 16px !important;
+  height: 16px !important;
+  overflow: hidden !important;
 }
 
 .tl-dot.s1 { background: var(--stage1); color: var(--white); }
@@ -752,7 +756,7 @@ body {
   border: 2px solid var(--black);
   box-shadow: var(--shadow-sm);
   background: var(--white);
-  padding: 11px 13px;
+  padding: 11px 20px;
   margin-bottom: 10px;
   border-left: 5px solid var(--black);
 }

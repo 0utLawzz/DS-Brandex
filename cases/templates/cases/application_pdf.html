@@ -94,24 +94,24 @@
     }
 
     .pdf-mark-image {
-      width: 15pt;
-      height: 15pt;
+      width: 10pt;
+      height: 10pt;
       object-fit: contain;
-      border: 1.5pt solid var(--black);
+      border: 1pt solid var(--black);
       flex-shrink: 0;
       background: white;
       padding: 1pt;
     }
 
     .pdf-mark-placeholder {
-      width: 15pt;
-      height: 15pt;
-      border: 1.5pt dashed #aaa;
+      width: 10pt;
+      height: 10pt;
+      border: 1pt dashed #aaa;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 6pt;
+      font-size: 5pt;
       color: #aaa;
     }
 
@@ -290,10 +290,12 @@
 
     @media print {
       .screen-only, .no-print { display: none !important; }
-      .pdf-mark-image { width: 12pt !important; height: 12pt !important; }
-      .pdf-mark-placeholder { width: 12pt !important; height: 12pt !important; }
-      body { background: #fafafa !important; }
-      .pdf-section { background: #ffffff !important; border: 1pt solid #e0e0e0 !important; }
+      .pdf-mark-image { width: 8pt !important; height: 8pt !important; }
+      .pdf-mark-placeholder { width: 8pt !important; height: 8pt !important; }
+      body { background: #f8f8f8 !important; }
+      .pdf-section { background: #ffffff !important; border: 0.5pt solid #e8e8e8 !important; }
+      .pdf-header { border-bottom: 1pt solid #ccc !important; }
+      .pdf-title-row { border: 1pt solid #ddd !important; }
     }
   </style>
 </head>

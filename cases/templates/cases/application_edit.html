@@ -151,9 +151,20 @@
             <label class="form-label small-cap">Agent</label>
             <select class="form-select victorian-input" name="agent_name">
               <option value="">Select Agent</option>
-              {% for value,label in agent_choices %}
-                <option value="{{ value }}" {% if application.agent_name == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
+              <option value="JAN ONLINE SERVICES/ÀDISTAAN" {% if application.agent_name == 'JAN ONLINE SERVICES/ÀDISTAAN' %}selected{% endif %}>JAN ONLINE SERVICES/ÀDISTAAN</option>
+              <option value="BRANDEX LAW ASSOCIATES" {% if application.agent_name == 'BRANDEX LAW ASSOCIATES' %}selected{% endif %}>BRANDEX LAW ASSOCIATES</option>
+              <option value="NOOR BAAF LAW ASSOCIATES" {% if application.agent_name == 'NOOR BAAF LAW ASSOCIATES' %}selected{% endif %}>NOOR BAAF LAW ASSOCIATES</option>
+              <option value="AZIZ LAW ASSOCIATES" {% if application.agent_name == 'AZIZ LAW ASSOCIATES' %}selected{% endif %}>AZIZ LAW ASSOCIATES</option>
+              <option value="MS TAX & FINANCE CONSULTANT" {% if application.agent_name == 'MS TAX & FINANCE CONSULTANT' %}selected{% endif %}>MS TAX & FINANCE CONSULTANT</option>
+              <option value="MS BRAND EXPERTS (PVT.) LIMITED" {% if application.agent_name == 'MS BRAND EXPERTS (PVT.) LIMITED' %}selected{% endif %}>MS BRAND EXPERTS (PVT.) LIMITED</option>
+              <option value="KK CONSULTANT SMC-PVT LIMITED" {% if application.agent_name == 'KK CONSULTANT SMC-PVT LIMITED' %}selected{% endif %}>KK CONSULTANT SMC-PVT LIMITED</option>
+              <option value="SHEIKH LAW ASSOCIATES" {% if application.agent_name == 'SHEIKH LAW ASSOCIATES' %}selected{% endif %}>SHEIKH LAW ASSOCIATES</option>
+              <option value="M. TARIQ SHAIKH LAW FIRM" {% if application.agent_name == 'M. TARIQ SHAIKH LAW FIRM' %}selected{% endif %}>M. TARIQ SHAIKH LAW FIRM</option>
+              <option value="CONSULTANCYFIN" {% if application.agent_name == 'CONSULTANCYFIN' %}selected{% endif %}>CONSULTANCYFIN</option>
+              <option value="M/S. SOLUTION LEGACY" {% if application.agent_name == 'M/S. SOLUTION LEGACY' %}selected{% endif %}>M/S. SOLUTION LEGACY</option>
+              <option value="S.A.T.H CONSULTANTS" {% if application.agent_name == 'S.A.T.H CONSULTANTS' %}selected{% endif %}>S.A.T.H CONSULTANTS</option>
+              <option value="BADAR CONSULTANTS" {% if application.agent_name == 'BADAR CONSULTANTS' %}selected{% endif %}>BADAR CONSULTANTS</option>
+              <option value="MS HAFIZ M. ALI WARRAICH" {% if application.agent_name == 'MS HAFIZ M. ALI WARRAICH' %}selected{% endif %}>MS HAFIZ M. ALI WARRAICH</option>
             </select>
           </div>
 
