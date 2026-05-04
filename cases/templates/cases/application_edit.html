@@ -51,11 +51,6 @@
           </div>
 
           <div class="col-md-4">
-            <label class="form-label small-cap">Case No (Official)</label>
-            <input class="form-control victorian-input" name="case_no" value="{{ application.case_no|default:'' }}" />
-          </div>
-
-          <div class="col-md-4">
             <label class="form-label small-cap">Application Type</label>
             <select class="form-select victorian-input" name="application_type" required>
               {% for value,label in application_type_choices %}
@@ -99,7 +94,25 @@
             <input class="form-control victorian-input" type="number" name="application_year" value="{{ application.application_year|default:'' }}" placeholder="2026" />
           </div>
 
-          <div class="col-md-4"></div>
+          <div class="col-md-4">
+            <label class="form-label small-cap">Current Stage</label>
+            <select class="form-select victorian-input" name="current_stage">
+              <option value="1" {% if application.current_stage == 1 %}selected{% endif %}>Stage 1 - Filing</option>
+              <option value="2" {% if application.current_stage == 2 %}selected{% endif %}>Stage 2 - Acceptance</option>
+              <option value="3" {% if application.current_stage == 3 %}selected{% endif %}>Stage 3 - Certificate</option>
+              <option value="4" {% if application.current_stage == 4 %}selected{% endif %}>Stage 4 - Opposition</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small-cap">Status</label>
+            <select class="form-select victorian-input" name="status">
+              <option value="active" {% if application.status == 'active' %}selected{% endif %}>Active</option>
+              <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>Pending</option>
+              <option value="completed" {% if application.status == 'completed' %}selected{% endif %}>Completed</option>
+              <option value="stopped" {% if application.status == 'stopped' %}selected{% endif %}>Stopped</option>
+            </select>
+          </div>
 
           <div class="col-12">
             <hr class="my-4" style="border: 3px solid var(--line);" />

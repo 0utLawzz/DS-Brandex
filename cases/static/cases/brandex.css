@@ -595,6 +595,10 @@ body {
   z-index: 1;
 }
 
+.tl-dot .material-icons-round {
+  font-size: 16px !important;
+}
+
 .tl-dot.s1 { background: var(--stage1); color: var(--white); }
 .tl-dot.s2 { background: var(--stage2); color: var(--black); }
 .tl-dot.s3 { background: var(--stage3); color: var(--white); }
