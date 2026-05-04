@@ -527,6 +527,7 @@ body {
   box-shadow: var(--shadow-sm);
   margin-bottom: 4px;
   overflow: hidden;
+  position: relative;
 }
 
 .pipeline-step {
@@ -544,6 +545,8 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #aaa;
+  position: relative;
+  z-index: 1;
   gap: 3px;
 }
 

@@ -37,8 +37,8 @@
 </div>
 
 {# ── 4-STAGE PIPELINE ── #}
-<div class="victorian-card mb-3 no-print">
-  <div class="stage-pipeline">
+<div class="victorian-card mb-3 no-print" style="clear:both;">
+  <div class="stage-pipeline" id="main-stage-pipeline">
     <div class="pipeline-step {% if application.current_stage >= 1 %}{% if application.current_stage == 1 %}active-s1{% else %}done{% endif %}{% endif %}">
       <span class="step-num">1</span>
       <span class="step-label">Filing</span>
