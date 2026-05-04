@@ -1,0 +1,715 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body, .wrap { font-family: 'Inter', sans-serif; }
+
+  .wrap {
+    background: #f5f0e6;
+    padding: 28px 20px 36px;
+    min-height: 100vh;
+  }
+
+  .page-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #2c3e50;
+    margin-bottom: 6px;
+  }
+
+  .page-sub {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-bottom: 24px;
+    letter-spacing: .04em;
+  }
+
+  /* ── SECTION CARD ── */
+  .section-card {
+    background: #fffdf8;
+    border-radius: 2px;
+    box-shadow: 0 4px 0 rgba(44,62,80,.10);
+    border: 1px solid rgba(44,62,80,.09);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 18px;
+    border-bottom: 1px solid rgba(44,62,80,.07);
+  }
+
+  .section-header .mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .section-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+  }
+
+  .section-body {
+    padding: 16px 18px;
+  }
+
+  /* ── CASE ID BUILDER ── */
+  .case-id-demo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .id-chip {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 2px;
+    letter-spacing: .06em;
+    box-shadow: 0 3px 0 rgba(44,62,80,.13);
+  }
+
+  .chip-x   { background:#3498db; color:#fff; }
+  .chip-n   { background:#27ae60; color:#fff; }
+  .chip-a   { background:#9b59b6; color:#fff; }
+  .chip-sep { color:#7f8c8d; font-size:15px; font-weight:700; }
+  .chip-id  { background:#e74c3c; color:#fff; }
+  .chip-seq { background:#f39c12; color:#fff; }
+
+  .id-result {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    background: #2c3e50;
+    color: #f5f0e6;
+    padding: 5px 18px;
+    border-radius: 2px;
+    box-shadow: 0 3px 0 rgba(44,62,80,.25);
+    letter-spacing: .10em;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .field-item {
+    background: #f5f0e6;
+    border-radius: 2px;
+    padding: 8px 12px;
+    border-left: 3px solid transparent;
+    font-size: 12px;
+  }
+
+  .field-label { font-weight: 500; color: #7f8c8d; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
+  .field-val   { color: #2c3e50; font-size: 12px; }
+
+  /* ── STAGE PIPELINE ── */
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 0;
+    margin-top: 4px;
+  }
+
+  .stage-col {
+    position: relative;
+  }
+
+  .stage-col:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: rgba(44,62,80,.08);
+  }
+
+  .stage-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 8px 12px;
+    border-bottom: 3px solid transparent;
+  }
+
+  .s1 .stage-header { border-color: #e74c3c; }
+  .s2 .stage-header { border-color: #f39c12; }
+  .s3 .stage-header { border-color: #27ae60; }
+  .s4 .stage-header { border-color: #3498db; }
+
+  .stage-badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .10em;
+    padding: 3px 10px;
+    border-radius: 2px;
+    margin-bottom: 6px;
+    box-shadow: 0 2px 0 rgba(44,62,80,.12);
+  }
+
+  .s1 .stage-badge { background:#e74c3c; color:#fff; }
+  .s2 .stage-badge { background:#f39c12; color:#fff; }
+  .s3 .stage-badge { background:#27ae60; color:#fff; }
+  .s4 .stage-badge { background:#3498db; color:#fff; }
+
+  .stage-name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2c3e50;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* Sub-status items */
+  .sub-list {
+    padding: 10px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sub-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border-radius: 2px;
+    font-size: 11.5px;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 2px 0 rgba(44,62,80,.08);
+    cursor: default;
+  }
+
+  .sub-item .material-icons-round { font-size: 15px; flex-shrink: 0; }
+
+  /* Stage 1 subs – red family */
+  .sub-s1 { background:#fdf0f0; color:#922b21; border-left:3px solid #e74c3c; }
+  .sub-s1 .material-icons-round { color:#e74c3c; }
+
+  /* Stage 2 subs – amber family */
+  .sub-s2 { background:#fef9f0; color:#7d5a1c; border-left:3px solid #f39c12; }
+  .sub-s2 .material-icons-round { color:#f39c12; }
+  .sub-s2-pub { background:#fff8e8; color:#7d5a1c; border-left:3px solid #e67e22; }
+  .sub-s2-pub .material-icons-round { color:#e67e22; }
+
+  /* Stage 3 subs – green family */
+  .sub-s3 { background:#f0faf4; color:#1a6b35; border-left:3px solid #27ae60; }
+  .sub-s3 .material-icons-round { color:#27ae60; }
+
+  /* Stage 4 subs – blue family */
+  .sub-s4 { background:#eef6fd; color:#1a5276; border-left:3px solid #3498db; }
+  .sub-s4 .material-icons-round { color:#3498db; }
+
+  /* STOP / special */
+  .sub-stop { background:#f2f3f4; color:#566573; border-left:3px solid #95a5a6; }
+  .sub-stop .material-icons-round { color:#95a5a6; }
+
+  /* Date tag */
+  .date-tag {
+    margin-left: auto;
+    font-size: 9.5px;
+    background: rgba(44,62,80,.07);
+    color: #7f8c8d;
+    padding: 2px 5px;
+    border-radius: 2px;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+
+  /* Proceed arrow between stage 1→2 */
+  .proceed-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 18px;
+    background: linear-gradient(90deg, rgba(231,76,60,.06), rgba(243,156,18,.06));
+    border-top: 1px dashed rgba(243,156,18,.35);
+    border-bottom: 1px dashed rgba(243,156,18,.35);
+    font-size: 11px;
+    color: #7d5a1c;
+    letter-spacing: .05em;
+  }
+
+  .proceed-banner .material-icons-round { font-size: 16px; color: #f39c12; }
+
+  /* ── AGENT ASSIGNMENT ── */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .agent-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 8px;
+    border-radius: 2px;
+    background: #f5f0e6;
+    border: 1px solid rgba(44,62,80,.08);
+    box-shadow: 0 3px 0 rgba(44,62,80,.09);
+    font-size: 11.5px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: #2c3e50;
+    letter-spacing: .04em;
+    gap: 4px;
+  }
+
+  .agent-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 2px 0 rgba(44,62,80,.15);
+  }
+
+  .agent-city {
+    font-size: 10px;
+    font-weight: 400;
+    color: #7f8c8d;
+    letter-spacing: .06em;
+  }
+
+  /* ── JOURNAL PUBLICATION ── */
+  .journal-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #eaf4fb;
+    border-radius: 2px;
+    border-left: 4px solid #3498db;
+    padding: 12px 14px;
+    box-shadow: 0 3px 0 rgba(52,152,219,.12);
+    margin-top: 4px;
+  }
+
+  .journal-box .material-icons-round { font-size: 22px; color: #2980b9; margin-top: 1px; flex-shrink: 0; }
+
+  .journal-content { font-size: 12px; color: #1a5276; line-height: 1.6; }
+  .journal-content strong { font-weight: 600; }
+
+  /* ── STOP STATUSES ── */
+  .stop-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .stop-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px;
+    padding: 5px 12px;
+    border-radius: 2px;
+    font-weight: 500;
+    box-shadow: 0 2px 0 rgba(44,62,80,.10);
+  }
+
+  .stop-chip .material-icons-round { font-size: 14px; }
+  .stop-close   { background:#fdecea; color:#922b21; border-left:3px solid #e74c3c; }
+  .stop-abandon { background:#fdf3e7; color:#7d4908; border-left:3px solid #f39c12; }
+  .stop-client  { background:#f0faf4; color:#1a6b35; border-left:3px solid #27ae60; }
+
+  /* ── DASHBOARD PREVIEW ── */
+  .dash-row {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .dash-card {
+    border-radius: 2px;
+    padding: 12px 10px 10px;
+    text-align: center;
+    box-shadow: 0 4px 0 rgba(44,62,80,.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dash-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .dc1 { background:#fdf3f3; } .dc1::before { background:#e74c3c; }
+  .dc2 { background:#fef9f0; } .dc2::before { background:#f39c12; }
+  .dc3 { background:#f0faf4; } .dc3::before { background:#27ae60; }
+  .dc4 { background:#eef6fd; } .dc4::before { background:#3498db; }
+
+  .dash-num {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .dash-lbl {
+    font-size: 10px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: #7f8c8d;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* ── MINI BAR CHART ── */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 60px;
+    padding: 0 4px;
+    margin-top: 12px;
+  }
+
+  .bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 3px;
+  }
+
+  .bar {
+    width: 100%;
+    border-radius: 2px 2px 0 0;
+    min-height: 4px;
+  }
+
+  .bar-lbl { font-size: 9.5px; color: #7f8c8d; letter-spacing: .05em; font-family: 'Poppins', sans-serif; }
+
+  /* Responsive */
+  @media (max-width: 580px) {
+    .pipeline { grid-template-columns: repeat(2,1fr); }
+    .dash-row  { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="page-title"><span class="material-icons-round" style="font-size:16px;vertical-align:middle;margin-right:6px">account_tree</span>DS-Brandex — Case Workflow</div>
+  <div class="page-sub">Trademark Case Management · 4-Stage Pipeline · Paper/Cutout Theme</div>
+
+  <!-- ── SECTION 1: CASE ID ── -->
+  <div class="section-card">
+    <div class="section-header" style="background:#fdf8f0;">
+      <span class="material-icons-round" style="color:#e74c3c;">folder_special</span>
+      <span class="section-title" style="color:#e74c3c;">Section 1 — Case Identification</span>
+    </div>
+    <div class="section-body">
+      <div style="font-size:12px;color:#7f8c8d;margin-bottom:10px;">Auto-generated Case / Folder Number:</div>
+      <div class="case-id-demo">
+        <span class="id-chip chip-x">X — Client</span>
+        <span class="id-chip chip-n">N — Noor Baaf</span>
+        <span class="id-chip chip-a">A — Consultant</span>
+        <span class="chip-sep">–</span>
+        <span class="id-chip chip-id">700 Client ID</span>
+        <span class="chip-sep">–</span>
+        <span class="id-chip chip-seq">004 Seq#</span>
+        <span class="chip-sep">=</span>
+        <span class="id-result">X-700-004</span>
+      </div>
+
+      <div style="margin-top:16px;font-size:10.5px;letter-spacing:.06em;color:#7f8c8d;text-transform:uppercase;font-weight:600;margin-bottom:6px;">Section 2 — Application Fields</div>
+      <div class="field-grid">
+        <div class="field-item" style="border-color:#e74c3c"><div class="field-label">Application Name</div><div class="field-val">Brand / Mark Name</div></div>
+        <div class="field-item" style="border-color:#e74c3c"><div class="field-label">Date of Filing</div><div class="field-val">Date Picker</div></div>
+        <div class="field-item" style="border-color:#3498db"><div class="field-label">TM No (Primary Key)</div><div class="field-val">Trademark Number</div></div>
+        <div class="field-item" style="border-color:#3498db"><div class="field-label">Class (1–45)</div><div class="field-val">Dropdown</div></div>
+        <div class="field-item" style="border-color:#f39c12"><div class="field-label">Application Type</div><div class="field-val">Sole / Company / Partner</div></div>
+        <div class="field-item" style="border-color:#f39c12"><div class="field-label">Applicant Name</div><div class="field-val">Text Input</div></div>
+        <div class="field-item" style="border-color:#27ae60"><div class="field-label">City</div><div class="field-val">LHR · KHI · ISB · PES</div></div>
+        <div class="field-item" style="border-color:#27ae60"><div class="field-label">Agent Name</div><div class="field-val">FAISAL · RASHID · UZMA · SALMAN</div></div>
+        <div class="field-item" style="border-color:#9b59b6"><div class="field-label">Logo Image</div><div class="field-val">Upload · Preview</div></div>
+        <div class="field-item" style="border-color:#9b59b6"><div class="field-label">Files (Multiple)</div><div class="field-val">Multi-upload Supported</div></div>
+        <div class="field-item" style="border-color:#e74c3c"><div class="field-label">Case Type</div><div class="field-val">TM · Copyright · NTN · Company</div></div>
+        <div class="field-item" style="border-color:#3498db"><div class="field-label">Filing Year</div><div class="field-val">Year Dropdown</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 4-STAGE PIPELINE ── -->
+  <div class="section-card">
+    <div class="section-header" style="background:#f0faf4;">
+      <span class="material-icons-round" style="color:#27ae60;">linear_scale</span>
+      <span class="section-title" style="color:#27ae60;">4-Stage Pipeline — Sub-Statuses</span>
+    </div>
+
+    <div class="pipeline">
+
+      <!-- STAGE 1 -->
+      <div class="stage-col s1">
+        <div class="stage-header">
+          <span class="stage-badge">STAGE 1</span>
+          <span class="stage-name">Filing</span>
+        </div>
+        <div class="sub-list">
+          <div class="sub-item sub-s1">
+            <span class="material-icons-round">upload_file</span>
+            Filing
+            <span class="date-tag">+ Date</span>
+          </div>
+          <div class="sub-item sub-s1">
+            <span class="material-icons-round">task_alt</span>
+            Acknowledgement
+            <span class="date-tag">+ Date</span>
+          </div>
+          <div class="sub-item sub-s1">
+            <span class="material-icons-round">manage_search</span>
+            Examination
+            <span class="date-tag">+ Date</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 2 -->
+      <div class="stage-col s2">
+        <div class="stage-header">
+          <span class="stage-badge">STAGE 2</span>
+          <span class="stage-name">Acceptance</span>
+        </div>
+        <div class="sub-list">
+          <div class="sub-item sub-s2">
+            <span class="material-icons-round">how_to_reg</span>
+            Acceptance Done
+            <span class="date-tag">+ Date/Time</span>
+          </div>
+          <div class="sub-item sub-s2">
+            <span class="material-icons-round">gavel</span>
+            Hearing
+            <span class="date-tag">+ Date/Time</span>
+          </div>
+          <div class="sub-item sub-s2-pub">
+            <span class="material-icons-round">menu_book</span>
+            Published
+            <span class="date-tag">Journal + Date</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 3 -->
+      <div class="stage-col s3">
+        <div class="stage-header">
+          <span class="stage-badge">STAGE 3</span>
+          <span class="stage-name">Certificate</span>
+        </div>
+        <div class="sub-list">
+          <div class="sub-item sub-s3">
+            <span class="material-icons-round">request_quote</span>
+            Demand Note Issue
+            <span class="date-tag">+ Date</span>
+          </div>
+          <div class="sub-item sub-s3">
+            <span class="material-icons-round">download_done</span>
+            Demand Note Received
+            <span class="date-tag">+ Date</span>
+          </div>
+          <div class="sub-item sub-s3">
+            <span class="material-icons-round">send</span>
+            Demand Note Submitted
+            <span class="date-tag">+ Date</span>
+          </div>
+          <div class="sub-item sub-s3">
+            <span class="material-icons-round">verified</span>
+            Certificate Issued
+            <span class="date-tag">+ Date</span>
+          </div>
+          <div class="sub-item sub-s3">
+            <span class="material-icons-round">inventory</span>
+            Certificate Received
+            <span class="date-tag">+ Date</span>
+          </div>
+          <div class="sub-item sub-s3">
+            <span class="material-icons-round">local_shipping</span>
+            Certificate Dispatch
+            <span class="date-tag">+ Date</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 4 -->
+      <div class="stage-col s4">
+        <div class="stage-header">
+          <span class="stage-badge">STAGE 4</span>
+          <span class="stage-name">Opposition</span>
+        </div>
+        <div class="sub-list">
+          <div class="sub-item sub-s4">
+            <span class="material-icons-round">report_problem</span>
+            Opposition Received
+            <span class="date-tag">+ Date</span>
+          </div>
+          <div class="sub-item sub-s4">
+            <span class="material-icons-round">undo</span>
+            Opposition Withdrawn
+            <span class="date-tag">+ Date</span>
+          </div>
+          <div class="sub-item sub-s4">
+            <span class="material-icons-round">drive_file_rename_outline</span>
+            Opposition Filed
+            <span class="date-tag">+ Date</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proceed Banner -->
+    <div class="proceed-banner">
+      <span class="material-icons-round">arrow_forward</span>
+      <strong>Stage 1 → 2:</strong> &nbsp; Client bolein "Proceed" tab ke baad hi Stage 2 activate hogi
+      <span class="material-icons-round" style="margin-left:8px">arrow_forward</span>
+    </div>
+  </div>
+
+  <!-- ── AGENT ASSIGNMENT ── -->
+  <div class="section-card">
+    <div class="section-header" style="background:#eef6fd;">
+      <span class="material-icons-round" style="color:#3498db;">assignment_ind</span>
+      <span class="section-title" style="color:#3498db;">Stage 2 — Agent Assignment</span>
+    </div>
+    <div class="section-body">
+      <div style="font-size:12px;color:#7f8c8d;margin-bottom:10px;">Har case kisi agent ko assign hoga — check &amp; balance rakha jata hai</div>
+      <div class="agent-grid">
+        <div class="agent-chip">
+          <div class="agent-avatar" style="background:#fde8e8;color:#c0392b">FA</div>
+          Faisal
+          <span class="agent-city">LHR</span>
+        </div>
+        <div class="agent-chip">
+          <div class="agent-avatar" style="background:#e8f5e9;color:#1a6b35">RA</div>
+          Rashid
+          <span class="agent-city">ISB</span>
+        </div>
+        <div class="agent-chip">
+          <div class="agent-avatar" style="background:#eef6fd;color:#1a5276">UZ</div>
+          Uzma
+          <span class="agent-city">KRI</span>
+        </div>
+        <div class="agent-chip">
+          <div class="agent-avatar" style="background:#fef9f0;color:#7d4908">SA</div>
+          Salman
+          <span class="agent-city">LHR</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── JOURNAL PUBLICATION ── -->
+  <div class="section-card">
+    <div class="section-header" style="background:#eaf4fb;">
+      <span class="material-icons-round" style="color:#2980b9;">menu_book</span>
+      <span class="section-title" style="color:#2980b9;">Journal Publication System (Stage 2 — Published)</span>
+    </div>
+    <div class="section-body">
+      <div class="journal-box">
+        <span class="material-icons-round">library_books</span>
+        <div class="journal-content">
+          <strong>TM No dalne ke baad:</strong> System automatically batata hai ke konse Journal mein hai.<br>
+          Journal Number (e.g. <strong>901</strong>) · Journal Date · Screenshot Upload option<br>
+          <span style="font-size:11px;color:#5d8aa8;margin-top:4px;display:block">Standalone Journal Publication Lookup Module — future plan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STOP / SPECIAL STATUSES ── -->
+  <div class="section-card">
+    <div class="section-header" style="background:#f8f9fa;">
+      <span class="material-icons-round" style="color:#95a5a6;">stop_circle</span>
+      <span class="section-title" style="color:#566573;">STOP — Special Statuses</span>
+    </div>
+    <div class="section-body">
+      <div class="stop-row">
+        <div class="stop-chip stop-close">
+          <span class="material-icons-round">cancel</span> Closed
+        </div>
+        <div class="stop-chip stop-abandon">
+          <span class="material-icons-round">do_not_disturb</span> Abandoned
+        </div>
+        <div class="stop-chip stop-client">
+          <span class="material-icons-round">person_off</span> By Client
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD STATS PREVIEW ── -->
+  <div class="section-card">
+    <div class="section-header" style="background:#f5f0e6;">
+      <span class="material-icons-round" style="color:#e74c3c;">dashboard</span>
+      <span class="section-title" style="color:#2c3e50;">Dashboard — Stage-wise Count (Preview)</span>
+    </div>
+    <div class="section-body">
+      <div class="dash-row">
+        <div class="dash-card dc1">
+          <div class="dash-num">24</div>
+          <div class="dash-lbl">Stage 1</div>
+        </div>
+        <div class="dash-card dc2">
+          <div class="dash-num">17</div>
+          <div class="dash-lbl">Stage 2</div>
+        </div>
+        <div class="dash-card dc3">
+          <div class="dash-num">31</div>
+          <div class="dash-lbl">Stage 3</div>
+        </div>
+        <div class="dash-card dc4">
+          <div class="dash-num">8</div>
+          <div class="dash-lbl">Stage 4</div>
+        </div>
+      </div>
+      <div class="bar-chart">
+        <div class="bar-wrap"><div class="bar" style="height:38%;background:#e74c3c;"></div><div class="bar-lbl">S1</div></div>
+        <div class="bar-wrap"><div class="bar" style="height:27%;background:#f39c12;"></div><div class="bar-lbl">S2</div></div>
+        <div class="bar-wrap"><div class="bar" style="height:50%;background:#27ae60;"></div><div class="bar-lbl">S3</div></div>
+        <div class="bar-wrap"><div class="bar" style="height:13%;background:#3498db;"></div><div class="bar-lbl">S4</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Print note -->
+  <div style="text-align:center;font-size:11px;color:#95a5a6;letter-spacing:.05em;margin-top:4px;">
+    <span class="material-icons-round" style="font-size:13px;vertical-align:middle;">print</span>
+    Print Preview → Print to PDF &nbsp;|&nbsp;
+    <span class="material-icons-round" style="font-size:13px;vertical-align:middle;">backup</span>
+    Auto Backup → Local + Google Drive &nbsp;|&nbsp;
+    <span class="material-icons-round" style="font-size:13px;vertical-align:middle;">cloud_sync</span>
+    rclone Sync
+  </div>
+
+</div>

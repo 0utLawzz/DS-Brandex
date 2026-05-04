@@ -107,8 +107,11 @@ def application_create(request: HttpRequest):
         files = request.FILES.getlist("files")
 
         errors = []
+        # Case number is optional now - will be auto-generated if not provided
+        # If case_number is provided, it must be unique
         if case_number and Application.objects.filter(case_number=case_number).exists():
             errors.append("Case number already exists")
+        # If case_number is not provided, client_id is required for auto-generation
         if not case_number and not client_id:
             errors.append("Either case number or client ID is required")
         if not application_name:
@@ -121,12 +124,6 @@ def application_create(request: HttpRequest):
             errors.append("Invalid application type")
         if applicant_type and applicant_type not in {c[0] for c in Application._meta.get_field("applicant_type").choices}:
             errors.append("Invalid applicant type")
-
-        # TM duplicate warning
-        tm_duplicate = None
-        if trademark_no and Application.objects.filter(trademark_no=trademark_no).exists():
-            tm_duplicate = Application.objects.filter(trademark_no=trademark_no).first()
-            errors.append(f"WARNING: TM No {trademark_no} already exists in case {tm_duplicate.case_number} ({tm_duplicate.application_name})")
 
         if errors:
             context = {
@@ -312,6 +309,7 @@ def application_detail(request: HttpRequest, pk: int):
                 urgency = "overdue"
             elif (a.due_date - today).days <= 3 and a.status != "completed":
                 urgency = "soon"
+
         assignment_cards.append((a, urgency))
 
     context = {
@@ -379,6 +377,7 @@ def add_assignment(request: HttpRequest, pk: int):
         status = (request.POST.get("status") or "pending").strip()
         notes = (request.POST.get("notes") or "").strip()
 
+        # Convert due_date string to date object if provided
         due_date = None
         if due_date_str:
             from datetime import datetime
@@ -424,25 +423,194 @@ def add_document(request: HttpRequest, pk: int):
 
 @login_required
 def export_application_pdf(request: HttpRequest, pk: int):
-    """Render print-ready HTML PDF view"""
     application = get_object_or_404(Application, pk=pk)
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+    from reportlab.lib import colors
+    from django.http import HttpResponse
+    import datetime
+
     site_settings = SiteSettings.objects.first()
     if not site_settings:
         site_settings = SiteSettings.objects.create()
 
-    context = {
-        "application": application,
-        "site_settings": site_settings,
-    }
-    return render(request, "cases/application_pdf.html", context)
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{application.case_number}_application.pdf"'
+
+    doc = SimpleDocTemplate(response, pagesize=A4,
+                            rightMargin=72, leftMargin=72,
+                            topMargin=72, bottomMargin=18)
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        textColor=colors.HexColor('#722F37'),
+        spaceAfter=12
+    )
+    header_style = ParagraphStyle(
+        'CustomHeader',
+        parent=styles['Heading2'],
+        fontSize=12,
+        textColor=colors.HexColor('#2E5339'),
+        spaceAfter=6
+    )
+
+    elements = []
+
+    # Header with company name
+    if site_settings.company_logo and site_settings.company_logo.path:
+        try:
+            img = Image(site_settings.company_logo.path, width=2*inch, height=1*inch)
+            elements.append(img)
+        except:
+            pass
+    
+    elements.append(Paragraph(site_settings.company_name or "Office IP Case Platform", title_style))
+    elements.append(Spacer(1, 0.2*inch))
+
+    # Case Information
+    elements.append(Paragraph("Case Information", header_style))
+    case_data = [
+        ["Case #", application.case_number],
+        ["Client Type", application.get_client_type_display()],
+        ["Application Type", application.get_application_type_display()],
+        ["Application Name", application.application_name],
+        ["Trademark No", application.trademark_no],
+        ["Case No (Official)", application.case_no or "-"],
+        ["Class", application.class_numbers],
+        ["Filing Date", application.filing_date.strftime("%d-%b-%Y") if application.filing_date else ""],
+        ["Applicant", application.applicant_name],
+        ["Trading As", application.trading_as],
+        ["City", application.city],
+        ["Agent", application.agent_name],
+        ["Dispatch Status", application.dispatch_status],
+    ]
+    case_table = Table(case_data, colWidths=[2*inch, 4*inch])
+    case_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (0, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    elements.append(case_table)
+    elements.append(Spacer(1, 0.2*inch))
+
+    # Status
+    elements.append(Paragraph("Status", header_style))
+    status_data = [
+        ["Stage", application.get_current_stage_display()],
+        ["Sub-Status", application.get_current_sub_stage_display()],
+        ["Status", application.current_status],
+    ]
+    status_table = Table(status_data, colWidths=[2*inch, 4*inch])
+    status_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (0, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    elements.append(status_table)
+    elements.append(Spacer(1, 0.2*inch))
+
+    # Timeline
+    elements.append(Paragraph("Timeline", header_style))
+    timeline_data = [["Date/Time", "Event Type", "Notes", "Deadline"]]
+    for e in application.events.all():
+        timeline_data.append([
+            e.event_datetime.strftime("%d-%b-%Y %H:%M"),
+            f"{e.get_event_type_display()} - {e.get_sub_stage_display()}" if e.sub_stage else e.get_event_type_display(),
+            e.notes,
+            e.deadline_date.strftime("%d-%b-%Y") if e.deadline_date else ""
+        ])
+    timeline_table = Table(timeline_data, colWidths=[1.2*inch, 1.5*inch, 2*inch, 1.3*inch])
+    timeline_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONTSIZE', (0, 1), (-1, -1), 8),
+    ]))
+    elements.append(timeline_table)
+    elements.append(Spacer(1, 0.2*inch))
+
+    # Assignments
+    elements.append(Paragraph("Assignments (CASES)", header_style))
+    assignment_data = [["Assigned To", "Due Date", "Status", "Notes"]]
+    for a in application.assignments.all():
+        assignment_data.append([
+            a.assigned_to.username if a.assigned_to else "(Unassigned)",
+            a.due_date.strftime("%d-%b-%Y") if a.due_date else "",
+            a.get_status_display(),
+            a.notes
+        ])
+    assignment_table = Table(assignment_data, colWidths=[1.2*inch, 1*inch, 1*inch, 2.8*inch])
+    assignment_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONTSIZE', (0, 1), (-1, -1), 8),
+    ]))
+    elements.append(assignment_table)
+    elements.append(Spacer(1, 0.2*inch))
+
+    # Documents
+    elements.append(Paragraph("Documents", header_style))
+    doc_data = [["Type", "Link"]]
+    for d in application.documents.all():
+        doc_data.append([d.get_file_type_display(), d.file_path])
+    doc_table = Table(doc_data, colWidths=[1.5*inch, 4.5*inch])
+    doc_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('FONTSIZE', (0, 1), (-1, -1), 8),
+    ]))
+    elements.append(doc_table)
+
+    # Footer
+    elements.append(Spacer(1, 0.5*inch))
+    elements.append(Paragraph(
+        f"{site_settings.company_name or 'Office IP Case Platform'} | Generated: {datetime.datetime.now().strftime('%d-%b-%Y %H:%M')}",
+        ParagraphStyle('Footer', parent=styles['Normal'], fontSize=8, textColor=colors.grey)
+    ))
+
+    doc.build(elements)
+    return response
 
 
 @login_required
 def dashboard(request: HttpRequest):
+    from django.db.models import Count
+
     site_settings = SiteSettings.objects.first()
     if not site_settings:
         site_settings = SiteSettings.objects.create()
 
+    # Stage counts
     total_count   = Application.objects.count()
     stage1_count  = Application.objects.filter(current_stage=1).count()
     stage2_count  = Application.objects.filter(current_stage=2).count()
@@ -450,15 +618,19 @@ def dashboard(request: HttpRequest):
     stage4_count  = Application.objects.filter(current_stage=4).count()
     stopped_count = Application.objects.exclude(stop_status="").count()
 
+    # Assignment counts
     pending_assignments = Assignment.objects.filter(status="pending").count()
     overdue_assignments  = Assignment.objects.filter(status="overdue").count()
 
+    # Recent cases (last 15 updated)
     recent_cases = Application.objects.order_by("-updated_at")[:15]
 
+    # Overdue assignment list
     overdue_list = Assignment.objects.filter(status="overdue").select_related(
         "application", "assigned_to"
     ).order_by("due_date")[:10]
 
+    # Agent stats
     agent_stats_qs = (
         Application.objects
         .exclude(agent_name="")
@@ -468,6 +640,7 @@ def dashboard(request: HttpRequest):
     )
     agent_stats = [{"agent_name": r["agent_name"], "count": r["count"]} for r in agent_stats_qs]
 
+    # Client type stats with percentage
     ct_labels = {"X": "X — Clients", "A": "A — Consultants", "N": "N — Noor Baaf"}
     ct_qs = (
         Application.objects
@@ -485,15 +658,24 @@ def dashboard(request: HttpRequest):
             "pct": pct,
         })
 
+    # Sub-stage stats
     SUBSTAGE_STAGE_MAP = {
-        "filed": (1, "Filed"), "ack_received": (1, "Acknowledgement Received"),
-        "examination_done": (1, "Examination"), "acceptance_done": (2, "Acceptance Done"),
-        "hearing": (2, "Hearing"), "published": (2, "Published"),
-        "demand_note_issue": (3, "Demand Note Issue"), "demand_note_received": (3, "Demand Note Received"),
-        "demand_note_submitted": (3, "Demand Note Submitted"), "certificate_issued": (3, "Certificate Issued"),
-        "certificate_received": (3, "Certificate Received"), "certificate_print": (3, "Certificate Print"),
-        "certificate_dispatch": (3, "Certificate Dispatch"), "opposition_received": (4, "Opposition Received"),
-        "opposition_withdrawn": (4, "Opposition Withdrawn"), "opposition_filed": (4, "Opposition Filed"),
+        "filed": (1, "Filed"),
+        "ack_received": (1, "Acknowledgement Received"),
+        "examination_done": (1, "Examination"),
+        "acceptance_done": (2, "Acceptance Done"),
+        "hearing": (2, "Hearing"),
+        "published": (2, "Published"),
+        "demand_note_issue": (3, "Demand Note Issue"),
+        "demand_note_received": (3, "Demand Note Received"),
+        "demand_note_submitted": (3, "Demand Note Submitted"),
+        "certificate_issued": (3, "Certificate Issued"),
+        "certificate_received": (3, "Certificate Received"),
+        "certificate_print": (3, "Certificate Print"),
+        "certificate_dispatch": (3, "Certificate Dispatch"),
+        "opposition_received": (4, "Opposition Received"),
+        "opposition_withdrawn": (4, "Opposition Withdrawn"),
+        "opposition_filed": (4, "Opposition Filed"),
     }
 
     ss_qs = (
@@ -506,7 +688,12 @@ def dashboard(request: HttpRequest):
     substage_stats = []
     for r in ss_qs:
         stage_num, label = SUBSTAGE_STAGE_MAP.get(r["current_sub_stage"], (0, r["current_sub_stage"]))
-        substage_stats.append({"key": r["current_sub_stage"], "label": label, "stage": stage_num, "count": r["count"]})
+        substage_stats.append({
+            "key": r["current_sub_stage"],
+            "label": label,
+            "stage": stage_num,
+            "count": r["count"],
+        })
 
     context = {
         "site_settings": site_settings,
@@ -533,14 +720,17 @@ def my_tasks(request: HttpRequest):
     today = timezone.localdate()
     current_user = request.user
 
+    # Get assignments for current user
     my_assignments = Assignment.objects.filter(
         assigned_to=current_user
     ).select_related('application').order_by('due_date', '-assigned_date')
 
+    # Separate by status
     pending_assignments = my_assignments.filter(status="pending")
     overdue_assignments = my_assignments.filter(status="overdue")
     completed_assignments = my_assignments.filter(status="completed")
 
+    # Get events with deadlines for applications assigned to user
     my_application_ids = my_assignments.values_list('application_id', flat=True)
     my_events = Event.objects.filter(
         application_id__in=my_application_ids,
@@ -564,15 +754,20 @@ def my_tasks(request: HttpRequest):
 
 @login_required
 def dispatch_certificate_received(request: HttpRequest, pk: int):
+    """Mark certificate as received in dispatch workflow"""
     application = get_object_or_404(Application, pk=pk)
     application.current_sub_stage = SubStage.CERTIFICATE_RECEIVED
     application.dispatch_status = "Certificate Received"
     application.save()
+
     Event.objects.create(
-        application=application, event_type=EventType.CERTIFICATE,
+        application=application,
+        event_type=EventType.CERTIFICATE,
         notes="Certificate marked as received (dispatch workflow)",
-        sub_stage=SubStage.CERTIFICATE_RECEIVED, stage=Stage.STAGE_3,
+        sub_stage=SubStage.CERTIFICATE_RECEIVED,
+        stage=Stage.STAGE_3,
     )
+
     return redirect("cases:application_detail", pk=pk)
 
 
@@ -584,24 +779,6 @@ def proceed_to_stage2(request: HttpRequest, pk: int):
         application.proceed_datetime = timezone.now()
         application.save(update_fields=["proceed_to_stage2", "proceed_datetime", "updated_at"])
         messages.success(request, "Proceed set. Stage 2 is now unlocked.")
-    return redirect("cases:application_detail", pk=pk)
-
-
-@login_required
-def stop_case(request: HttpRequest, pk: int):
-    """Set stop status (Closed / Abandoned / By Client) on a case"""
-    application = get_object_or_404(Application, pk=pk)
-    if request.method == "POST":
-        stop_status = (request.POST.get("stop_status") or "").strip()
-        if stop_status:
-            application.stop_status = stop_status
-            application.save(update_fields=["stop_status", "updated_at"])
-            messages.success(request, f"Case marked as: {application.get_stop_status_display()}")
-        else:
-            # Clear stop status
-            application.stop_status = ""
-            application.save(update_fields=["stop_status", "updated_at"])
-            messages.success(request, "Stop status cleared.")
     return redirect("cases:application_detail", pk=pk)
 
 
@@ -629,35 +806,47 @@ def update_journal(request: HttpRequest, pk: int):
 
 @login_required
 def dispatch_certificate_print(request: HttpRequest, pk: int):
+    """Mark certificate as printed in dispatch workflow"""
     application = get_object_or_404(Application, pk=pk)
     application.current_sub_stage = SubStage.CERTIFICATE_PRINT
     application.dispatch_status = "Certificate Printed"
     application.save()
+
     Event.objects.create(
-        application=application, event_type=EventType.CERTIFICATE,
+        application=application,
+        event_type=EventType.CERTIFICATE,
         notes="Certificate marked as printed (dispatch workflow)",
-        sub_stage=SubStage.CERTIFICATE_PRINT, stage=Stage.STAGE_3,
+        sub_stage=SubStage.CERTIFICATE_PRINT,
+        stage=Stage.STAGE_3,
     )
+
     return redirect("cases:application_detail", pk=pk)
 
 
 @login_required
 def dispatch_certificate_dispatch(request: HttpRequest, pk: int):
+    """Mark certificate as dispatched in dispatch workflow"""
     application = get_object_or_404(Application, pk=pk)
     application.current_sub_stage = SubStage.CERTIFICATE_DISPATCH
     application.dispatch_status = "Certificate Dispatched"
     application.save()
+
     Event.objects.create(
-        application=application, event_type=EventType.CERTIFICATE,
+        application=application,
+        event_type=EventType.CERTIFICATE,
         notes="Certificate marked as dispatched (dispatch workflow)",
-        sub_stage=SubStage.CERTIFICATE_DISPATCH, stage=Stage.STAGE_3,
+        sub_stage=SubStage.CERTIFICATE_DISPATCH,
+        stage=Stage.STAGE_3,
     )
+
     return redirect("cases:application_detail", pk=pk)
 
 
 @login_required
 def search_by_tm(request: HttpRequest):
+    """Search applications by Trademark Number"""
     q = (request.GET.get("q") or "").strip()
+
     applications = []
     if q:
         applications = Application.objects.filter(trademark_no__icontains=q)
@@ -670,18 +859,27 @@ def search_by_tm(request: HttpRequest):
     if not site_settings:
         site_settings = SiteSettings.objects.create()
 
-    context = {"page_obj": page_obj, "q": q, "site_settings": site_settings}
+    context = {
+        "page_obj": page_obj,
+        "q": q,
+        "site_settings": site_settings,
+    }
     return render(request, "cases/application_list.html", context)
 
 
 @login_required
 def export_applications_csv(request: HttpRequest):
+    """Export all applications to CSV file"""
     applications = Application.objects.all().order_by('-created_at')
+
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="applications_export.csv"'
+
     writer = csv.writer(response)
+    
+    # Write header row
     writer.writerow([
-        'Ref #', 'Case Number', 'Client Type', 'Client ID', 'Sequence',
+        'Case Number', 'Client Type', 'Client ID', 'Sequence',
         'Folder Number', 'Application Name', 'Application Type',
         'Trademark No', 'Case No', 'Class Numbers', 'Filing Date',
         'Application Year', 'Applicant Name', 'Trading As',
@@ -690,9 +888,10 @@ def export_applications_csv(request: HttpRequest):
         'Demand Note Date', 'Current Stage', 'Current Sub Stage',
         'Current Status', 'Created At', 'Updated At'
     ])
+
+    # Write data rows
     for app in applications:
         writer.writerow([
-            app.ref_number or '',
             app.case_number or '',
             app.client_type or '',
             app.client_id or '',
@@ -721,6 +920,7 @@ def export_applications_csv(request: HttpRequest):
             app.created_at.strftime('%Y-%m-%d %H:%M:%S') if app.created_at else '',
             app.updated_at.strftime('%Y-%m-%d %H:%M:%S') if app.updated_at else ''
         ])
+
     return response
 
 
@@ -739,18 +939,22 @@ def assignments_view(request: HttpRequest):
     elif status_filter == "completed":
         assignments = assignments.filter(status="completed")
 
+    # Agent summary cards
     AGENTS = [
-        {"name": "Fasial", "city": "LHR"},
-        {"name": "Rashid", "city": "ISB"},
-        {"name": "Uzma",   "city": "KRI"},
-        {"name": "Sulman", "city": "LHR"},
+        {"name": "Fasial",  "city": "LHR"},
+        {"name": "Rashid",  "city": "ISB"},
+        {"name": "Uzma",    "city": "KRI"},
+        {"name": "Sulman",  "city": "LHR"},
     ]
 
     agent_summary = []
     for ag in AGENTS:
-        qs = Assignment.objects.filter(application__agent_name=ag["name"])
+        qs = Assignment.objects.filter(
+            application__agent_name=ag["name"]
+        )
         agent_summary.append({
-            "name": ag["name"], "city": ag["city"],
+            "name": ag["name"],
+            "city": ag["city"],
             "pending":   qs.filter(status="pending").count(),
             "overdue":   qs.filter(status="overdue").count(),
             "completed": qs.filter(status="completed").count(),
@@ -781,6 +985,7 @@ def complete_assignment(request: HttpRequest, pk: int):
 
 @login_required
 def check_tm_duplicate(request: HttpRequest):
+    """AJAX endpoint: returns JSON {exists: bool, case_number, application_name}"""
     tm_no = (request.GET.get("tm_no") or "").strip()
     exclude_pk = request.GET.get("exclude_pk")
 
@@ -814,6 +1019,9 @@ def application_delete(request: HttpRequest, pk: int):
 
     if request.method == "POST":
         case_num = application.case_number
+        # Log deletion in audit before deleting
+        from .models import AuditLog, AuditActionType
+        # Note: since the app is being deleted, log to system or skip
         application.delete()
         messages.success(request, f"Case {case_num} deleted.")
         return redirect("cases:application_list")
@@ -826,7 +1034,22 @@ def application_delete(request: HttpRequest, pk: int):
 
 
 @login_required
+def export_application_pdf(request: HttpRequest, pk: int):
+    application = get_object_or_404(Application, pk=pk)
+    site_settings = SiteSettings.objects.first()
+    if not site_settings:
+        site_settings = SiteSettings.objects.create()
+
+    context = {
+        "application": application,
+        "site_settings": site_settings,
+    }
+    return render(request, "cases/application_pdf.html", context)
+
+
+@login_required
 def import_applications_csv(request: HttpRequest):
+    """Import applications from CSV file"""
     if request.method == 'POST':
         csv_file = request.FILES.get('csv_file')
         if not csv_file:
@@ -839,6 +1062,7 @@ def import_applications_csv(request: HttpRequest):
                 'error': 'Please upload a CSV file.'
             })
 
+        # Read CSV file
         decoded_file = csv_file.read().decode('utf-8')
         io_string = io.StringIO(decoded_file)
         reader = csv.DictReader(io_string)
@@ -848,11 +1072,13 @@ def import_applications_csv(request: HttpRequest):
 
         for row in reader:
             try:
+                # Skip if case number already exists
                 case_number = row.get('Case Number', '').strip()
                 if case_number and Application.objects.filter(case_number=case_number).exists():
                     errors.append(f"Case {case_number} already exists - skipped")
                     continue
 
+                # Create application from CSV row
                 app = Application(
                     case_number=case_number or None,
                     client_type=row.get('Client Type', 'X') or 'X',

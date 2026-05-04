@@ -1,0 +1,150 @@
+{% extends 'cases/base.html' %}
+{% block title %}Assignments — DS Brandex{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <div>
+    <h1 style="font-family:var(--font-heading);font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin:0;">
+      <span class="material-icons-round" style="font-size:20px;vertical-align:middle;margin-right:6px;">assignment_ind</span>Assignments
+    </h1>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Agent case assignments &amp; workload</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-dark small-cap" href="{% url 'cases:dashboard' %}">← Dashboard</a>
+  </div>
+</div>
+
+{# ── AGENT SUMMARY CARDS ── #}
+<div class="metric-grid mb-3">
+  {% for agent in agent_summary %}
+  <div class="victorian-card card" style="margin-bottom:0;padding:14px 16px;">
+    <div class="d-flex align-items-center gap-3 mb-2">
+      <div class="agent-avatar" style="width:44px;height:44px;font-size:15px;">{{ agent.name|slice:":2"|upper }}</div>
+      <div>
+        <div style="font-family:var(--font-heading);font-size:14px;font-weight:800;">{{ agent.name }}</div>
+        <div style="font-size:10px;color:var(--text-muted);letter-spacing:.06em;">{{ agent.city }}</div>
+      </div>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <span class="sub-badge" style="background:var(--warning);color:var(--black);">
+        {{ agent.pending }} Pending
+      </span>
+      {% if agent.overdue %}
+      <span class="sub-badge" style="background:var(--danger);color:var(--white);">
+        {{ agent.overdue }} Overdue
+      </span>
+      {% endif %}
+      <span class="sub-badge" style="background:var(--success);color:var(--white);">
+        {{ agent.completed }} Done
+      </span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{# ── FILTER TABS ── #}
+<div style="display:flex;gap:0;margin-bottom:0;border:var(--border);width:fit-content;box-shadow:var(--shadow-sm);">
+  <a href="?status=all"
+     class="btn btn-sm small-cap {% if status_filter == 'all' or not status_filter %}btn-dark{% endif %}"
+     style="border-radius:0;border-right:var(--border);">All</a>
+  <a href="?status=pending"
+     class="btn btn-sm small-cap {% if status_filter == 'pending' %}btn-dark{% endif %}"
+     style="border-radius:0;border-right:var(--border);">Pending</a>
+  <a href="?status=overdue"
+     class="btn btn-sm small-cap {% if status_filter == 'overdue' %}btn-dark{% endif %}"
+     style="border-radius:0;border-right:var(--border);background:{% if status_filter == 'overdue' %}var(--danger){% else %}var(--yellow){% endif %};color:{% if status_filter == 'overdue' %}#fff{% else %}#000{% endif %};">Overdue</a>
+  <a href="?status=completed"
+     class="btn btn-sm small-cap {% if status_filter == 'completed' %}btn-dark{% endif %}"
+     style="border-radius:0;background:{% if status_filter == 'completed' %}var(--success){% else %}var(--yellow){% endif %};color:{% if status_filter == 'completed' %}#fff{% else %}#000{% endif %};">Completed</a>
+</div>
+
+{# ── ASSIGNMENTS TABLE ── #}
+<div class="victorian-card card mt-0" style="border-top:none;">
+  <div class="card-body p-0">
+    <div style="overflow-x:auto;">
+      <table class="brandex-table">
+        <thead>
+          <tr>
+            <th>Case / TM No</th>
+            <th>Application</th>
+            <th>Stage</th>
+            <th>Assigned To</th>
+            <th>Assigned Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for assign in assignments %}
+          <tr>
+            <td>
+              <a href="{% url 'cases:application_detail' assign.application.pk %}" class="victorian-link">
+                <div class="tm-number">{{ assign.application.trademark_no|default:"—" }}</div>
+                <div class="case-num">{{ assign.application.case_number }}</div>
+              </a>
+            </td>
+            <td style="font-size:12px;max-width:160px;">{{ assign.application.application_name|truncatechars:28 }}</td>
+            <td>
+              <span class="stage-badge stage-s{{ assign.application.current_stage }}" style="font-size:9px;padding:2px 7px;">
+                S{{ assign.application.current_stage }}
+              </span>
+            </td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="agent-avatar" style="width:28px;height:28px;font-size:10px;">
+                  {{ assign.assigned_to.get_full_name|default:assign.assigned_to.username|slice:":2"|upper|default:"?" }}
+                </div>
+                <span style="font-size:12px;font-weight:600;">
+                  {{ assign.assigned_to.get_full_name|default:assign.assigned_to.username|default:"—" }}
+                </span>
+              </div>
+            </td>
+            <td style="font-size:11px;white-space:nowrap;">{{ assign.assigned_date|date:"d M Y" }}</td>
+            <td style="font-size:11px;white-space:nowrap;
+              {% if assign.status == 'overdue' %}color:var(--danger);font-weight:700;{% endif %}">
+              {{ assign.due_date|date:"d M Y"|default:"—" }}
+            </td>
+            <td>
+              <span class="sub-badge
+                {% if assign.status == 'overdue' %}" style="background:var(--danger);color:#fff;border-color:#000;
+                {% elif assign.status == 'completed' %}" style="background:var(--success);color:#fff;border-color:#000;
+                {% else %}" style="background:var(--warning);color:#000;border-color:#000;{% endif %}">
+                {{ assign.get_status_display }}
+              </span>
+            </td>
+            <td style="font-size:11px;max-width:120px;color:var(--text-muted);">{{ assign.notes|truncatechars:30|default:"—" }}</td>
+            <td>
+              <div class="d-flex gap-1">
+                <a href="{% url 'cases:application_detail' assign.application.pk %}" class="btn btn-sm btn-dark" title="View Case">
+                  <span class="material-icons-round" style="font-size:12px">open_in_new</span>
+                </a>
+                {% if assign.status != 'completed' %}
+                <form method="post" action="{% url 'cases:complete_assignment' assign.pk %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-success" title="Mark Complete"
+                    onclick="return confirm('Mark as completed?')">
+                    <span class="material-icons-round" style="font-size:12px">check</span>
+                  </button>
+                </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="9" style="text-align:center;padding:32px;color:var(--text-muted);">
+              <span class="material-icons-round" style="font-size:36px;display:block;margin-bottom:8px;">assignment_turned_in</span>
+              No assignments found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

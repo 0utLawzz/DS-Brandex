@@ -20,9 +20,8 @@ urlpatterns = [
 
     # ── Stage actions ──
     path("cases/<int:pk>/proceed/",           views.proceed_to_stage2,          name="proceed_to_stage2"),
-    path("cases/<int:pk>/journal/",           views.update_journal,             name="update_journal"),
-    path("cases/<int:pk>/dispatch/received/", views.dispatch_certificate_received, name="dispatch_received"),
-    path("cases/<int:pk>/dispatch/print/",    views.dispatch_certificate_print,  name="dispatch_print_certificate"),
+    path("cases/<int:pk>/stop/",              views.stop_case,                   name="stop_case"),
+    path("cases/<int:pk>/dispatch/print/",    views.dispatch_print_certificate,  name="dispatch_print_certificate"),
     path("cases/<int:pk>/dispatch/dispatch/", views.dispatch_certificate_dispatch, name="dispatch_certificate_dispatch"),
 
     # ── PDF & Export ──

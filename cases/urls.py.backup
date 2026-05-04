@@ -1,0 +1,31 @@
+from django.urls import path
+
+from . import views
+
+
+app_name = "cases"
+
+urlpatterns = [
+    path("", views.dashboard, name="dashboard"),
+    path("my-tasks/", views.my_tasks, name="my_tasks"),
+    path("applications/", views.application_list, name="application_list"),
+    path("applications/new/", views.application_create, name="application_create"),
+    path("applications/<int:pk>/", views.application_detail, name="application_detail"),
+    path("applications/<int:pk>/edit/", views.application_edit, name="application_edit"),
+    path("applications/<int:pk>/add-event/", views.add_event, name="add_event"),
+    path("applications/<int:pk>/add-assignment/", views.add_assignment, name="add_assignment"),
+    path("applications/<int:pk>/add-document/", views.add_document, name="add_document"),
+    path("applications/<int:pk>/proceed/", views.proceed_to_stage2, name="proceed_to_stage2"),
+    path("applications/<int:pk>/journal/", views.update_journal, name="update_journal"),
+    path("applications/<int:pk>/export/pdf/", views.export_application_pdf, name="export_application_pdf"),
+    path("assignments/", views.assignments_view, name="assignments"),
+    path("assignments/<int:pk>/complete/", views.complete_assignment, name="complete_assignment"),
+    path("applications/<int:pk>/delete/", views.application_delete, name="application_delete"),
+    path("api/check-tm-duplicate/", views.check_tm_duplicate, name="check_tm_duplicate"),
+    path("applications/<int:pk>/dispatch/received/", views.dispatch_certificate_received, name="dispatch_received"),
+    path("applications/<int:pk>/dispatch/print/", views.dispatch_certificate_print, name="dispatch_print"),
+    path("applications/<int:pk>/dispatch/dispatch/", views.dispatch_certificate_dispatch, name="dispatch_dispatch"),
+    path("applications/export/csv/", views.export_applications_csv, name="export_applications_csv"),
+    path("applications/import/csv/", views.import_applications_csv, name="import_applications_csv"),
+    path("search/tm/", views.search_by_tm, name="search_tm"),
+]
